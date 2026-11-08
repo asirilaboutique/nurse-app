@@ -68,7 +68,12 @@ nav.tabs svg{width:24px;height:24px}
 .card916.v-blush{background:var(--blush);color:var(--navy)}.card916.v-blush .dl{border-color:#CDBFA6!important}.card916.v-blush .dt{color:var(--navy)!important}.card916.v-blush .dk{color:#8A4A33!important}.card916.v-blush .dh{color:var(--navy)!important}.card916.v-blush .dh i{color:#8A4A33!important}
 .card916.v-foto{background-size:cover;background-position:center;color:#fff}.card916.v-foto:before{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(16,41,58,.78),rgba(16,41,58,.62) 40%,rgba(16,41,58,.9))}.card916.v-foto>*{position:relative}
 .demo{background:var(--warnbg);color:var(--warnfg)}
-@media(min-width:900px){#app{padding-bottom:40px}nav.tabs{max-width:560px}}
+@media(min-width:900px){#app{padding-bottom:90px}nav.tabs{max-width:none;justify-content:center}nav.tabs a{flex:0 0 120px}}
+.splash{position:fixed;inset:0;z-index:99;background:#14275F;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;pointer-events:none;animation:spOut .5s 1.5s forwards}
+.splash .tl{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;color:#E3EEF9;text-align:center;padding:0 24px}
+.splash svg{width:112px;height:112px}.splash svg path:last-child{stroke-dasharray:160;stroke-dashoffset:160;animation:spDr 1s .25s ease forwards}
+@keyframes spDr{to{stroke-dashoffset:0}}@keyframes spOut{to{opacity:0;visibility:hidden}}
+@media(prefers-reduced-motion:reduce){.splash svg path:last-child{animation:none;stroke-dashoffset:0}.splash{animation-delay:.6s}}
 @media print{nav.tabs,.noprint,.sheetbg,.toast{display:none!important}#app{max-width:none;padding:0}body{background:#fff}}
 .hide{display:none!important}
 .skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:#fff;padding:8px;z-index:99}
@@ -266,6 +271,22 @@ function route(){
 window.addEventListener('hashchange',route);
 
 /* ============ HOY ============ */
+function outbox(){
+ const t=today(),tm=addDays(t,1),sent=(S.ui.sent=S.ui.sent||{}),items=[];
+ const first=n=>String(n||'').split(/[ ,]/)[0];
+ const sig=' — '+first(S.profile.name)+', Enfermera a domicilio';
+ S.appts.filter(a=>a.date===tm&&a.status==='prog'&&!a.tent).forEach(a=>{const p=P(a.patientId);if(!p)return;
+  items.push({k:'r'+a.id,kind:'Recordatorio',who:p.name,phone:p.resp&&p.resp.phone,why:'Mañana '+a.start,msg:`Hola ${first(p.resp&&p.resp.name)}, te recuerdo la atención de ${first(p.name)} mañana a las ${a.start} (${a.type}). Si necesitas cambiar la hora, avísame por aquí.${sig}`})});
+ S.leads.filter(l=>l.stage===1&&/sin respuesta/i.test(l.note||'')).forEach(l=>{const p=l.patientId&&P(l.patientId);
+  items.push({k:'q'+l.id,kind:'Cotización',who:l.name,phone:p&&p.resp&&p.resp.phone,why:'Sin respuesta',msg:`Hola, ¿pudiste revisar la cotización de ${l.need||'la atención'}? Si tienes dudas o quieres ajustar algo, lo vemos juntas.${sig}`})});
+ S.leads.filter(l=>l.stage===5&&/c[oó]mo sigue/i.test(l.note||'')).forEach(l=>{const p=l.patientId&&P(l.patientId);
+  items.push({k:'a'+l.id,kind:'Seguimiento',who:l.name,phone:p&&p.resp&&p.resp.phone,why:'Alta reciente',msg:`Hola, quería saber cómo sigue ${first(l.name)} después del alta. Quedo atenta por si necesitas algo.${sig}`})});
+ return items.filter(i=>sent[i.k]!==t);
+}
+function outboxHtml(){
+ const it=outbox();if(!it.length)return '';
+ return `<section class="card col" aria-label="Por enviar hoy"><div class="row sp"><b>Por enviar hoy</b><span class="pill p-ok">${it.length}</span></div><span class="xs mut">Tú tocas enviar: se abre WhatsApp con el mensaje listo. Nada sale solo.</span>${it.map(i=>`<div class="row sp" style="gap:10px"><div class="grow" style="min-width:0"><b class="sm">${esc(i.kind)} · ${esc(i.who)}</b><div class="xs mut">${esc(i.why)}</div></div>${i.phone?`<button class="btn sm" data-act="osend" data-k="${i.k}">Enviar</button>`:'<span class="xs mut">Falta WhatsApp</span>'}</div>`).join('')}</section>`;
+}
 routes.hoy=()=>{
  const t=today(),list=dayAppts(t);
  const d=new Date();
@@ -285,6 +306,7 @@ routes.hoy=()=>{
  ${(!S.demo&&S.patients.length&&(!S.lastBackup||(Date.now()-S.lastBackup)>7*864e5))?`<div class="alert a-warn row sp"><span><b>Haz un respaldo.</b><br>${S.lastBackup?'Hace más de una semana.':'Aún no has guardado ninguno.'}</span><button class="btn sm" data-act="export">Respaldar</button></div>`:''}
  <div class="eyebrow" style="margin-top:4px">Tu día</div>
  ${list.length?list.map(aptCard).join(''):empty('Hoy no tienes atenciones agendadas.','<a class="btn" href="#/voz">Agendar algo</a>')}
+ ${outboxHtml()}
  ${list.length>1?`<section class="card row" aria-label="Ruta del día"><svg width="64" height="40" viewBox="0 0 64 40" fill="none" aria-hidden="true"><path d="M8 30C18 30 20 10 32 10S46 28 56 14" stroke="#2E9C8F" stroke-width="2" stroke-dasharray="3 5" stroke-linecap="round"/><circle cx="8" cy="30" r="4" fill="#C9785D"/><circle cx="32" cy="10" r="4" fill="#14275F"/><circle cx="56" cy="14" r="4" fill="#2E9C8F"/></svg><div><b class="sm">Traslados del día</b><div class="xs mut">${trav} min en total · ${new Set(list.map(a=>a.zone)).size} sector(es)</div></div></section>`:''}
  <div class="row" style="align-items:stretch">
   <a href="${pendRepList[0]?'#/informe/'+pendRepList[0].id:'#/agenda'}" class="alert a-warn grow" style="min-height:52px"><b>${pendRep} informe${pendRep===1?'':'s'} pendiente${pendRep===1?'':'s'}</b><br>${pendRepList[0]?esc(P(pendRepList[0].patientId)?.name||''):'Al día'}</a>
@@ -733,14 +755,14 @@ routes.panel=()=>{
  alerts.push(['ok','Publica tu disponibilidad',`Tienes ~${Math.round(free)} horas libres esta semana.`]);
  return `${back('Hoy','#/hoy')}${header('Ventas de servicios',cap(MESES[new Date().getMonth()])+' · todo se calcula desde tus cotizaciones, visitas y cobros')}
  <div class="col"><section class="row" style="flex-wrap:wrap;align-items:stretch">
- <div class="navy" style="flex:1.3;min-width:220px"><span class="xs">Ingresos del mes</span><b class="big" style="font-size:40px">${clp(ing)}</b><div class="bar" style="background:#34488A;margin-top:8px"><i style="width:${Math.min(100,Math.round(ing/meta*100))}%;background:var(--amber)"></i></div><span class="xs">${Math.round(ing/meta*100)} % de tu meta (${clp(meta)})</span></div>
- <div class="card" style="flex:1;min-width:150px"><span class="xs mut">Tasa de cierre</span><b style="font-family:'Cormorant Garamond',serif;font-size:36px;display:block">${tasa} %</b><span class="xs mut">${acc} de ${qs.length} cotizaciones</span></div>
+ <div class="navy" style="flex:1.3;min-width:220px"><span class="xs">Ingresos del mes</span><b class="big" style="font-size:40px">${clp(ing)}</b><div class="bar" style="background:#34488A;margin-top:8px"><i style="width:${Math.min(100,Math.round(ing/meta*100))}%;background:var(--coral)"></i></div><span class="xs">${Math.round(ing/meta*100)} % de tu meta (${clp(meta)})</span></div>
+ <div class="card" style="flex:1;min-width:150px"><span class="xs mut">Tasa de cierre</span><b style="font-family:'Cormorant Garamond',serif;font-size:36px;display:block">${qs.length>=5?tasa+' %':'—'}</b><span class="xs mut">${acc} de ${qs.length} cotizaciones${qs.length>=5?'':' · muestra pequeña, aún sin porcentaje'}</span></div>
  <div class="card" style="flex:1;min-width:150px"><span class="xs mut">Ocupación</span><b style="font-family:'Cormorant Garamond',serif;font-size:36px;display:block">${ocup} %</b><span class="xs mut">de tus horas del mes</span></div>
  <div class="card" style="flex:1;min-width:150px"><span class="xs mut">Valor por hora trabajada</span><b style="font-family:'Cormorant Garamond',serif;font-size:36px;display:block">${clp(vph)}</b><span class="xs mut">incluye traslados</span></div></section>
  <section class="card" aria-label="Ingresos por semana"><b>Ingresos por semana</b> <span class="xs mut">cobrado vs. por cobrar</span>
- <div class="row" style="align-items:flex-end;height:160px;margin-top:10px;gap:14px">${wk.map((w,i)=>`<div class="grow col" style="gap:0;justify-content:flex-end;height:100%;align-items:center"><div style="width:100%;max-width:60px;display:flex;flex-direction:column;justify-content:flex-end;height:130px"><div style="height:${Math.round(w.c/mx*130)}px;background:var(--amber);border-radius:6px 6px 0 0"></div><div style="height:${Math.round(w.p/mx*130)}px;background:var(--ok);${w.c?'':'border-radius:6px 6px 0 0'}"></div></div><b class="xs">Sem ${i+1}</b><span class="xs mut">${clp(w.p+w.c)}</span></div>`).join('')}</div>
- <div class="row xs mut"><span class="row" style="gap:6px"><i style="width:10px;height:10px;background:var(--ok);border-radius:2px"></i>Cobrado</span><span class="row" style="gap:6px"><i style="width:10px;height:10px;background:var(--amber);border-radius:2px"></i>Por cobrar</span></div></section>
- <section class="card col"><b>De dónde llegan</b>${Object.entries(srcs).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div><div class="row sp sm"><span>${esc(k)}</span><b>${v}</b></div><div class="bar"><i style="width:${Math.round(v/smax*100)}%;background:var(--amber)"></i></div></div>`).join('')||'<span class="sm mut">Aún sin datos</span>'}</section>
+ <div class="row" style="align-items:flex-end;height:160px;margin-top:10px;gap:14px">${wk.map((w,i)=>`<div class="grow col" style="gap:0;justify-content:flex-end;height:100%;align-items:center"><div style="width:100%;max-width:60px;display:flex;flex-direction:column;justify-content:flex-end;height:130px"><div style="height:${Math.round(w.c/mx*130)}px;background:var(--azul);border-radius:6px 6px 0 0"></div><div style="height:${Math.round(w.p/mx*130)}px;background:var(--ok);${w.c?'':'border-radius:6px 6px 0 0'}"></div></div><b class="xs">Sem ${i+1}</b><span class="xs mut">${clp(w.p+w.c)}</span></div>`).join('')}</div>
+ <div class="row xs mut"><span class="row" style="gap:6px"><i style="width:10px;height:10px;background:var(--ok);border-radius:2px"></i>Cobrado</span><span class="row" style="gap:6px"><i style="width:10px;height:10px;background:var(--azul);border-radius:2px"></i>Por cobrar</span></div></section>
+ <section class="card col"><b>De dónde llegan</b>${Object.entries(srcs).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div><div class="row sp sm"><span>${esc(k)}</span><b>${v}</b></div><div class="bar"><i style="width:${Math.round(v/smax*100)}%;background:var(--turq)"></i></div></div>`).join('')||'<span class="sm mut">Aún sin datos</span>'}</section>
  <section class="col">${alerts.map(a=>`<div class="alert a-${a[0]}"><b>${a[1]}.</b><br>${a[2]}</div>`).join('')}</section></div>`;
 };
 
@@ -1003,6 +1025,7 @@ document.addEventListener('click',async ev=>{
  case 'dispvar':S.ui.dispVar=el.dataset.v;save();route();break;
  case 'copyavail':try{await navigator.clipboard.writeText(availText());toast('Texto copiado')}catch(e){toast('No se pudo copiar')}break;
  case 'pcopy':{const p=P(id);await ensurePin(p);try{await navigator.clipboard.writeText(await portalUrl(p));toast('Enlace copiado')}catch(e){toast('No se pudo copiar')}break}
+ case 'osend':{const i=outbox().find(x=>x.k===el.dataset.k);if(!i||!i.phone)break;window.open(waLink(i.phone,i.msg),'_blank','noopener');S.ui.sent[i.k]=today();save();route();toast('Marcado como enviado hoy');break}
  case 'pwa':{const p=P(id);if(!p.resp.phone){toast('Falta el WhatsApp del responsable');break}await ensurePin(p);const cfg=S.ui.portal[p.id];window.open(waLink(p.resp.phone,`Hola ${p.resp.name.split(' ')[0]}, este es tu enlace personal para seguir el cuidado de ${p.name.split(/[ ,]/)[0]}. Vence el ${fdate(cfg.exp)}. El PIN te lo entrego en persona.\n${await portalUrl(p)}`),'_blank','noopener');break}
  case 'pinshow':{const b=$('#pinv'),cfg=S.ui.portal[id];b.textContent=b.textContent==='••••'?cfg.pin:'••••';break}
  case 'prenew':{const cfg=S.ui.portal[id];cfg.exp=addDays(today(),30);save();route();toast('Renovado 30 días')}break;
@@ -1070,7 +1093,9 @@ async function ensurePin(p){}
 function shrink(file){return new Promise(res=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.6))};im.onerror=()=>res('');im.src=r.result};r.readAsDataURL(file)})}
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window._bip=e;const b=$('#installbtn');if(b)b.style.display=''});
 if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator.serviceWorker.register('sw.js').catch(()=>{})}
-window.NURSE={PCACHE,openPortal,get S(){return S},set S(v){S=v},route,conflicts,suggest,parsePhrase,qTotal,freeWindows,today,addDays,genFamily,tentSlots,startVisit,closeVisit,waLink,demo,DEFAULTS,saveNow,b64e,b64d,portalUrl,sha,A,P,loadOf,dayAppts};
+(function(){try{if(sessionStorage.getItem('splash'))return;sessionStorage.setItem('splash','1')}catch(e){}
+ const s=document.createElement('div');s.className='splash';s.setAttribute('aria-hidden','true');s.innerHTML=LOGO(112,true)+'<div class="tl">Cuidados que acompañan.<br>En cada etapa de la vida.</div>';document.body.appendChild(s);setTimeout(()=>s.remove(),2200)})();
+window.NURSE={outbox,PCACHE,openPortal,get S(){return S},set S(v){S=v},route,conflicts,suggest,parsePhrase,qTotal,freeWindows,today,addDays,genFamily,tentSlots,startVisit,closeVisit,waLink,demo,DEFAULTS,saveNow,b64e,b64d,portalUrl,sha,A,P,loadOf,dayAppts};
 loadDispImg();
 route();
 </script>

@@ -86,7 +86,7 @@ t('mover cliente avanza y retrocede',async()=>{fresh();await go('#/embudo');cons
 t('no se sale de los extremos',async()=>{fresh();const l=N.S.leads[0];l.stage=0;await go('#/embudo');ok(document.querySelector(`[data-act=lmove][data-id="${l.id}"][data-n="-1"]`).disabled)});
 t('suma de cotizaciones abiertas',async()=>{fresh();await go('#/embudo');const sum=N.S.leads.filter(l=>l.stage===1).reduce((s,l)=>s+l.amount,0);ok(txt().includes(clp(sum)))});
 t('panel: ingresos del mes = pagados del mes',async()=>{fresh();await go('#/panel');const m=N.today().slice(0,7);const s=N.S.charges.filter(c=>c.status==='pagado'&&(c.paidAt||c.due).startsWith(m)).reduce((x,c)=>x+c.amount,0);ok(txt().includes(clp(s)),'ingresos '+s)});
-t('panel: tasa de cierre',async()=>{fresh();N.S.quotes.push({id:'a',n:'1',patientId:'x',modo:'m',servicio:'s',qty:1,unit:1,disc:0,valid:7,status:'enviada',date:N.today(),slots:[]});await go('#/panel');ok(/50 %/.test(txt()),'1 aceptada de 2')});
+t('panel: tasa de cierre',async()=>{fresh();for(const i of 'abcd')N.S.quotes.push({id:i,n:i,patientId:'x',modo:'m',servicio:'s',qty:1,unit:1,disc:0,valid:7,status:'enviada',date:N.today(),slots:[]});await go('#/panel');ok(/Tasa de cierre\s*\d+ %/.test(txt()),'con 5+ cotizaciones sí muestra porcentaje')});
 t('panel sin datos no rompe (NaN/Infinity)',async()=>{N.S=N.DEFAULTS();await go('#/panel');N.route();ok(!/NaN|Infinity|undefined/.test(txt()),txt().slice(0,200))});
 t('crear y editar lead',async()=>{fresh();await go('#/embudo');click('[data-act=newlead]');const f=document.querySelector('form[data-form=lead]');f.elements.name.value='Familia Test';f.requestSubmit();await wait(60);ok(N.S.leads.some(l=>l.name==='Familia Test'))});
 t('lead sin nombre es rechazado',async()=>{fresh();await go('#/embudo');click('[data-act=newlead]');const f=document.querySelector('form[data-form=lead]');f.requestSubmit();await wait(60);ok(/Falta el nombre/.test(document.body.innerText))});
@@ -175,11 +175,21 @@ t('paleta oficial: tokens Noche/Turquesa/Terracota y sin colores del mockup anti
 t('logo original V con pulso y lockup Enfermera a domicilio',async()=>{fresh();await go('#/hoy');ok(document.querySelector('#app svg path[d*="M6 34 H20"]'));const q=N.S.quotes[0];await go('#/cotizacion/'+q.id);ok(/ENFERMERA A DOMICILIO/i.test(document.querySelector('#qpaper').innerText))});
 t('ícono PWA y manifest con la marca nueva',async()=>{const s=await (await fetch('icon.svg')).text();ok(s.includes('#F2A48C')&&s.includes('#14275F'))});
 
+
+/* R12 · Auditoría 360: panel honesto, Por enviar hoy, bienvenida */
+cur=R[12]=[];
+t('panel: con pocas cotizaciones no muestra porcentaje de cierre',async()=>{fresh();await go('#/panel');ok(/muestra pequeña/.test(txt()))});
+t('panel: la terracota no se usa en gráficos',async()=>{fresh();await go('#/panel');const h=document.querySelector('#app').innerHTML;ok(!/var\(--amber\)/.test(h))});
+t('por enviar hoy: recordatorio de mañana con mensaje listo',async()=>{fresh();const p=N.S.patients[0];const tm=N.addDays(N.today(),1);N.S.appts.push({id:'zz1',patientId:p.id,type:'Curación',date:tm,start:'10:00',dur:30,travel:10,price:1,status:'prog',zone:'x',record:null,report:null});const o=N.outbox().find(i=>i.k==='rzz1');ok(o&&/10:00/.test(o.msg)&&o.kind==='Recordatorio');await go('#/hoy');ok(/Por enviar hoy/.test(txt()))});
+t('por enviar hoy: cotización sin respuesta aparece',async()=>{fresh();ok(N.outbox().some(i=>i.kind==='Cotización'))});
+t('por enviar hoy: enviar lo marca y desaparece',async()=>{fresh();const k=N.outbox().find(i=>i.phone);if(!k){ok(true);return}const w=window.open;window.open=()=>null;await go('#/hoy');click('[data-act=osend][data-k="'+k.k+'"]');await wait(60);window.open=w;ok(!N.outbox().some(i=>i.k===k.k))});
+t('por enviar hoy: sin WhatsApp no ofrece botón',async()=>{fresh();N.S.leads.forEach(l=>{l.patientId=null});await go('#/hoy');ok(!document.querySelector('[data-act=osend][data-k^="q"]'))});
+t('bienvenida: se retira sola y no bloquea clics',async()=>{const s=document.createElement('div');s.className='splash';document.body.appendChild(s);eq(getComputedStyle(s).pointerEvents,'none');s.remove()});
 window.__errs=[];window.addEventListener('error',e=>window.__errs.push(e.message));
 window.runRound=async function(n){
  const res=[];
  for(const x of R[n]){try{await x.fn();res.push({ok:true,name:x.name})}catch(e){res.push({ok:false,name:x.name,err:String(e.message).slice(0,200)})}}
  return {round:n,pass:res.filter(r=>r.ok).length,total:res.length,fails:res.filter(r=>!r.ok)};
 };
-window.runAll=async function(){const o=[];for(let i=1;i<=11;i++)o.push(await runRound(i));return o};
+window.runAll=async function(){const o=[];for(let i=1;i<=12;i++)o.push(await runRound(i));return o};
 })();
