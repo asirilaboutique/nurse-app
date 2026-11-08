@@ -1,0 +1,1062 @@
+<title>Nurse App</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1B3A4B;--sage:#8BA888;--blush:#E8D5C4;--amber:#C4935A;--bg:#FBF8F4;--line:#E9E1D7;--mut:#5A6B74;--ok:#2F5A3C;--okbg:#DDE8DA;--okfg:#234B31;--warnbg:#F4E6D2;--warnfg:#5E3E17;--badbg:#F3DDD6;--badfg:#7A2F1F;--bad:#A4452F;--card:#fff}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--navy);font-family:'DM Sans',system-ui,sans-serif;-webkit-text-size-adjust:100%}
+body{min-height:100vh;min-height:100dvh}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+#app{max-width:560px;margin:0 auto;padding:18px 18px calc(96px + env(safe-area-inset-bottom));min-height:100vh}
+#app.wide{max-width:1280px}
+#app.portal{background:#F6EFE8;max-width:520px;padding-top:26px;line-height:1.6}#app.portal .col{gap:16px}#app.portal h1{font-size:40px}#app.portal .card,#app.portal .paper{padding:18px}#app.portal .navy{padding:22px}
+.pfoot{margin-top:22px;text-align:center;font-size:12px;color:var(--mut)}.pfoot b{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--navy)}
+h1,h2{font-family:'Cormorant Garamond',serif;margin:0;line-height:1.05}
+h1{font-size:32px;font-weight:700}h2{font-size:24px;font-weight:700}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:700}
+.mut{color:var(--mut)}.sm{font-size:13px}.xs{font-size:12px}
+.row{display:flex;gap:10px;align-items:center}.col{display:flex;flex-direction:column;gap:12px}.sp{justify-content:space-between}.grow{flex:1;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+.navy{background:var(--navy);color:var(--blush);border-radius:20px;padding:16px 18px}
+.navy b.big{font-family:'Cormorant Garamond',serif;font-size:32px;color:#fff;line-height:1;display:block}
+.btn{min-height:46px;border:0;border-radius:14px;padding:0 16px;font-weight:700;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--ok);color:#fff;text-align:center}
+.btn.sec{background:#fff;border:1px solid var(--line);color:var(--navy);font-weight:500}
+.btn.amb{background:var(--amber);color:#10293A}
+.btn.sage{background:var(--okbg);color:var(--okfg)}
+.btn.bad{background:var(--badbg);color:var(--badfg)}
+.btn.full{width:100%}.btn.sm{min-height:44px;font-size:13px;padding:0 12px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:4px 8px;border-radius:999px;white-space:nowrap}
+.p-warn{background:var(--warnbg);color:var(--warnfg)}.p-ok{background:var(--okbg);color:var(--okfg)}.p-bad{background:var(--badbg);color:var(--badfg)}.p-mut{background:#EFE7DC;color:var(--mut)}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:500;color:var(--mut)}
+input,select,textarea{min-height:46px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:8px 12px;width:100%;font-size:15px}
+textarea{min-height:90px;resize:vertical}
+.seg{display:flex;gap:2px;background:#EFE7DC;border-radius:14px;padding:3px}
+.seg button{flex:1;min-width:48px;min-height:44px;border:0;border-radius:11px;background:transparent;color:var(--mut);font-size:13px;font-weight:500;cursor:pointer}
+.seg button.on{background:#fff;color:var(--navy);font-weight:700}
+.chip{min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13px;cursor:pointer}
+.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);display:flex;max-width:560px;margin:0 auto;padding:6px 6px calc(10px + env(safe-area-inset-bottom));z-index:20}
+nav.tabs a{flex:1;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11px;font-weight:500;color:var(--mut)}
+nav.tabs a.on{color:var(--navy);font-weight:700}
+nav.tabs svg{width:24px;height:24px}
+.sheetbg{position:fixed;inset:0;background:rgba(27,58,75,.45);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:18px 18px calc(22px + env(safe-area-inset-bottom))}
+.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 18px;border-radius:14px;font-size:14px;z-index:60;max-width:90vw}
+.alert{border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.4}
+.a-warn{background:var(--warnbg);color:var(--warnfg)}.a-bad{background:var(--badbg);color:var(--badfg)}.a-ok{background:var(--okbg);color:var(--okfg)}
+.apt{display:flex;gap:12px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;cursor:pointer}
+.apt .t{width:52px;flex:none}
+.gap{font-size:12px;color:var(--mut);padding:2px 0 2px 64px}
+.kan{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;align-items:flex-start}
+.kan>div{min-width:230px;flex:1;background:#F3EDE4;border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.bar{height:10px;border-radius:5px;background:#EFE7DC}.bar i{display:block;height:10px;border-radius:5px;background:var(--navy)}
+.paper{background:#fff;border:1px solid var(--line);border-radius:6px;padding:20px;font-size:13px;line-height:1.5}
+.paper table{width:100%;border-collapse:collapse}.paper td,.paper th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
+.card916{aspect-ratio:9/16;width:100%;max-width:320px;background:var(--navy);color:var(--blush);border-radius:18px;padding:26px 22px;display:flex;flex-direction:column;margin:0 auto;position:relative;overflow:hidden}
+.card916.v-blush{background:var(--blush);color:var(--navy)}.card916.v-blush .dl{border-color:#C9B29C!important}.card916.v-blush .dt{color:var(--navy)!important}.card916.v-blush .dk{color:#7A5A2E!important}.card916.v-blush .dh{color:var(--navy)!important}.card916.v-blush .dh i{color:#7A5A2E!important}
+.card916.v-foto{background-size:cover;background-position:center;color:#fff}.card916.v-foto:before{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(16,41,58,.78),rgba(16,41,58,.62) 40%,rgba(16,41,58,.9))}.card916.v-foto>*{position:relative}
+.demo{background:var(--warnbg);color:var(--warnfg)}
+@media(min-width:900px){#app{padding-bottom:40px}nav.tabs{max-width:560px}}
+@media print{nav.tabs,.noprint,.sheetbg,.toast{display:none!important}#app{max-width:none;padding:0}body{background:#fff}}
+.hide{display:none!important}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:#fff;padding:8px;z-index:99}
+</style>
+
+<a class="skip" href="#app">Saltar al contenido</a>
+<div id="app" role="main"></div>
+<div id="nav"></div>
+<div id="sheet"></div>
+<script>
+'use strict';
+/* ============ utilidades ============ */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const clp=n=>'$'+Math.round(Number(n)||0).toLocaleString('es-CL');
+const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const pISO=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const toMin=t=>{const [h,m]=String(t).split(':').map(Number);return (h||0)*60+(m||0)};
+const hhmm=m=>pad(Math.floor(m/60))+':'+pad(m%60);
+const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3);
+const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const DIAS3=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const fdate=(s,long)=>{const d=pISO(s);return (long?cap(DIAS[d.getDay()])+' ':DIAS3[d.getDay()]+' ')+d.getDate()+(long?' de '+MESES[d.getMonth()]:' '+MESES[d.getMonth()].slice(0,3))};
+const addDays=(s,n)=>{const d=pISO(s);d.setDate(d.getDate()+n);return iso(d)};
+const today=()=>iso(new Date());
+const nowMin=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
+const dur=m=>m>=60?(Math.floor(m/60)+' h'+(m%60?' '+m%60+' min':'')):m+' min';
+const initials=n=>n.split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+const digits=s=>String(s||'').replace(/\D/g,'');
+function waLink(phone,text){let p=digits(phone);if(p.length===9&&p[0]==='9')p='56'+p;else if(p.length===8)p='569'+p;return 'https://wa.me/'+p+'?text='+encodeURIComponent(text)}
+const sha=async s=>{try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('').slice(0,24)}catch(e){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))|0;return String(h)}};
+const b64e=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const b64d=s=>JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/')))));
+
+/* ============ estado ============ */
+const KEY='nurseapp.v1';
+const DEFAULTS=()=>({v:1,profile:{name:'Valeria Inzunza',role:'Enfermera · cuidados domiciliarios',reg:'475283',rut:'',wa:'',email:'',bank:'',holder:'',ig:'@valeria.inzunza.enfermera',tagline:'Cuidados que acompañan. En cada etapa de la vida.',meta:800000},
+ tarifas:{visita:18000,turnoHora:13500,pack:15000,traslado:0},
+ horario:{ini:'08:00',fin:'20:00',almIni:'13:00',almFin:'14:00',margen:15,dias:[1,2,3,4,5,6]},
+ patients:[],appts:[],quotes:[],charges:[],leads:[],counters:{quote:12,boleta:0},ui:{}});
+let S=load();
+function load(){try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);const d=DEFAULTS();return Object.assign(d,o,{profile:Object.assign(d.profile,o.profile,{reg:(o.profile&&o.profile.reg)||d.profile.reg}),tarifas:Object.assign(d.tarifas,o.tarifas),horario:Object.assign(d.horario,o.horario)})}}catch(e){console.warn('load',e)}return DEFAULTS()}
+let saveT=null;
+function save(){clearTimeout(saveT);saveT=setTimeout(saveNow,150)}
+function saveNow(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){toast('No hay espacio para guardar. Exporta un respaldo y borra fotos.');return false}}
+window.addEventListener('pagehide',saveNow);
+const P=id=>S.patients.find(p=>p.id===id);
+const A=id=>S.appts.find(a=>a.id===id);
+const Q=id=>S.quotes.find(q=>q.id===id);
+
+/* ============ agenda: choques y huecos ============ */
+const BUSY=a=>a.status!=='cancel';
+function span(a){return [toMin(a.start)-(a.travel||0),toMin(a.start)+a.dur]}
+function conflicts(date,start,durMin,travel,ignoreId){
+ const s=toMin(start)-(travel||0),e=toMin(start)+durMin;
+ return S.appts.filter(a=>a.date===date&&BUSY(a)&&a.id!==ignoreId).filter(a=>{const [x,y]=span(a);return s<y&&e>x});
+}
+function lunchClash(start,durMin){const s=toMin(start),e=s+durMin,a=toMin(S.horario.almIni),b=toMin(S.horario.almFin);return a<b&&s<b&&e>a}
+function workDay(date){return S.horario.dias.includes(pISO(date).getDay())}
+function suggest(date,durMin,travel,n,fromMin,ignoreId){
+ const out=[];const ini=toMin(S.horario.ini),fin=toMin(S.horario.fin);
+ for(let d=0;d<10&&out.length<n;d++){
+  const day=addDays(date,d);if(!workDay(day))continue;
+  let t=d===0&&fromMin!=null?Math.max(ini,Math.ceil(fromMin/15)*15):ini;
+  for(;t+durMin<=fin&&out.length<n;t+=15){
+   if(day===today()&&t<=nowMin())continue;
+   const st=hhmm(t);
+   if(!conflicts(day,st,durMin,travel,ignoreId).length&&!lunchClash(st,durMin)){out.push({date:day,start:st});t+=Math.max(durMin-15,0)}
+  }
+ }
+ return out;
+}
+function loadOf(date){const m=S.appts.filter(a=>a.date===date&&BUSY(a)).reduce((s,a)=>s+a.dur+(a.travel||0),0);return m>=360?'alta':m>=180?'media':m>0?'baja':'libre'}
+const loadColor={libre:'#E9E1D7',baja:'#8BA888',media:'#C4935A',alta:'#A4452F'};
+function dayAppts(date){return S.appts.filter(a=>a.date===date&&BUSY(a)).sort((a,b)=>toMin(a.start)-toMin(b.start))}
+function freeWindows(date){
+ if(!workDay(date))return [];
+ const ini=toMin(S.horario.ini),fin=toMin(S.horario.fin);
+ let busy=dayAppts(date).map(span);
+ const a=toMin(S.horario.almIni),b=toMin(S.horario.almFin);if(a<b)busy.push([a,b]);
+ busy.sort((x,y)=>x[0]-y[0]);
+ const out=[];let cur=ini;
+ for(const [s,e] of busy){if(s-cur>=60)out.push([cur,Math.min(s,fin)]);cur=Math.max(cur,e)}
+ if(fin-cur>=60)out.push([cur,fin]);
+ return out;
+}
+
+/* ============ datos de ejemplo ============ */
+function demo(){
+ const t=today(),d=n=>addDays(t,n);
+ const mk=(o)=>Object.assign({id:uid()},o);
+ const rosa=mk({name:'Rosa Contreras',age:58,zone:'Talca Norte',phase:'tratamiento',phone:'',resp:{name:'Camila Contreras',rel:'hija',phone:'+56 9 1234 4821'},consent:{date:d(-5)},indication:{text:'Anticoagulante · 7 días',date:d(-5)},risks:['Sangrado','Caídas: bajo'],source:'Derivación médica',pin:'',notes:''});
+ const mateo=mk({name:'Mateo, 8 meses',age:1,zone:'Sector Oriente',phase:'tratamiento',phone:'',resp:{name:'Pamela Rojas',rel:'madre',phone:'+56 9 5555 0101'},consent:{date:d(-10)},indication:{text:'',date:''},risks:[],source:'Instagram',pin:'',notes:'Turno por horas lun · mié · vie'});
+ const hern=mk({name:'Hernán Soto',age:74,zone:'Talca Sur',phase:'cobro',phone:'',resp:{name:'Hernán Soto',rel:'paciente',phone:'+56 9 5555 0202'},consent:{date:d(-30)},indication:{text:'Curaciones · 10 días',date:d(-30)},risks:['Infección herida'],source:'Derivación médica',pin:'',notes:''});
+ const elena=mk({name:'Elena Vidal',age:81,zone:'Talca Centro',phase:'cobro',phone:'',resp:{name:'Elena Vidal',rel:'paciente',phone:'+56 9 5555 0303'},consent:null,indication:{text:'',date:''},risks:['Caídas: medio'],source:'Recomendación',pin:'',notes:''});
+ S.patients=[rosa,mateo,hern,elena];
+ const ap=(p,dt,st,du,ty,tr,status,price)=>mk({patientId:p.id,date:dt,start:st,dur:du,type:ty,travel:tr,status,price,record:null,report:null,zone:p.zone});
+ S.appts=[
+  ap(rosa,d(-3),'08:30',30,'Inyección anticoagulante · día 1',12,'hecha',18000),
+  ap(rosa,d(-2),'08:30',30,'Inyección anticoagulante · día 2',12,'hecha',18000),
+  ap(rosa,d(-1),'08:30',30,'Inyección anticoagulante · día 3',12,'hecha',18000),
+  ap(rosa,t,'08:30',30,'Inyección anticoagulante · día 4',12,'prog',18000),
+  ap(mateo,t,'10:00',180,'Cuidado de bebé · turno por horas',20,'prog',40500),
+  ap(hern,t,'13:30',30,'Curación · visita de procedimiento',30,'prog',18000),
+  ap(rosa,d(1),'08:30',30,'Inyección anticoagulante · día 5',12,'prog',18000),
+  ap(rosa,d(2),'08:30',30,'Inyección anticoagulante · día 6',12,'prog',18000),
+  ap(rosa,d(3),'08:30',30,'Inyección anticoagulante · día 7',12,'prog',18000),
+  ap(mateo,d(2),'10:00',180,'Cuidado de bebé · turno por horas',20,'prog',40500),
+ ];
+ S.appts.slice(0,3).forEach((a,i)=>{a.record={start:a.date+'T08:34',end:a.date+'T09:04',sitio:i%2?'Abdomen izq.':'Abdomen der.',farmaco:'Anticoagulante',dosis:'según indicación',vit:{pa:'120/78',fc:'72',temp:'36.5',sat:'97'},vig:['Sin sangrado','Sin dolor'],nota:''};a.report={family:'Hoy visité a la Sra. Rosa para su inyección anticoagulante. Se aplicó sin inconvenientes, sin sangrado ni dolor.',clinical:'',approved:true,sent:true}});
+ S.quotes=[mk({n:'0012',patientId:rosa.id,resp:'Camila Contreras',modo:'Visita de procedimiento',servicio:'Tratamiento inyectable domiciliario · 7 días',qty:7,unit:18000,disc:0,zone:'Talca Norte',valid:7,status:'aceptada',date:d(-5),slots:[]})];
+ S.charges=[
+  mk({patientId:hern.id,concept:'Boleta N° 126 · 10 curaciones',amount:90000,due:d(-5),status:'pend',boleta:'126'}),
+  mk({patientId:elena.id,concept:'Boleta N° 128 · turno de 4 h',amount:54000,due:d(2),status:'pend',boleta:'128'}),
+  mk({patientId:rosa.id,concept:'Tratamiento 7 días · cotización 0012',amount:126000,due:d(2),status:'pend',boleta:''}),
+  mk({patientId:mateo.id,concept:'Turno 3 h · semana pasada',amount:40500,due:d(-6),status:'pagado',boleta:'124',paidAt:d(-4)}),
+  mk({patientId:hern.id,concept:'Curaciones previas',amount:180000,due:d(-12),status:'pagado',boleta:'120',paidAt:d(-9)}),
+  mk({patientId:elena.id,concept:'Turno 4 h',amount:54000,due:d(-3),status:'pagado',boleta:'125',paidAt:d(-2)}),
+ ];
+ S.leads=[
+  mk({name:'Familia Vera',need:'Adulto mayor · compañía',source:'Instagram',stage:0,amount:0,note:'Hoy'}),
+  mk({name:'Pamela Rojas',need:'Bebé · 3 meses',source:'WhatsApp',stage:0,amount:0,note:'Ayer'}),
+  mk({name:'Luis Parra',need:'Paliativo · 4 h al día',source:'Derivación médica',stage:1,amount:480000,note:'Vista por la familia'}),
+  mk({name:'Familia Núñez',need:'Turno nocturno',source:'Recomendación',stage:1,amount:90000,note:'Sin respuesta hace 3 días'}),
+  mk({name:'Familia Pino',need:'Curaciones · 10 días',source:'Derivación médica',stage:2,amount:180000,note:'Falta agendar las horas'}),
+  mk({name:'Rosa Contreras',need:'Inyecciones · día 4 de 7',source:'Derivación médica',stage:3,amount:126000,note:'',patientId:rosa.id}),
+  mk({name:'Elena Vidal',need:'Boleta N° 128',source:'Recomendación',stage:4,amount:54000,note:'Vence en 2 días',patientId:elena.id}),
+  mk({name:'Marta Díaz',need:'Alta hace 7 días',source:'Instagram',stage:5,amount:0,note:'Preguntar cómo sigue'}),
+ ];
+ S.counters={quote:12,boleta:128};S.demo=true;
+ save();
+}
+const STAGES=['Consulta','Cotización enviada','Aceptada','En tratamiento','Boleta y cobro','Seguimiento'];
+
+/* ============ UI base ============ */
+const ICON={
+ hoy:'<circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/>',
+ agenda:'<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+ pac:'<circle cx="12" cy="8" r="3.5"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/>',
+ cobros:'<rect x="3" y="6" width="18" height="12" rx="3"/><circle cx="12" cy="12" r="2.5"/>',
+ cot:'<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/>',
+ mic:'<rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+ menu:'<path d="M4 7h16M4 12h16M4 17h16"/>'
+};
+const LOGO=(sz,light)=>`<svg width="${sz}" height="${sz}" viewBox="0 0 64 64" role="img" aria-label="Valeria Enfermera" style="flex:none"><circle cx="32" cy="32" r="32" fill="${light?'#E8D5C4':'#1B3A4B'}"/><circle cx="32" cy="32" r="24" fill="none" stroke="${light?'#1B3A4B':'#E8D5C4'}" stroke-width="2"/><path d="M32 19v26M19 32h26" stroke="#C4935A" stroke-width="7" stroke-linecap="round"/><path d="M33 19c8 0 12 5 12 10-7 0-12-3-12-10z" fill="#8BA888"/></svg>`;
+const svg=(k,sz)=>`<svg width="${sz||24}" height="${sz||24}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg>`;
+const NATIVE_CONFIRM=window.confirm;
+function ask(msg){
+ if(window.confirm!==NATIVE_CONFIRM)return Promise.resolve(window.confirm(msg)); // pruebas automáticas
+ return new Promise(res=>{
+  const b=document.createElement('div');b.className='sheetbg';b.style.zIndex=80;b.style.alignItems='center';b.style.padding='18px';
+  b.innerHTML='<div class="card col" role="alertdialog" aria-modal="true" aria-label="Confirmar" style="max-width:420px;width:100%;padding:20px"><p style="margin:0;line-height:1.5">'+esc(msg)+'</p><div class="row"><button class="btn grow" id="askok">Sí, continuar</button><button class="btn sec grow" id="askno">Cancelar</button></div></div>';
+  const done=v=>{b.remove();res(v)};
+  document.body.appendChild(b);
+  b.querySelector('#askok').onclick=()=>done(true);b.querySelector('#askno').onclick=()=>done(false);
+  b.addEventListener('keydown',e=>{if(e.key==='Escape')done(false)});b.querySelector('#askno').focus();
+ });
+}
+function toast(m){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2800)}
+function sheet(html){const s=$('#sheet');s.innerHTML=`<div class="sheetbg" data-act="closesheet"><div class="sheet" role="dialog" aria-modal="true" data-stop>${html}</div></div>`;const f=s.querySelector('input,select,textarea,button.btn');if(f&&innerWidth>700)f.focus()}
+function closeSheet(){$('#sheet').innerHTML=''}
+function nav(active){
+ const tabs=[['#/hoy','hoy','Hoy'],['#/agenda','agenda','Agenda'],['#/pacientes','pac','Pacientes'],['#/cobros','cobros','Cobros'],['#/cotizar','cot','Cotizar']];
+ $('#nav').innerHTML=`<nav class="tabs" aria-label="Navegación principal">${tabs.map(t=>`<a href="${t[0]}" class="${active===t[1]?'on':''}" ${active===t[1]?'aria-current="page"':''}>${svg(t[1])}${t[2]}</a>`).join('')}</nav>`;
+}
+function back(label,href){return `<a href="${href}" class="row xs mut" style="min-height:44px;font-weight:700">‹ ${esc(label)}</a>`}
+function empty(msg,btn){return `<div class="card mut sm" style="text-align:center;padding:26px 16px">${msg}${btn?'<div style="margin-top:12px">'+btn+'</div>':''}</div>`}
+function header(title,sub,right){return `<header class="row sp" style="margin-bottom:14px"><div>${sub?`<div class="eyebrow">${sub}</div>`:''}<h1>${title}</h1></div>${right||''}</header>`}
+function menuBtn(){return `<button class="btn sec sm" data-act="menu" aria-label="Más opciones" style="width:44px;padding:0">${svg('menu')}</button>`}
+
+/* ============ router ============ */
+const routes={};
+function route(){
+ const h=(location.hash||'#/hoy').split('?')[0];
+ const parts=h.replace(/^#\//,'').split('/');
+ const name=parts[0]||'hoy';
+ const app=$('#app');
+ app.classList.toggle('wide',name==='embudo'||name==='panel');app.classList.remove('portal');
+ closeSheet();
+ if(name==='p'){app.classList.remove('wide');app.classList.add('portal');document.body.style.background='#F6EFE8';$('#nav').innerHTML='';portalRoute(parts.slice(1).join('/'));window.scrollTo(0,0);return}
+ document.body.style.background='';const fn=routes[name]||routes.hoy;
+ const act=({hoy:'hoy',agenda:'agenda',pacientes:'pac',ficha:'pac',cobros:'cobros',cotizar:'cot',cotizacion:'cot'})[name]||'';
+ nav(act);
+ try{app.innerHTML=fn(parts.slice(1))}catch(e){console.error(e);app.innerHTML=`<div class="alert a-bad">Algo falló al abrir esta pantalla. Tus datos están a salvo. <a href="#/hoy" style="text-decoration:underline">Volver al inicio</a></div>`}
+ document.title=(({hoy:'Hoy',agenda:'Agenda',pacientes:'Pacientes',ficha:'Ficha',cobros:'Cobros',cotizar:'Cotizar',embudo:'Clientes',panel:'Panel',visita:'Visita en curso',informe:'Informe',disponibilidad:'Disponibilidad',ajustes:'Ajustes',voz:'Agendar'})[name]||'Nurse App')+' · Nurse App';
+ window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',route);
+
+/* ============ HOY ============ */
+routes.hoy=()=>{
+ const t=today(),list=dayAppts(t);
+ const d=new Date();
+ const mins=list.reduce((s,a)=>s+a.dur,0);
+ const pendRep=S.appts.filter(a=>a.status==='hecha'&&a.report&&!a.report.sent||a.status==='hecha'&&!a.report).length;
+ const pendRepList=S.appts.filter(a=>a.status==='hecha'&&(!a.report||!a.report.sent));
+ const due=S.charges.filter(c=>c.status==='pend'&&c.due<=addDays(t,3));
+ const next=list.find(a=>a.status==='prog'||a.status==='curso');
+ const greet=d.getHours()<12?'Buenos días':d.getHours()<20?'Buenas tardes':'Buenas noches';
+ const nconf=list.filter(a=>conflicts(a.date,a.start,a.dur,a.travel,a.id).length).length;
+ const trav=list.reduce((s,a)=>s+(a.travel||0),0);
+ return `${header(greet+', '+esc(S.profile.name.split(' ')[0]),cap(DIAS[d.getDay()])+' '+d.getDate()+' de '+MESES[d.getMonth()],`<div class="row"><a href="#/ajustes" aria-label="Ajustes y perfil" class="row" style="width:44px;height:44px;justify-content:center">${LOGO(44)}</a>${menuBtn()}</div>`)}
+ <div class="col">
+ <section class="navy row" aria-label="Resumen del día"><div class="grow"><b class="big">${list.length}</b><span class="xs">atenciones hoy</span></div><div class="grow"><b class="big">${mins?dur(mins):'0 h'}</b><span class="xs">de cuidado</span></div><div class="grow"><b class="big">${nconf}</b><span class="xs">choques de agenda</span></div></section>
+ ${S.patients.length===0&&S.appts.length===0?`<div class="card"><b>Bienvenida a tu Nurse App</b><p class="sm mut" style="margin:6px 0 12px">Parte agregando tu primera paciente, o carga datos de ejemplo para recorrer la app sin riesgo. Todo se guarda solo en este teléfono.</p><div class="row"><a class="btn grow" href="#/pacientes" data-new="1">Agregar paciente</a><button class="btn sec grow" data-act="demo">Cargar ejemplo</button></div></div>`:''}
+ ${S.demo?`<div class="alert demo row sp" role="status"><span><b>Estás viendo datos de ejemplo.</b><br>Nada de esto es real.</span><button class="btn sec sm" data-act="cleardemo">Empezar con los míos</button></div>`:''}
+ ${(!S.demo&&S.patients.length&&(!S.lastBackup||(Date.now()-S.lastBackup)>7*864e5))?`<div class="alert a-warn row sp"><span><b>Haz un respaldo.</b><br>${S.lastBackup?'Hace más de una semana.':'Aún no has guardado ninguno.'}</span><button class="btn sm" data-act="export">Respaldar</button></div>`:''}
+ <div class="eyebrow" style="margin-top:4px">Tu día</div>
+ ${list.length?list.map(aptCard).join(''):empty('Hoy no tienes atenciones agendadas.','<a class="btn" href="#/voz">Agendar algo</a>')}
+ ${list.length>1?`<section class="card row" aria-label="Ruta del día"><svg width="64" height="40" viewBox="0 0 64 40" fill="none" aria-hidden="true"><path d="M8 30C18 30 20 10 32 10S46 28 56 14" stroke="#3F6B4E" stroke-width="2" stroke-dasharray="3 5" stroke-linecap="round"/><circle cx="8" cy="30" r="4" fill="#C4935A"/><circle cx="32" cy="10" r="4" fill="#1B3A4B"/><circle cx="56" cy="14" r="4" fill="#3F6B4E"/></svg><div><b class="sm">Traslados del día</b><div class="xs mut">${trav} min en total · ${new Set(list.map(a=>a.zone)).size} sector(es)</div></div></section>`:''}
+ <div class="row" style="align-items:stretch">
+  <a href="${pendRepList[0]?'#/informe/'+pendRepList[0].id:'#/agenda'}" class="alert a-warn grow" style="min-height:52px"><b>${pendRep} informe${pendRep===1?'':'s'} pendiente${pendRep===1?'':'s'}</b><br>${pendRepList[0]?esc(P(pendRepList[0].patientId)?.name||''):'Al día'}</a>
+  <a href="#/cobros" class="alert a-ok grow" style="min-height:52px"><b>${due.length} cobro${due.length===1?'':'s'} por vencer</b><br>Revisar cobranza</a>
+ </div>
+ <div class="row">${next?`<button class="btn grow" style="min-height:52px;font-size:16px" data-act="start" data-id="${next.id}">${next.status==='curso'?'Volver a la visita':'Iniciar visita'} · ${esc((P(next.patientId)?.name||'').split(/[ ,]/)[0])}</button>`:'<a class="btn sec grow" style="min-height:52px" href="#/agenda">Ver agenda</a>'}
+ <a href="#/voz" class="btn amb" aria-label="Agendar por voz" style="width:52px;height:52px;border-radius:26px;padding:0">${svg('mic')}</a></div>
+ <p class="xs mut" style="text-align:center;margin:4px 0 0">En una emergencia llama al 131 (SAMU). Esta app no reemplaza el criterio clínico.</p>
+ </div>`;
+};
+function typePill(a){return a.status==='curso'?'<span class="pill p-bad">En curso</span>':a.status==='hecha'?'<span class="pill p-ok">Hecha</span>':/turno/i.test(a.type)?'<span class="pill p-ok">Turno</span>':'<span class="pill p-ok">Visita</span>'}
+function aptCard(a){
+ const p=P(a.patientId);const tm=conflicts(a.date,a.start,a.dur,a.travel,a.id).length;
+ return `<article class="apt" tabindex="0" role="link" data-act="aptopen" data-id="${a.id}" style="${tm?'border-color:var(--bad)':''}"><div class="t"><b>${a.start}</b><div class="xs mut">${dur(a.dur)}</div></div><div class="grow"><b>${esc(p?p.name:'Sin paciente')}</b><div class="sm mut" style="margin-top:2px">${esc(a.type)}</div><div class="xs mut" style="margin-top:6px">${esc(a.zone||'')}${a.travel?' · traslado '+a.travel+' min':''}</div></div><div style="align-self:flex-start">${tm?'<span class="pill p-bad">Choque</span>':typePill(a)}</div></article>`;
+}
+
+/* ============ AGENDA ============ */
+routes.agenda=()=>{
+ const sel=S.ui.agDate||today(),mode=S.ui.agMode||'dia';
+ const ws=(()=>{const d=pISO(sel);const wd=(d.getDay()+6)%7;return addDays(sel,-wd)})();
+ const week=[...Array(7)].map((_,i)=>addDays(ws,i));
+ const strip=week.map(dt=>{const on=dt===sel,L=loadOf(dt),dd=pISO(dt);return `<button type="button" class="chip" data-act="agpick" data-d="${dt}" aria-label="${fdate(dt,true)}, carga ${L}" aria-pressed="${on}" style="flex:1;min-width:0;height:62px;padding:0;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;${on?'background:var(--navy);color:#fff;border-color:var(--navy)':''}"><span class="xs" style="opacity:.8">${DIAS3[dd.getDay()][0]}</span><b>${dd.getDate()}</b><i style="width:6px;height:6px;border-radius:3px;background:${loadColor[L]}"></i></button>`}).join('');
+ let body='';
+ if(mode==='mes'){
+  const d0=pISO(sel);const first=new Date(d0.getFullYear(),d0.getMonth(),1);const dim=new Date(d0.getFullYear(),d0.getMonth()+1,0).getDate();
+  const off=(first.getDay()+6)%7;const cells=[];
+  for(let i=0;i<off;i++)cells.push('<div></div>');
+  for(let n=1;n<=dim;n++){const dt=iso(new Date(d0.getFullYear(),d0.getMonth(),n));const c=dayAppts(dt).length;cells.push(`<button type="button" class="chip" data-act="agpick" data-d="${dt}" data-mode="dia" style="min-height:48px;padding:0;border-radius:12px;${dt===today()?'border-color:var(--amber);border-width:2px':''}"><b>${n}</b><br><span class="xs mut">${c?c+' at.':'·'}</span></button>`)}
+  body=`<div class="eyebrow">${cap(MESES[d0.getMonth()])} ${d0.getFullYear()}</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">${['L','M','X','J','V','S','D'].map(x=>`<div class="xs mut" style="text-align:center">${x}</div>`).join('')}${cells.join('')}</div>`;
+ }else if(mode==='semana'){
+  body=week.map(dt=>{const l=dayAppts(dt);return `<div class="card"><div class="row sp"><b>${fdate(dt,true)}</b><span class="pill" style="background:${loadColor[loadOf(dt)]};color:${loadOf(dt)==='libre'?'var(--mut)':'#fff'}">${loadOf(dt)}</span></div>${l.length?l.map(a=>`<div class="sm" style="margin-top:6px"><b>${a.start}</b> · ${esc(P(a.patientId)?.name||'')} <span class="mut">· ${esc(a.type)}</span></div>`).join(''):'<div class="sm mut" style="margin-top:6px">Libre</div>'}</div>`}).join('');
+ }else{
+  const l=dayAppts(sel);let prevEnd=null;let h='';
+  l.forEach(a=>{const s=toMin(a.start);
+   if(prevEnd!=null&&s-(a.travel||0)-prevEnd>=30)h+=`<div class="gap">Libre ${hhmm(prevEnd)} – ${hhmm(s-(a.travel||0))} · ${dur(s-(a.travel||0)-prevEnd)}</div>`;
+   if(a.travel&&a.status!=='hecha')h+=`<div class="gap" style="background:repeating-linear-gradient(135deg,#EFE7DC 0,#EFE7DC 6px,#F7F1E8 6px,#F7F1E8 12px);border-radius:8px;padding:5px 10px;margin:0 0 0 64px">Traslado ${a.travel} min</div>`;
+   h+=aptCard(a);prevEnd=s+a.dur});
+  const lun=S.horario.almIni<S.horario.almFin?`<div class="alert a-warn xs" style="margin-top:6px">No disponible · almuerzo y descanso ${S.horario.almIni}–${S.horario.almFin}</div>`:'';
+  const fw=freeWindows(sel);
+  body=(l.length?h:empty('Día libre. ¿Agendamos algo?'))+lun+(fw.length?`<div class="xs mut" style="margin-top:6px">Horas libres: ${fw.map(w=>hhmm(w[0])+'–'+hhmm(w[1])).join(' · ')}</div>`:'');
+ }
+ return `${header('Agenda','',`<div class="seg" role="group" aria-label="Vista"><button class="${mode==='dia'?'on':''}" data-act="agmode" data-m="dia">Día</button><button class="${mode==='semana'?'on':''}" data-act="agmode" data-m="semana">Semana</button><button class="${mode==='mes'?'on':''}" data-act="agmode" data-m="mes">Mes</button></div>`)}
+ <div class="col">
+ <div class="row sp"><button class="btn sec sm" data-act="agshift" data-n="-7" aria-label="Semana anterior">‹</button><b class="sm">${fdate(sel,true)}</b><button class="btn sec sm" data-act="agshift" data-n="7" aria-label="Semana siguiente">›</button></div>
+ <div class="row" style="gap:6px">${strip}</div>
+ <div class="row xs mut"><b>Carga</b> ${['baja','media','alta'].map(k=>`<span class="row" style="gap:5px"><i style="width:8px;height:8px;border-radius:4px;background:${loadColor[k]}"></i>${k}</span>`).join('')}</div>
+ ${body}
+ <div class="row"><button class="btn grow" data-act="newappt">+ Agendar atención</button><a href="#/voz" class="btn amb" style="width:52px;padding:0" aria-label="Agendar por voz">${svg('mic')}</a></div>
+ <a class="btn sec" href="#/disponibilidad">Publicar mis horas libres</a>
+ </div>`;
+};
+
+/* formulario de atención */
+function apptForm(a,pre){
+ a=a||pre||{};
+ const pats=S.patients;
+ sheet(`<h2>${a.id?'Editar atención':'Agendar atención'}</h2>
+ <form class="col" data-form="appt" style="margin-top:12px" novalidate>
+  <input type="hidden" name="id" value="${a.id||''}">
+  <label class="f">Paciente<select name="patientId" required><option value="">Elige…</option>${pats.map(p=>`<option value="${p.id}" ${a.patientId===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}</select></label>
+  ${pats.length?'':'<div class="alert a-warn">Primero agrega una paciente en la pestaña Pacientes.</div>'}
+  <label class="f">Qué se hace<input name="type" value="${esc(a.type||'')}" placeholder="Ej: Curación · visita de procedimiento" required></label>
+  <div class="row"><label class="f grow">Fecha<input type="date" name="date" value="${a.date||S.ui.agDate||today()}" required></label><label class="f grow">Hora<input type="time" name="start" value="${a.start||'09:00'}" required></label></div>
+  <div class="row"><label class="f grow">Duración (min)<input type="number" name="dur" min="10" step="5" value="${a.dur||30}" required></label><label class="f grow">Traslado previo (min)<input type="number" name="travel" min="0" step="5" value="${a.travel!=null?a.travel:20}"></label></div>
+  <label class="f">Valor (CLP)<input type="number" name="price" min="0" step="500" value="${a.price!=null?a.price:S.tarifas.visita}"></label>
+  <div id="confbox"></div>
+  <div class="row"><button class="btn grow" type="submit">Guardar</button><button class="btn sec" type="button" data-act="closesheet">Cancelar</button></div>
+  ${a.id?`<button class="btn bad" type="button" data-act="cancelappt" data-id="${a.id}">Cancelar esta atención</button>`:''}
+ </form>`);
+}
+function saveAppt(f,force){
+ const o=Object.fromEntries(new FormData(f));
+ const errs=[];
+ if(!o.patientId)errs.push('Elige la paciente.');if(!o.type.trim())errs.push('Describe qué se hace.');if(!o.date)errs.push('Falta la fecha.');if(!/^\d\d:\d\d$/.test(o.start))errs.push('Falta la hora.');
+ o.dur=Number(o.dur);o.travel=Number(o.travel||0);o.price=Number(o.price||0);
+ if(!(o.dur>=10))errs.push('La duración debe ser de al menos 10 minutos.');
+ const box=f.querySelector('#confbox');
+ if(errs.length){box.innerHTML=`<div class="alert a-bad" role="alert">${errs.join('<br>')}</div>`;return}
+ const cf=conflicts(o.date,o.start,o.dur,o.travel,o.id);
+ if(cf.length&&!force){
+  const sg=suggest(o.date,o.dur,o.travel,3,toMin(o.start),o.id);
+  box.innerHTML=`<div class="alert a-bad" role="alert"><b>Choque detectado</b> con ${cf.map(c=>esc((P(c.patientId)?.name||'')+' '+c.start)).join(', ')}.<div class="row" style="margin-top:8px;flex-wrap:wrap">${sg.map(s=>`<button type="button" class="btn sage sm" data-act="usesug" data-d="${s.date}" data-s="${s.start}">${fdate(s.date)} ${s.start}</button>`).join('')}</div><button type="button" class="btn sec sm" style="margin-top:8px" data-act="forceappt">Guardar igual</button></div>`;return}
+ if(lunchClash(o.start,o.dur)&&!force&&!cf.length){box.innerHTML=`<div class="alert a-warn" role="alert">Esa hora cae en tu almuerzo (${S.horario.almIni}–${S.horario.almFin}). <button type="button" class="btn sec sm" data-act="forceappt">Guardar igual</button></div>`;return}
+ const p=P(o.patientId);
+ if(o.id){const a=A(o.id);Object.assign(a,{patientId:o.patientId,type:o.type.trim(),date:o.date,start:o.start,dur:o.dur,travel:o.travel,price:o.price,zone:p.zone})}
+ else S.appts.push({id:uid(),patientId:o.patientId,type:o.type.trim(),date:o.date,start:o.start,dur:o.dur,travel:o.travel,price:o.price,status:'prog',zone:p.zone,record:null,report:null});
+ save();closeSheet();toast('Atención guardada');S.ui.agDate=o.date;route();
+}
+
+/* ============ VOZ / FRASE ============ */
+function norm(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+function parsePhrase(txt){
+ const raw=txt.trim();const n=norm(raw);const out={ok:false,notes:[],raw};
+ // paciente
+ const words=n.replace(/\b(don|dona|doña|sr|sra|senor|senora|a|el|la|los|las|de|del)\b/g,' ').split(/[^a-z0-9]+/).filter(w=>w.length>2);
+ let best=null,bs=0;
+ S.patients.forEach(p=>{const pn=norm(p.name).split(/[^a-z0-9]+/).filter(w=>w.length>2);const sc=pn.filter(w=>words.includes(w)).length;if(sc>bs){bs=sc;best=p}});
+ out.patient=best;
+ // fecha
+ let date=null;const t=today();
+ if(/\bpasado manana\b/.test(n))date=addDays(t,2);
+ else if(/\bmanana\b/.test(n)&&!/\bde la manana\b/.test(n)||/\bmanana\b/.test(n)&&/\bagenda|agendar|para manana|manana a|manana en\b/.test(n))date=addDays(t,1);
+ else if(/\bhoy\b/.test(n))date=t;
+ else{
+  const wd=['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
+  for(let i=0;i<7;i++){if(new RegExp('\\b'+wd[i]+'\\b').test(n)){const cur=new Date().getDay();let diff=(i-cur+7)%7;if(diff===0)diff=7;date=addDays(t,diff);break}}
+  const m=n.match(/\b(\d{1,2})\s*(?:de\s+)?(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)\b/);
+  if(m){const mi=MESES.indexOf(m[2]);let y=new Date().getFullYear();let dd=new Date(y,mi,Number(m[1]));if(iso(dd)<t)dd=new Date(y+1,mi,Number(m[1]));date=iso(dd)}
+ }
+ out.date=date;
+ // hora
+ let time=null;
+ let m=n.match(/\b(?:a las|a la|las)\s*(\d{1,2})(?:[:.](\d{2}))?\s*(?:horas|hrs|h)?\s*(am|pm|de la manana|de la tarde|de la noche)?/);
+ if(!m)m=n.match(/\b(\d{1,2})[:.](\d{2})\b/);
+ if(m){let h=Number(m[1]);const mi=Number(m[2]||0);const ap=m[3]||'';
+  if(/pm|tarde|noche/.test(ap)&&h<12)h+=12;
+  else if(!ap&&h>=1&&h<=7)h+=12; // "a las 3" en jornada = tarde
+  if(h<24&&mi<60)time=pad(h)+':'+pad(mi)}
+ out.time=time;
+ // duración
+ let d=null;const dm=n.match(/(\d+(?:[.,]\d+)?)\s*(horas?|hrs?|h)\b/)||n.match(/(\d+)\s*(minutos?|min)\b/);
+ if(dm){const v=Number(dm[1].replace(',','.'));d=/^h/.test(dm[2])?Math.round(v*60):v}
+ else if(/\bmedia hora\b/.test(n))d=30;else if(/\buna hora\b/.test(n))d=60;
+ // tipo
+ let type='Visita',price=S.tarifas.visita,defd=30;
+ if(/curaci/.test(n)){type='Visita · curación';defd=30}
+ else if(/inyecc|anticoag|enoxa/.test(n)){type='Visita · inyección';defd=30}
+ else if(/turno|cuidado|acompan|noche|bebe/.test(n)){type='Turno por horas';defd=180}
+ else if(/control|signos|presion/.test(n)){type='Visita · control de signos';defd=30}
+ const turno=/turno/i.test(type);
+ if(d==null){d=defd;out.notes.push('No dijiste la duración. Usé '+dur(d)+(turno?'':', que es lo habitual en visitas')+'. Cámbialo si no corresponde.')}
+ price=turno?Math.round(S.tarifas.turnoHora*d/60):S.tarifas.visita;
+ out.type=type;out.dur=d;out.price=price;out.travel=best?20:20;
+ if(!best)out.notes.push('No reconocí a la paciente. Elígela de la lista.');
+ if(!date)out.notes.push('No entendí el día. Elígelo abajo.');
+ if(!time)out.notes.push('No entendí la hora. Indícala abajo.');
+ out.ok=!!(best&&date&&time);
+ return out;
+}
+routes.voz=()=>{
+ const v=S.ui.voz;const can='webkitSpeechRecognition' in window||'SpeechRecognition' in window;
+ return `${back('Cerrar','#/hoy')}${header('Agendar','por frase o voz')}
+ <div class="col">
+ <form data-form="phrase" class="col" novalidate><label class="f">Dilo o escríbelo<textarea name="txt" id="phr" placeholder="Agenda a Don Hernán el martes a las 9, visita de curación" aria-describedby="phint">${esc(v?.raw||'')}</textarea></label>
+ <div class="row"><button class="btn grow" type="submit">Entender</button>${can?`<button type="button" class="btn amb" id="micbtn" data-act="mic" style="width:52px;padding:0" aria-label="Dictar con el micrófono">${svg('mic')}</button>`:''}</div>
+ <div id="phint" class="xs mut">${can?'Toca el micrófono y habla en español.':'Tu navegador no dicta por voz; escribe la frase.'} Nunca guardo nada sin tu confirmación.</div></form>
+ ${v?phraseCard(v):''}
+ <div class="row" style="flex-wrap:wrap"><a class="chip row" href="#/agenda" style="display:inline-flex;align-items:center">Ver agenda</a><button class="chip" data-act="newappt">Formulario completo</button></div>
+ </div>`;
+};
+function phraseCard(v){
+ const cf=v.date&&v.time?conflicts(v.date,v.time,v.dur,v.travel):[];
+ const sg=cf.length?suggest(v.date,v.dur,v.travel,3,toMin(v.time)):[];
+ return `<section class="card col" aria-live="polite"><b class="sm">Entendí esto · confírmalo</b>
+ <div class="sm"><div class="row sp"><span class="mut">Paciente</span><b>${v.patient?esc(v.patient.name):'—'}</b></div>
+ <div class="row sp"><span class="mut">Tipo</span><b>${esc(v.type)}</b></div>
+ <div class="row sp"><span class="mut">Cuándo</span><b>${v.date&&v.time?fdate(v.date)+' · '+v.time+'–'+hhmm(toMin(v.time)+v.dur):'—'}</b></div>
+ <div class="row sp"><span class="mut">Zona</span><b>${esc(v.patient?.zone||'—')}</b></div>
+ <div class="row sp"><span class="mut">Tarifa</span><b>${clp(v.price)}</b></div></div>
+ ${cf.length?`<div class="alert a-bad"><b>Choque</b> con ${esc(P(cf[0].patientId)?.name||'')} ${cf[0].start}. Horas que sí calzan:<div class="row" style="flex-wrap:wrap;margin-top:8px">${sg.map(s=>`<button class="btn sage sm" data-act="vozsug" data-d="${s.date}" data-s="${s.start}">${fdate(s.date)} ${s.start}</button>`).join('')}</div></div>`:(v.ok?`<div class="alert a-ok"><b>Sin choques.</b></div>`:'')}
+ ${v.notes.map(x=>`<div class="alert a-warn">${esc(x)}</div>`).join('')}
+ ${!v.ok?`<div class="row"><select id="vp" aria-label="Paciente">${S.patients.map(p=>`<option value="${p.id}" ${v.patient?.id===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}</select></div><div class="row"><input type="date" id="vd" value="${v.date||today()}" aria-label="Fecha"><input type="time" id="vt" value="${v.time||'09:00'}" aria-label="Hora"></div><button class="btn sec" data-act="vozfix">Aplicar</button>`:''}
+ <div class="row"><button class="btn grow" data-act="vozok" ${v.ok&&!cf.length?'':'disabled'}>Confirmar turno</button><button class="btn sec" data-act="vozclear">Editar</button></div></section>`;
+}
+
+/* ============ PACIENTES ============ */
+routes.pacientes=()=>{
+ const q=(S.ui.pq||'').toLowerCase();
+ const list=S.patients.filter(p=>!q||p.name.toLowerCase().includes(q)||(p.zone||'').toLowerCase().includes(q));
+ return `${header('Pacientes','',`<button class="btn sm" data-act="newpat">+ Nueva</button>`)}
+ <div class="col"><input type="search" id="pq" placeholder="Buscar por nombre o sector" value="${esc(S.ui.pq||'')}" aria-label="Buscar paciente">
+ ${list.length?list.map(p=>{const nx=S.appts.filter(a=>a.patientId===p.id&&a.status==='prog'&&(a.date>today()||a.date===today())).sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start))[0];
+  return `<a class="apt" href="#/ficha/${p.id}"><div style="width:44px;height:44px;border-radius:22px;background:var(--navy);color:var(--blush);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:18px;flex:none">${esc(initials(p.name))}</div><div class="grow"><b>${esc(p.name)}</b><div class="xs mut">${p.age?p.age+' años · ':''}${esc(p.zone||'')}</div><div class="xs mut" style="margin-top:4px">${nx?'Próxima: '+fdate(nx.date)+' '+nx.start:'Sin visitas agendadas'}</div></div>${p.consent?'':'<span class="pill p-warn">Sin consentimiento</span>'}</a>`}).join(''):empty(S.patients.length?'Nadie coincide con la búsqueda.':'Aún no tienes pacientes.','<button class="btn" data-act="newpat">Agregar la primera</button>')}
+ </div>`;
+};
+function patForm(p){
+ p=p||{resp:{}};
+ sheet(`<h2>${p.id?'Editar paciente':'Nueva paciente'}</h2>
+ <form class="col" data-form="pat" style="margin-top:12px" novalidate>
+ <input type="hidden" name="id" value="${p.id||''}">
+ <label class="f">Nombre<input name="name" value="${esc(p.name||'')}" required></label>
+ <div class="row"><label class="f grow">Edad<input type="number" name="age" min="0" max="120" value="${p.age||''}"></label><label class="f grow">Sector<input name="zone" value="${esc(p.zone||'')}" placeholder="Talca Norte"></label></div>
+ <label class="f">Servicio<select name="svc">${['Adulto mayor','Bebé y niño','Paliativo','Procedimientos'].map(x=>`<option ${p.svc===x?'selected':''}>${x}</option>`).join('')}</select></label>
+ <label class="f">Cómo llegó<select name="source">${['Derivación médica','Instagram','Recomendación','WhatsApp directo','Otro'].map(x=>`<option ${p.source===x?'selected':''}>${x}</option>`).join('')}</select></label>
+ <div class="eyebrow">Responsable (recibe los informes)</div>
+ <div class="row"><label class="f grow">Nombre<input name="rname" value="${esc(p.resp.name||'')}"></label><label class="f grow">Parentesco<input name="rrel" value="${esc(p.resp.rel||'')}" placeholder="hija"></label></div>
+ <label class="f">WhatsApp del responsable<input type="tel" name="rphone" value="${esc(p.resp.phone||'')}" placeholder="+56 9 1234 5678" inputmode="tel"></label>
+ <label class="f">Indicación médica vigente<input name="ind" value="${esc(p.indication?.text||'')}" placeholder="Anticoagulante · 7 días"></label>
+ <label class="f">Riesgos a vigilar (separados por coma)<input name="risks" value="${esc((p.risks||[]).join(', '))}" placeholder="Sangrado, Caídas: bajo"></label>
+ <label class="f">Notas<textarea name="notes">${esc(p.notes||'')}</textarea></label>
+ <div class="alert a-warn xs">Guarda solo lo necesario. Estos datos de salud quedan únicamente en este teléfono.</div>
+ <div id="confbox"></div>
+ <div class="row"><button class="btn grow" type="submit">Guardar</button><button class="btn sec" type="button" data-act="closesheet">Cancelar</button></div>
+ ${p.id?`<button class="btn bad" type="button" data-act="delpat" data-id="${p.id}">Eliminar paciente</button>`:''}
+ </form>`);
+}
+routes.ficha=([id])=>{
+ const p=P(id);if(!p)return `${back('Pacientes','#/pacientes')}${empty('Paciente no encontrada.')}`;
+ const tab=S.ui.ftab||'res';
+ const vis=S.appts.filter(a=>a.patientId===p.id&&a.status==='hecha').sort((a,b)=>(b.date+b.start).localeCompare(a.date+a.start));
+ const nxt=S.appts.filter(a=>a.patientId===p.id&&a.status==='prog').sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start));
+ const ch=S.charges.filter(c=>c.patientId===p.id);
+ let body='';
+ if(tab==='res'){
+  body=`<div class="alert ${p.consent?'a-ok':'a-warn'}"><b>${p.consent?'Consentimiento firmado · '+fdate(p.consent.date):'Sin consentimiento firmado'}</b><br>${p.consent?`Autoriza el envío de informes a ${esc(p.resp.name||'el responsable')}.`:'Sin esto, el botón de enviar informes queda bloqueado.'}<div style="margin-top:8px"><button class="btn sm ${p.consent?'sec':''}" data-act="consent" data-id="${p.id}">${p.consent?'Anular consentimiento':'Registrar consentimiento'}</button></div></div>
+  <div class="card"><div class="eyebrow">Indicación médica vigente</div><div style="margin-top:4px">${esc(p.indication?.text||'Sin indicación registrada')}</div>${p.indication?.photo?`<img src="${p.indication.photo}" alt="Foto de la receta" style="max-width:100%;border-radius:10px;margin-top:8px">`:''}<label class="btn sec sm" style="margin-top:8px;cursor:pointer">Adjuntar foto de la receta<input type="file" accept="image/*" capture="environment" data-act="recipe" data-id="${p.id}" class="hide"></label></div>
+  <div class="card"><div class="eyebrow">Riesgos</div><div class="row" style="flex-wrap:wrap;margin-top:6px">${(p.risks||[]).length?p.risks.map(r=>`<span class="pill p-warn">${esc(r)}</span>`).join(''):'<span class="sm mut">Sin riesgos anotados</span>'}</div></div>
+  <div class="card row sp"><div><div class="eyebrow">Responsable</div><b>${esc(p.resp.name||'—')}</b><div class="xs mut">${esc(p.resp.rel||'')} · ${esc(p.resp.phone||'sin WhatsApp')}</div></div><a class="btn sec sm" href="#/portal/${p.id}">Portal familiar ›</a></div>
+  ${p.notes?`<div class="card sm">${esc(p.notes)}</div>`:''}
+  <div class="card"><div class="eyebrow">Próximas</div>${nxt.slice(0,3).map(a=>`<div class="sm" style="margin-top:6px"><b>${fdate(a.date)} ${a.start}</b> · ${esc(a.type)}</div>`).join('')||'<div class="sm mut">Nada agendado</div>'}<button class="btn sm sage" style="margin-top:8px" data-act="newappt" data-pat="${p.id}">+ Agendar</button></div>
+  ${vis.length?`<div class="alert a-ok"><b>Carpeta de reembolso lista</b><br>Boleta de honorarios + indicación médica, juntas para isapre o seguro.</div>`:''}`;
+ }else if(tab==='hist'){
+  body=vis.length?vis.map(a=>`<div class="card row sp"><div><b>${fdate(a.date)}</b> <span class="xs mut">· ${esc(a.type)}</span><div class="xs mut">${a.record?.vit?.pa?'PA '+esc(a.record.vit.pa)+' · ':''}${(a.record?.vig||[]).map(esc).join(', ')}</div></div>${a.report?.sent?'<span class="pill p-ok">Informe enviado</span>':`<a class="btn sm sage" href="#/informe/${a.id}">Informe</a>`}</div>`).join(''):empty('Aún no hay visitas realizadas.');
+ }else if(tab==='doc'){
+  const qs=S.quotes.filter(q=>q.patientId===p.id);
+  body=`${qs.map(q=>`<a class="card row sp" href="#/cotizacion/${q.id}"><div><b>Cotización N° ${q.n}</b><div class="xs mut">${fdate(q.date)} · ${clp(qTotal(q))}</div></div><span class="pill p-mut">${q.status}</span></a>`).join('')||empty('Sin cotizaciones.')}<a class="btn sec" href="#/cotizar?pat=${p.id}" data-pat="${p.id}" data-act="quotefor">+ Nueva cotización</a>`;
+ }else{
+  body=ch.length?ch.map(c=>`<div class="card row sp"><div><b>${esc(c.concept)}</b><div class="xs mut">${c.status==='pagado'?'Pagado '+fdate(c.paidAt||c.due):'Vence '+fdate(c.due)}</div></div><b>${clp(c.amount)}</b></div>`).join(''):empty('Sin cobros.');
+ }
+ return `${back('Pacientes','#/pacientes')}
+ <div class="row" style="margin-bottom:12px"><div style="width:56px;height:56px;border-radius:28px;background:var(--navy);color:var(--blush);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:22px">${esc(initials(p.name))}</div><div class="grow"><h2>${esc(p.name)}</h2><div class="sm mut">${p.age?p.age+' años · ':''}${esc(p.zone||'')}</div></div><button class="btn sec sm" data-act="editpat" data-id="${p.id}">Editar</button></div>
+ <div class="seg" role="tablist" style="margin-bottom:12px">${[['res','Resumen'],['hist','Historial'],['doc','Documentos'],['cob','Cobros']].map(t=>`<button role="tab" aria-selected="${tab===t[0]}" class="${tab===t[0]?'on':''}" data-act="ftab" data-t="${t[0]}">${t[1]}</button>`).join('')}</div>
+ <div class="col">${body}</div>`;
+};
+
+/* ============ VISITA EN CURSO ============ */
+const VIG=['Sin sangrado','Sin dolor','Hematoma en sitio','Otro'];
+routes.visita=([id])=>{
+ const a=A(id);if(!a)return `${empty('Atención no encontrada.','<a class="btn" href="#/hoy">Volver</a>')}`;
+ const p=P(a.patientId);const r=a.record||(a.record={start:null});
+ const isInj=/inyecc|anticoag/i.test(a.type);
+ const last=S.appts.filter(x=>x.patientId===a.patientId&&x.record?.sitio&&x.id!==a.id).sort((x,y)=>(y.date+y.start).localeCompare(x.date+x.start))[0];
+ const sug=last?(last.record.sitio==='Abdomen izq.'?'Abdomen der.':'Abdomen izq.'):'';
+ return `<div class="row sp">${back('Hoy','#/hoy')}<span class="pill p-bad" id="timer" aria-live="off">En curso · 00:00</span></div>
+ <div class="row" style="margin:6px 0 12px"><div style="width:52px;height:52px;border-radius:26px;background:var(--navy);color:var(--blush);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:20px">${esc(initials(p.name))}</div><div><h2>${esc(p.name)}</h2><div class="sm mut">${esc(a.type)}</div></div></div>
+ <form class="col" data-form="visit" data-id="${a.id}" novalidate>
+ ${p.indication?.text?`<div class="alert a-ok"><b>Indicación vigente</b><br>${esc(p.indication.text)}${p.indication.photo?' · foto adjunta':''}</div>`:'<div class="alert a-warn"><b>Sin indicación médica registrada.</b> Adjúntala en la ficha antes de procedimientos.</div>'}
+ ${isInj?`<div class="card col"><b>Registro de inyección</b><div class="row"><label class="f grow">Fármaco<input name="farmaco" value="${esc(r.farmaco||'')}" placeholder="Anticoagulante"></label><label class="f grow">Dosis<input name="dosis" value="${esc(r.dosis||'')}" placeholder="según receta"></label></div>
+ <div class="f"><span>Sitio de aplicación</span><div class="row" style="flex-wrap:wrap;margin-top:4px">${['Abdomen izq.','Abdomen der.','Otro'].map(s=>`<label class="chip row" style="display:inline-flex;align-items:center;gap:6px"><input type="radio" name="sitio" value="${s}" style="width:auto;min-height:0" ${r.sitio===s?'checked':''}>${s}</label>`).join('')}</div>${sug?`<span class="xs">Ayer fue ${esc(last.record.sitio.toLowerCase())} · hoy te sugiero rotar a ${sug.toLowerCase()}</span>`:''}</div></div>`:''}
+ <div class="card col"><b>Signos vitales</b><div class="row"><label class="f grow">Presión<input name="pa" inputmode="numeric" value="${esc(r.vit?.pa||'')}" placeholder="120/80"></label><label class="f grow">Pulso<input name="fc" inputmode="numeric" value="${esc(r.vit?.fc||'')}" placeholder="72"></label></div><div class="row"><label class="f grow">Temp. °C<input name="temp" inputmode="decimal" value="${esc(r.vit?.temp||'')}" placeholder="36.5"></label><label class="f grow">Sat. O₂<input name="sat" inputmode="numeric" value="${esc(r.vit?.sat||'')}" placeholder="97"></label></div><div id="vitwarn"></div></div>
+ <div class="card"><b>Vigilancia</b> <span class="xs mut">criterios que tú definiste</span><div class="row" style="flex-wrap:wrap;margin-top:8px">${VIG.map(v=>`<label class="chip row" style="display:inline-flex;align-items:center;gap:6px"><input type="checkbox" name="vig" value="${v}" style="width:auto;min-height:0" ${(r.vig||[]).includes(v)?'checked':''}>${v}</label>`).join('')}</div></div>
+ <label class="f">Nota para el informe<textarea name="nota" id="nota" placeholder="Dicta una nota para el informe…">${esc(r.nota||'')}</textarea></label>
+ ${('webkitSpeechRecognition' in window||'SpeechRecognition' in window)?'<button type="button" class="btn sec" data-act="dictnote">🎙 Dictar nota</button>':''}
+ <button class="btn full" style="min-height:54px;font-size:16px" type="submit">Cerrar visita y generar informe</button>
+ </form>`;
+};
+function tickTimer(){const t=$('#timer');if(!t)return;const m=location.hash.match(/#\/visita\/(\w+)/);if(!m)return;const a=A(m[1]);if(!a?.record?.start)return;const sec=Math.max(0,Math.floor((Date.now()-new Date(a.record.start).getTime())/1000));t.textContent='En curso · '+pad(Math.floor(sec/60))+':'+pad(sec%60)}
+setInterval(tickTimer,1000);
+function vitWarn(f){
+ const g=n=>f.elements[n]?.value||'';const w=[];
+ const [s,d]=g('pa').split('/').map(Number);
+ if(s&&(s>=180||s<90))w.push('Presión fuera de rango habitual');if(d&&d>=110)w.push('Diastólica alta');
+ if(g('fc')&&(Number(g('fc'))>110||Number(g('fc'))<50))w.push('Pulso fuera de rango');
+ if(g('temp')&&Number(g('temp').replace(',','.'))>=37.8)w.push('Temperatura elevada');
+ if(g('sat')&&Number(g('sat'))<92)w.push('Saturación baja');
+ const box=f.querySelector('#vitwarn');if(box)box.innerHTML=w.length?`<div class="alert a-bad" role="alert">${w.join(' · ')}. Revisa y decide con tu criterio clínico.</div>`:'';
+}
+function genFamily(a,p,r){
+ const first=p.name.split(/[ ,]/)[0];const trat=/Sra|Sr/.test('')?'':'';
+ const inj=/inyecc|anticoag/i.test(a.type);
+ const bits=[];
+ const vig=r.vig||[];
+ const dia=a.type.match(/día (\d+)/i);
+ bits.push(`Hoy visité a ${esc2(first)}${inj?' para su inyección'+(r.farmaco?' de '+r.farmaco.toLowerCase():''):' por: '+a.type.toLowerCase()}${dia?', día '+dia[1]:''}.`);
+ if(inj&&r.sitio)bits.push(`Se aplicó en ${r.sitio.toLowerCase()}${vig.includes('Hematoma en sitio')?', con un pequeño hematoma en el sitio':', sin inconvenientes'}.`);
+ const pos=[];if(vig.includes('Sin sangrado'))pos.push('sin sangrado');if(vig.includes('Sin dolor'))pos.push('sin dolor');
+ if(pos.length)bits.push('Estuvo '+pos.join(' y ')+'.');
+ const v=r.vit||{};if(v.pa||v.fc||v.temp||v.sat)bits.push('Los signos vitales fueron controlados y quedaron registrados.');
+ if(r.nota)bits.push(r.nota.trim().replace(/\s+/g,' ').replace(/^./,c=>c.toUpperCase()).replace(/([^.!?])$/,'$1.'));
+ const nxt=S.appts.filter(x=>x.patientId===a.patientId&&x.status==='prog'&&(x.date+x.start)>(a.date+a.start)).sort((x,y)=>(x.date+x.start).localeCompare(y.date+y.start))[0];
+ const obs=`Avísame si aparece sangrado, dolor intenso o algo que te preocupe.${nxt?' Nos vemos '+fdate(nxt.date,true).toLowerCase()+' a las '+nxt.start+'.':''}`;
+ return {texto:bits.join(' '),obs};
+}
+const esc2=s=>s;
+function genClinical(a,p,r){
+ const v=r.vit||{};
+ return `${fdate(a.date,true)} ${a.start}. ${a.type}. ${r.farmaco?'Fármaco: '+r.farmaco+(r.dosis?' ('+r.dosis+')':'')+'. ':''}${r.sitio?'Sitio: '+r.sitio+'. ':''}SV: PA ${v.pa||'—'} · FC ${v.fc||'—'} · T° ${v.temp||'—'} · SatO₂ ${v.sat||'—'}. Vigilancia: ${(r.vig||[]).join(', ')||'sin hallazgos registrados'}. ${r.nota||''}`.trim();
+}
+function closeVisit(f){
+ const a=A(f.dataset.id),p=P(a.patientId);const fd=new FormData(f);
+ const r=a.record||{};
+ r.farmaco=fd.get('farmaco')||'';r.dosis=fd.get('dosis')||'';r.sitio=fd.get('sitio')||'';
+ r.vit={pa:fd.get('pa')||'',fc:fd.get('fc')||'',temp:fd.get('temp')||'',sat:fd.get('sat')||''};
+ r.vig=fd.getAll('vig');r.nota=fd.get('nota')||'';r.end=new Date().toISOString();
+ a.record=r;a.status='hecha';
+ const g=genFamily(a,p,r);
+ a.report={family:g.texto,obs:g.obs,clinical:genClinical(a,p,r),approved:false,sent:false};
+ save();toast('Visita cerrada');location.hash='#/informe/'+a.id;
+}
+
+/* ============ INFORME ============ */
+routes.informe=([id])=>{
+ const a=A(id);if(!a||!a.report)return `${back('Hoy','#/hoy')}${empty('No hay informe para esta atención.')}`;
+ const p=P(a.patientId);const rp=a.report;const mode=S.ui.imode||'fam';
+ const last4=digits(p.resp.phone).slice(-4);
+ const ok=!!p.consent&&!!last4;
+ const dur0=a.record?.start&&a.record?.end?Math.max(1,Math.round((new Date(a.record.end)-new Date(a.record.start))/60000)):a.dur;
+ return `<div class="row sp">${back('Hoy','#/hoy')}<span class="pill ${rp.sent?'p-ok':'p-warn'}">${rp.sent?'Enviado':'Borrador · tú apruebas'}</span></div>
+ <h2 style="margin:4px 0 10px">Informe del turno</h2>
+ <div class="seg" style="margin-bottom:12px"><button class="${mode==='fam'?'on':''}" data-act="imode" data-m="fam">Familiar</button><button class="${mode==='cli'?'on':''}" data-act="imode" data-m="cli">Clínico</button></div>
+ <div class="col">
+ <div class="paper" id="rptpaper"><div class="row">${LOGO(44)}<div><b>${esc(S.profile.name)}</b><div class="xs mut">${esc(S.profile.role)}</div></div></div>
+ <div class="xs mut" style="margin:6px 0"><i>${esc(S.profile.tagline)}</i></div>
+ <b>${esc(p.name)} · ${fdate(a.date,true).toLowerCase()} · ${a.start} a ${hhmm(toMin(a.start)+dur0)}</b>
+ ${mode==='fam'?`<p>${esc(rp.family)}</p><div class="eyebrow" style="margin-top:10px">Qué observar en casa</div><p>${esc(rp.obs||'')}</p><p class="xs mut">En una emergencia llama al 131 (SAMU).</p>`:`<p>${esc(rp.clinical)}</p>`}
+ <div class="xs mut">${esc(S.profile.name)} · Enfermera · Reg. ${esc(S.profile.reg||'[N° profesional]')}</div></div>
+ <label class="f noprint">Edita el texto antes de aprobar<textarea id="rptedit" data-act="rptedit" data-id="${a.id}" data-m="${mode}">${esc(mode==='fam'?rp.family:rp.clinical)}</textarea></label>
+ ${mode==='fam'?`<label class="f noprint">Qué observar en casa<textarea id="rptobs" data-act="rptobs" data-id="${a.id}" style="min-height:70px">${esc(rp.obs||'')}</textarea></label>`:''}
+ <section class="card col noprint"><b>Antes de enviar</b>
+  <div class="sm">Destinatario autorizado: <b>${esc(p.resp.name||'—')}</b> (${esc(p.resp.rel||'')}). ${p.consent?'Consentimiento firmado el '+fdate(p.consent.date)+'.':'<span style="color:var(--bad)"><b>Sin consentimiento firmado.</b></span>'}</div>
+  ${ok?`<label class="row sm"><input type="checkbox" id="chk4" style="width:24px;min-height:24px"> Confirmo que el número termina en <b>${last4}</b> y es el de ${esc((p.resp.name||'').split(' ')[0])}.</label>`:`<div class="alert a-bad">Para enviar necesitas el consentimiento y el WhatsApp del responsable. <a href="#/ficha/${p.id}" style="text-decoration:underline">Ir a la ficha</a></div>`}
+  <div class="row"><button class="btn grow" id="sendrpt" data-act="sendrpt" data-id="${a.id}" disabled>Enviar por WhatsApp</button><button class="btn sec" data-act="printrpt">PDF</button></div>
+  <div class="xs mut">Se abre WhatsApp con el mensaje listo; tú tocas enviar. Nada sale sin tu aprobación.</div></section>
+ </div>`;
+};
+
+/* ============ COBROS ============ */
+routes.cobros=()=>{
+ const t=today(),pend=S.charges.filter(c=>c.status==='pend').sort((a,b)=>a.due.localeCompare(b.due));
+ const m=t.slice(0,7);
+ const cobrado=S.charges.filter(c=>c.status==='pagado'&&(c.paidAt||c.due).startsWith(m)).reduce((s,c)=>s+c.amount,0);
+ const porCobrar=pend.reduce((s,c)=>s+c.amount,0);
+ const sinBoleta=pend.filter(c=>!c.boleta).length;
+ const infEnv=S.appts.filter(a=>a.report?.sent).length;
+ return `${header('Cobros',cap(MESES[new Date().getMonth()]),`<button class="btn sm" data-act="newcharge">+ Cobro</button>`)}
+ <div class="col">
+ <div class="row" style="align-items:stretch"><div class="navy grow"><span class="xs">Por cobrar</span><b class="big">${clp(porCobrar)}</b></div><div class="card grow"><span class="xs mut">Cobrado este mes</span><b style="font-family:'Cormorant Garamond',serif;font-size:32px;display:block;line-height:1">${clp(cobrado)}</b></div></div>
+ <div class="row" style="flex-wrap:wrap"><span class="pill p-warn">${infEnv} informes enviados</span><span class="pill p-ok">${S.charges.filter(c=>c.boleta).length} boletas</span><span class="pill p-mut">${S.charges.filter(c=>c.status==='pagado').length} cobrados</span></div>
+ ${pend.length?pend.map(c=>{const p=P(c.patientId);const dd=Math.round((pISO(c.due)-pISO(t))/864e5);
+  const st=dd<0?`<span class="pill p-bad">Atrasado ${-dd} día${dd===-1?'':'s'}</span>`:dd===0?'<span class="pill p-warn">Vence hoy</span>':`<span class="pill p-warn">Vence en ${dd} día${dd===1?'':'s'}</span>`;
+  return `<article class="card col"><div class="row sp"><div class="grow"><b>${esc(p?.name||'—')}</b><div class="xs mut">${esc(c.concept)}</div></div><b>${clp(c.amount)}</b></div><div class="row sp">${st}<div class="row"><button class="btn sage sm" data-act="remind" data-id="${c.id}">Recordar</button><button class="btn sm" data-act="pay" data-id="${c.id}">Registrar pago</button></div></div>${c.boleta?'':`<button class="btn sec sm" data-act="boleta" data-id="${c.id}">Preparar boleta</button>`}</article>`}).join(''):empty('No tienes cobros pendientes. Buen trabajo.')}
+ ${sinBoleta?`<div class="alert a-ok"><b>${sinBoleta} sin boleta</b><br>Receptor, monto y glosa quedan preparados. Los copias en sii.cl y registras el N°.</div>`:''}
+ <p class="xs mut">Boleta de Honorarios Electrónica en sii.cl. Esta app prepara los datos; no emite documentos tributarios.</p>
+ </div>`;
+};
+function boletaSheet(id){
+ const c=S.charges.find(x=>x.id===id),p=P(c.patientId);
+ const glosa=`Servicios de enfermería domiciliaria: ${c.concept.replace(/^Boleta N° \d+ · /,'')}`;
+ const txt=`Receptor: ${p.resp.name||p.name}\nMonto bruto: ${clp(c.amount)}\nGlosa: ${glosa}`;
+ sheet(`<h2>Boleta lista para emitir</h2><div class="paper sm" style="margin:12px 0;white-space:pre-line">${esc(txt)}</div>
+ <p class="xs mut">Si el receptor es distinto de la paciente (reembolso), confirma el RUT con la familia.</p>
+ <div class="row"><button class="btn grow" data-act="copy" data-t="${esc(txt)}">Copiar datos</button></div>
+ <form class="col" data-form="boleta" data-id="${c.id}" style="margin-top:12px"><label class="f">N° de boleta emitida<input name="n" inputmode="numeric" value="${S.counters.boleta+1}" required></label><button class="btn" type="submit">Registrar N° de boleta</button></form>`);
+}
+
+/* ============ COTIZAR ============ */
+const qTotal=q=>Math.max(0,Math.round(q.qty*q.unit*(1-(q.disc||0)/100)));
+routes.cotizar=()=>{
+ const d=S.ui.qdraft||(S.ui.qdraft={patientId:'',modo:'Visita de procedimiento',servicio:'',qty:7,unit:S.tarifas.visita,disc:0,zone:'',valid:7,hour:'08:30',dur:30,startDate:addDays(today(),1)});
+ const hash=location.hash;const pm=hash.match(/pat=(\w+)/);if(pm&&!d._pre){d.patientId=pm[1];d.zone=P(pm[1])?.zone||'';d._pre=1}
+ const p=P(d.patientId);
+ const tent=tentSlots(d);
+ const tot=qTotal(d);
+ return `${header('Nueva cotización','',S.quotes.length?`<a class="btn sec sm" href="#/embudo">Embudo</a>`:'')}
+ <form class="col" data-form="quote" novalidate>
+ <label class="f">Paciente<select name="patientId" data-live="1"><option value="">Elige…</option>${S.patients.map(x=>`<option value="${x.id}" ${d.patientId===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select></label>
+ <div class="f"><span>Modalidad</span><div class="row" style="flex-wrap:wrap;margin-top:4px">${[['Turno por horas','turnoHora'],['Visita de procedimiento','visita'],['Pack recurrente','pack']].map(m=>`<button type="button" class="chip ${d.modo===m[0]?'on':''}" data-act="qmodo" data-m="${m[0]}" data-k="${m[1]}">${m[0]}</button>`).join('')}</div></div>
+ <label class="f">Servicio<input name="servicio" data-live="1" value="${esc(d.servicio)}" placeholder="Tratamiento inyectable domiciliario · 7 días"></label>
+ <div class="row"><label class="f grow">${d.modo==='Turno por horas'?'Horas':'Visitas'}<input type="number" name="qty" data-live="1" min="1" value="${d.qty}"></label><label class="f grow">Valor unitario<input type="number" name="unit" data-live="1" min="0" step="500" value="${d.unit}"></label></div>
+ <div class="row"><label class="f grow">Zona<input name="zone" data-live="1" value="${esc(d.zone)}"></label><label class="f grow">Vigencia (días)<input type="number" name="valid" data-live="1" min="1" value="${d.valid}"></label><label class="f grow">Descuento %<input type="number" name="disc" data-live="1" min="0" max="50" value="${d.disc}"></label></div>
+ <div class="card col"><div class="row sp"><b class="sm">Horas tentativas desde tu agenda</b><span class="pill ${tent.length>=Math.min(d.qty,14)?'p-ok':'p-warn'}">${tent.length>=Math.min(d.qty,14)?'Sin choques':'Faltan horas'}</span></div>
+ <div class="row"><label class="f grow">Desde<input type="date" name="startDate" data-live="1" value="${d.startDate}"></label><label class="f grow">Hora<input type="time" name="hour" data-live="1" value="${d.hour}"></label><label class="f grow">Min.<input type="number" name="dur" data-live="1" min="10" step="5" value="${d.dur}"></label></div>
+ <div class="row" style="flex-wrap:wrap">${tent.map(s=>`<span class="pill p-ok">${fdate(s.date)} · ${s.start}</span>`).join('')||'<span class="xs mut">Sin horas calzadas</span>'}</div>
+ <div class="xs mut">Se reservan de forma tentativa al enviar y se liberan si la cotización vence.</div></div>
+ <div class="navy row sp"><span>Total <span class="xs">(tarifas editables)</span></span><b style="font-family:'Cormorant Garamond',serif;font-size:32px;color:#fff">${clp(tot)}</b></div>
+ <div id="confbox"></div>
+ <div class="row"><button class="btn grow" type="submit">Ver vista previa</button></div>
+ </form>
+ ${S.quotes.length?`<div class="eyebrow" style="margin-top:20px">Cotizaciones anteriores</div><div class="col" style="margin-top:8px">${S.quotes.slice().reverse().slice(0,6).map(q=>`<a class="card row sp" href="#/cotizacion/${q.id}"><div><b>N° ${q.n} · ${esc(P(q.patientId)?.name||q.resp||'')}</b><div class="xs mut">${fdate(q.date)} · ${clp(qTotal(q))}</div></div><span class="pill ${q.status==='aceptada'?'p-ok':q.status==='vencida'?'p-bad':'p-warn'}">${q.status}</span></a>`).join('')}</div>`:''}`;
+};
+function tentSlots(d){
+ const out=[];let day=d.startDate||addDays(today(),1);const n=Math.min(Number(d.qty)||0,14);
+ for(let i=0;i<40&&out.length<n;i++,day=addDays(day,1)){
+  if(!workDay(day))continue;
+  if(!conflicts(day,d.hour,d.dur,15).length&&!lunchClash(d.hour,d.dur))out.push({date:day,start:d.hour});
+ }
+ return out;
+}
+routes.cotizacion=([id])=>{
+ const q=Q(id);if(!q)return `${back('Cotizar','#/cotizar')}${empty('Cotización no encontrada.')}`;
+ const p=P(q.patientId);const tot=qTotal(q);
+ const exp=addDays(q.date,q.valid);const expired=q.status==='enviada'&&exp<today();
+ return `${back('Cotizar','#/cotizar')}<div class="row sp" style="margin:4px 0 10px"><h2>Cotización N° ${q.n}</h2><span class="pill ${q.status==='aceptada'?'p-ok':expired?'p-bad':'p-warn'}">${expired?'vencida':q.status}</span></div>
+ <div class="col"><div class="paper" id="qpaper"><div class="row">${LOGO(48)}<div><b>${esc(S.profile.name)}</b><div class="xs mut">${esc(S.profile.role)}</div></div></div>
+ <p style="margin:12px 0 2px"><b>Cotización N° ${q.n}</b><br><span class="xs mut">Emitida ${fdate(q.date,true)} · Vigente hasta ${fdate(exp,true)}</span></p>
+ <p>Para: <b>${esc(q.resp||p?.resp?.name||'')}</b> · Paciente: <b>${esc(p?.name||'')}</b></p>
+ <p><b>${esc(q.servicio||q.modo)}</b><br><span class="xs mut">Se realiza únicamente con indicación médica vigente.</span></p>
+ <table><tr><th>Concepto</th><th>Cant.</th><th>Valor</th><th>Total</th></tr><tr><td>${esc(q.modo)}</td><td>${q.qty}</td><td>${clp(q.unit)}</td><td>${clp(q.qty*q.unit)}</td></tr>${q.disc?`<tr><td colspan="3">Descuento ${q.disc}%</td><td>−${clp(q.qty*q.unit*q.disc/100)}</td></tr>`:''}<tr><td colspan="3"><b>Total</b></td><td><b>${clp(tot)}</b></td></tr></table>
+ ${q.slots?.length?`<p class="xs"><b>Horas propuestas:</b> ${q.slots.map(s=>fdate(s.date)+' '+s.start).join(' · ')}</p>`:''}
+ <p class="xs"><b>Condiciones:</b> pago por transferencia · cancelación con 12 horas de aviso.</p>
+ <p>Para reservar tus horas, responde <b>ACEPTO</b> por WhatsApp.</p>
+ <p class="xs mut">${esc(S.profile.name)} · Reg. ${esc(S.profile.reg||'[N° profesional]')} · ${esc(S.profile.wa||'[WhatsApp]')} · ${esc(S.profile.email||'[correo]')}</p></div>
+ <div class="row noprint"><button class="btn grow" data-act="qsend" data-id="${q.id}">${q.status==='borrador'?'Enviar por WhatsApp':'Reenviar por WhatsApp'}</button><button class="btn sec" data-act="printq">PDF</button></div>
+ ${q.status!=='aceptada'?`<button class="btn sage noprint" data-act="qaccept" data-id="${q.id}">Marcar aceptada (agenda las horas)</button>`:'<div class="alert a-ok noprint">Aceptada. Horas agendadas y cobro creado.</div>'}
+ <a class="btn sec noprint" href="#/portal/${q.patientId}">Compartir en portal familiar</a>
+ <button class="btn bad noprint" data-act="qdel" data-id="${q.id}">Eliminar cotización</button></div>`;
+};
+
+/* ============ EMBUDO ============ */
+routes.embudo=()=>{
+ const f=S.ui.efilter||'Todos';
+ const leads=S.leads.filter(l=>f==='Todos'||(l.need||'').toLowerCase().includes(f.toLowerCase().split(' ')[0])||(l.svc||'')===f);
+ const open=S.leads.filter(l=>l.stage===1).reduce((s,l)=>s+l.amount,0);
+ return `${back('Hoy','#/hoy')}${header('Clientes · embudo','De la primera consulta al seguimiento',`<button class="btn" data-act="newlead">+ Nuevo cliente</button>`)}
+ <div class="col"><div class="row" style="flex-wrap:wrap">${['Todos','Adulto mayor','Bebé','Paliativo','Curaciones'].map(x=>`<button class="chip ${f===x?'on':''}" data-act="efilter" data-f="${x}">${x}</button>`).join('')}</div>
+ <div class="kan">${STAGES.map((st,i)=>{const col=leads.filter(l=>l.stage===i);return `<div><div class="row sp"><b class="sm">${st}</b><span class="pill p-mut">${col.length}</span></div>${col.map(l=>`<article class="card col" style="padding:10px"><b class="sm">${esc(l.name)}</b><div class="xs mut">${esc(l.need||'')}</div><div class="xs mut">${esc(l.source||'')}${l.amount?' · '+clp(l.amount):''}</div>${l.note?`<div class="xs" style="color:var(--warnfg)">${esc(l.note)}</div>`:''}<div class="row"><button class="btn sec sm" style="min-height:44px;flex:1" data-act="lmove" data-id="${l.id}" data-n="-1" ${i===0?'disabled':''} aria-label="Mover atrás">‹</button><button class="btn sec sm" style="min-height:44px;flex:1" data-act="ledit" data-id="${l.id}">Editar</button><button class="btn sec sm" style="min-height:44px;flex:1" data-act="lmove" data-id="${l.id}" data-n="1" ${i===STAGES.length-1?'disabled':''} aria-label="Mover adelante">›</button></div></article>`).join('')||'<div class="xs mut" style="padding:6px">Vacío</div>'}</div>`}).join('')}</div>
+ <div class="card row sp"><div><b>Cotizaciones abiertas</b><div class="xs mut">${S.leads.filter(l=>l.stage===1).length} en espera de respuesta</div></div><b style="font-family:'Cormorant Garamond',serif;font-size:28px">${clp(open)}</b></div></div>`;
+};
+function leadForm(l){
+ l=l||{stage:0};
+ sheet(`<h2>${l.id?'Editar cliente':'Nuevo cliente'}</h2><form class="col" data-form="lead" style="margin-top:12px" novalidate><input type="hidden" name="id" value="${l.id||''}">
+ <label class="f">Nombre<input name="name" value="${esc(l.name||'')}" required></label>
+ <label class="f">Qué necesita<input name="need" value="${esc(l.need||'')}" placeholder="Adulto mayor · compañía"></label>
+ <div class="row"><label class="f grow">Origen<select name="source">${['Instagram','WhatsApp','Derivación médica','Recomendación','Otro'].map(x=>`<option ${l.source===x?'selected':''}>${x}</option>`).join('')}</select></label><label class="f grow">Monto estimado<input type="number" name="amount" min="0" step="1000" value="${l.amount||0}"></label></div>
+ <label class="f">Etapa<select name="stage">${STAGES.map((s,i)=>`<option value="${i}" ${l.stage===i?'selected':''}>${s}</option>`).join('')}</select></label>
+ <label class="f">Nota<input name="note" value="${esc(l.note||'')}"></label><div id="confbox"></div>
+ <div class="row"><button class="btn grow" type="submit">Guardar</button><button class="btn sec" type="button" data-act="closesheet">Cancelar</button></div>
+ ${l.id?`<button class="btn bad" type="button" data-act="ldel" data-id="${l.id}">Eliminar</button>`:''}</form>`);
+}
+
+/* ============ PANEL ============ */
+routes.panel=()=>{
+ const t=today(),m=t.slice(0,7);
+ const paid=S.charges.filter(c=>c.status==='pagado'&&(c.paidAt||c.due).startsWith(m));
+ const ing=paid.reduce((s,c)=>s+c.amount,0);
+ const meta=S.profile.meta||1;
+ const qs=S.quotes.filter(q=>q.status!=='borrador');const acc=qs.filter(q=>q.status==='aceptada').length;
+ const tasa=qs.length?Math.round(acc/qs.length*100):0;
+ const done=S.appts.filter(a=>a.status==='hecha'&&a.date.startsWith(m));
+ const horasT=done.reduce((s,a)=>s+a.dur+(a.travel||0),0)/60;
+ const vph=horasT?Math.round(done.reduce((s,a)=>s+(a.price||0),0)/horasT):0;
+ // ocupación: horas agendadas del mes / horas disponibles hasta fin de mes
+ let disp=0,vend=0;const d0=pISO(m+'-01');const dim=new Date(d0.getFullYear(),d0.getMonth()+1,0).getDate();
+ for(let i=1;i<=dim;i++){const dt=m+'-'+pad(i);if(!workDay(dt))continue;disp+=(toMin(S.horario.fin)-toMin(S.horario.ini))-Math.max(0,toMin(S.horario.almFin)-toMin(S.horario.almIni));vend+=dayAppts(dt).reduce((s,a)=>s+a.dur,0)}
+ const ocup=disp?Math.round(vend/disp*100):0;
+ const wk=[0,0,0,0].map(()=>({p:0,c:0}));
+ S.charges.filter(c=>(c.paidAt||c.due).startsWith(m)).forEach(c=>{const day=Number((c.paidAt||c.due).slice(8));const w=Math.min(3,Math.floor((day-1)/7));c.status==='pagado'?wk[w].p+=c.amount:wk[w].c+=c.amount});
+ const mx=Math.max(1,...wk.map(w=>w.p+w.c));
+ const srcs={};S.patients.forEach(p=>srcs[p.source||'Otro']=(srcs[p.source||'Otro']||0)+1);
+ const smax=Math.max(1,...Object.values(srcs));
+ const alerts=[];
+ const old=S.leads.filter(l=>l.stage===1&&/sin respuesta/i.test(l.note||'')).length;
+ if(old)alerts.push(['bad',`${old} cotización sin respuesta`,'Tienes el seguimiento listo para enviar.']);
+ if(ing<meta*0.7&&t.slice(8)>'20')alerts.push(['warn','Cierras bajo tu meta','Quedan pocos días del mes.']);
+ const free=[...Array(7)].reduce((s,_,i)=>s+freeWindows(addDays(t,i)).reduce((x,w)=>x+(w[1]-w[0]),0),0)/60;
+ alerts.push(['ok','Publica tu disponibilidad',`Tienes ~${Math.round(free)} horas libres esta semana.`]);
+ return `${back('Hoy','#/hoy')}${header('Ventas de servicios',cap(MESES[new Date().getMonth()])+' · todo se calcula desde tus cotizaciones, visitas y cobros')}
+ <div class="col"><section class="row" style="flex-wrap:wrap;align-items:stretch">
+ <div class="navy" style="flex:1.3;min-width:220px"><span class="xs">Ingresos del mes</span><b class="big" style="font-size:40px">${clp(ing)}</b><div class="bar" style="background:#3B5C6E;margin-top:8px"><i style="width:${Math.min(100,Math.round(ing/meta*100))}%;background:var(--amber)"></i></div><span class="xs">${Math.round(ing/meta*100)} % de tu meta (${clp(meta)})</span></div>
+ <div class="card" style="flex:1;min-width:150px"><span class="xs mut">Tasa de cierre</span><b style="font-family:'Cormorant Garamond',serif;font-size:36px;display:block">${tasa} %</b><span class="xs mut">${acc} de ${qs.length} cotizaciones</span></div>
+ <div class="card" style="flex:1;min-width:150px"><span class="xs mut">Ocupación</span><b style="font-family:'Cormorant Garamond',serif;font-size:36px;display:block">${ocup} %</b><span class="xs mut">de tus horas del mes</span></div>
+ <div class="card" style="flex:1;min-width:150px"><span class="xs mut">Valor por hora trabajada</span><b style="font-family:'Cormorant Garamond',serif;font-size:36px;display:block">${clp(vph)}</b><span class="xs mut">incluye traslados</span></div></section>
+ <section class="card" aria-label="Ingresos por semana"><b>Ingresos por semana</b> <span class="xs mut">cobrado vs. por cobrar</span>
+ <div class="row" style="align-items:flex-end;height:160px;margin-top:10px;gap:14px">${wk.map((w,i)=>`<div class="grow col" style="gap:0;justify-content:flex-end;height:100%;align-items:center"><div style="width:100%;max-width:60px;display:flex;flex-direction:column;justify-content:flex-end;height:130px"><div style="height:${Math.round(w.c/mx*130)}px;background:var(--amber);border-radius:6px 6px 0 0"></div><div style="height:${Math.round(w.p/mx*130)}px;background:var(--ok);${w.c?'':'border-radius:6px 6px 0 0'}"></div></div><b class="xs">Sem ${i+1}</b><span class="xs mut">${clp(w.p+w.c)}</span></div>`).join('')}</div>
+ <div class="row xs mut"><span class="row" style="gap:6px"><i style="width:10px;height:10px;background:var(--ok);border-radius:2px"></i>Cobrado</span><span class="row" style="gap:6px"><i style="width:10px;height:10px;background:var(--amber);border-radius:2px"></i>Por cobrar</span></div></section>
+ <section class="card col"><b>De dónde llegan</b>${Object.entries(srcs).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div><div class="row sp sm"><span>${esc(k)}</span><b>${v}</b></div><div class="bar"><i style="width:${Math.round(v/smax*100)}%;background:var(--amber)"></i></div></div>`).join('')||'<span class="sm mut">Aún sin datos</span>'}</section>
+ <section class="col">${alerts.map(a=>`<div class="alert a-${a[0]}"><b>${a[1]}.</b><br>${a[2]}</div>`).join('')}</section></div>`;
+};
+
+/* ============ DISPONIBILIDAD ============ */
+function dispWeek(){
+ const t=today();const wd=(pISO(t).getDay()+6)%7;let ws=addDays(t,7-wd);
+ if(S.ui.dispThis)ws=addDays(t,-wd);
+ return [...Array(6)].map((_,i)=>{const dt=addDays(ws,i);const w=freeWindows(dt);return {date:dt,w}});
+}
+routes.disponibilidad=()=>{
+ const days=dispWeek();const ws=days[0].date,we=days[5].date;
+ return `${back('Agenda','#/agenda')}${header('Horas disponibles','Publicable en historias')}
+ <div class="col"><div class="seg"><button class="${!S.ui.dispThis?'on':''}" data-act="dispwk" data-v="0">Próxima semana</button><button class="${S.ui.dispThis?'on':''}" data-act="dispwk" data-v="1">Esta semana</button></div>
+ <div class="card916 v-${S.ui.dispVar||'marino'}" id="c916" style="${dispStyle()}"><div class="row">${LOGO(44,true)}<div class="xs" style="letter-spacing:.12em;text-transform:uppercase;font-weight:700">${esc(S.profile.name)} · Enfermera</div></div>
+ <div class="xs dk" style="letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#D9A978;margin-top:18px">Semana del ${pISO(ws).getDate()} al ${pISO(we).getDate()} de ${MESES[pISO(we).getMonth()]}</div>
+ <div class="dh" style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:700;color:#fff;line-height:.98;margin-top:6px">Horas<br><i style="font-weight:600;color:var(--blush)">disponibles</i></div>
+ <div class="col" style="gap:7px;margin-top:16px">${days.map(d=>`<div class="row sp dl" style="border-bottom:1px solid #3B5C6E;padding-bottom:6px"><span class="dt" style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:${d.w.length?'#fff':'#9FB3BF'}">${cap(DIAS[pISO(d.date).getDay()])} ${pISO(d.date).getDate()}</span><span class="xs dt" style="font-weight:700;color:${d.w.length?'var(--blush)':'#9FB3BF'}">${d.w.length?d.w.map(w=>hhmm(w[0])+'–'+hhmm(w[1])).join(' · '):'Completo'}</span></div>`).join('')}</div>
+ <div style="margin-top:auto"><div style="background:var(--amber);color:#10293A;border-radius:999px;padding:11px 18px;font-weight:700;font-size:14px;display:inline-block">Escríbeme para reservar</div><div class="xs" style="margin-top:8px">${esc(S.profile.ig)}${S.profile.wa?' · '+esc(S.profile.wa):''}<br>Reg. N° ${esc(S.profile.reg)}<br><i>${esc(S.profile.tagline)}</i></div></div></div>
+ <div class="seg" role="group" aria-label="Estilo de la imagen">${[['marino','Marino'],['blush','Claro'],['foto','Con foto']].map(v=>`<button class="${(S.ui.dispVar||'marino')===v[0]?'on':''}" data-act="dispvar" data-v="${v[0]}">${v[1]}</button>`).join('')}</div>
+ ${(S.ui.dispVar==='foto')?`<label class="btn sec" style="cursor:pointer">${S.ui.dispPhoto?'Cambiar foto':'Elegir foto'}<input type="file" accept="image/*" data-act="dispphoto" class="hide"></label>`:''}
+ <div class="row"><button class="btn grow" data-act="dlcard">Descargar imagen</button><button class="btn sec" data-act="copyavail">Copiar texto</button></div>
+ <div class="xs mut">Solo se publican horas que de verdad te calzan. Tu agenda completa y tus pacientes nunca aparecen.</div></div>`;
+};
+function dispStyle(){return (S.ui.dispVar==='foto'&&S.ui.dispPhoto)?"background-image:url('"+S.ui.dispPhoto+"')":''}
+function availText(){const d=dispWeek();return `Horas disponibles · ${S.profile.name}, enfermera\n`+d.map(x=>`${cap(DIAS[pISO(x.date).getDay()])} ${pISO(x.date).getDate()}: ${x.w.length?x.w.map(w=>hhmm(w[0])+'–'+hhmm(w[1])).join(' y '):'completo'}`).join('\n')+`\nEscríbeme para reservar ${S.profile.ig}`}
+let dispImg=null;
+function drawLogo(x,px,py,sz,light){x.save();x.translate(px,py);const k=sz/64;x.scale(k,k);x.fillStyle=light?'#E8D5C4':'#1B3A4B';x.beginPath();x.arc(32,32,32,0,7);x.fill();x.strokeStyle=light?'#1B3A4B':'#E8D5C4';x.lineWidth=2;x.beginPath();x.arc(32,32,24,0,7);x.stroke();x.strokeStyle='#C4935A';x.lineWidth=7;x.lineCap='round';x.beginPath();x.moveTo(32,19);x.lineTo(32,45);x.moveTo(19,32);x.lineTo(45,32);x.stroke();x.fillStyle='#8BA888';x.fill(new Path2D('M33 19c8 0 12 5 12 10-7 0-12-3-12-10z'));x.restore()}
+function loadDispImg(){if(S.ui.dispPhoto){const i=new Image();i.onload=()=>{dispImg=i};i.src=S.ui.dispPhoto}}
+function downloadCard(){
+ const days=dispWeek();const W=1080,H=1920;const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+ const V=S.ui.dispVar||'marino';const light=V==='blush';const fg=light?'#1B3A4B':'#E8D5C4',acc=light?'#7A5A2E':'#D9A978',line=light?'#C9B29C':'#3B5C6E',dim=light?'#6B7C85':'#9FB3BF',big=light?'#1B3A4B':'#fff';
+ x.fillStyle=light?'#E8D5C4':'#1B3A4B';x.fillRect(0,0,W,H);
+ if(V==='foto'&&dispImg){const k=Math.max(W/dispImg.width,H/dispImg.height);x.drawImage(dispImg,(W-dispImg.width*k)/2,(H-dispImg.height*k)/2,dispImg.width*k,dispImg.height*k);const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'rgba(16,41,58,.8)');g.addColorStop(.4,'rgba(16,41,58,.66)');g.addColorStop(1,'rgba(16,41,58,.92)');x.fillStyle=g;x.fillRect(0,0,W,H)}
+ else if(!light){x.fillStyle='#274B5F';x.beginPath();x.arc(W-60,60,330,0,7);x.fill()}
+ drawLogo(x,90,90,120,V==='blush');
+ x.textAlign='left';x.fillStyle=fg;x.font='700 32px "DM Sans",sans-serif';x.fillText((S.profile.name+' · ENFERMERA').toUpperCase(),240,160);
+ const ws=days[0].date,we=days[5].date;x.fillStyle=acc;x.fillText(`SEMANA DEL ${pISO(ws).getDate()} AL ${pISO(we).getDate()} DE ${MESES[pISO(we).getMonth()].toUpperCase()}`,90,420);
+ x.fillStyle=big;x.font='700 190px "Cormorant Garamond",serif';x.fillText('Horas',90,620);x.fillStyle=fg;x.font='italic 600 190px "Cormorant Garamond",serif';x.fillText('disponibles',90,810);
+ days.forEach((d,i)=>{const y=980+i*105;x.strokeStyle=line;x.lineWidth=2;x.beginPath();x.moveTo(90,y+30);x.lineTo(W-90,y+30);x.stroke();x.fillStyle=d.w.length?big:dim;x.font='700 56px "Cormorant Garamond",serif';x.textAlign='left';x.fillText(cap(DIAS[pISO(d.date).getDay()])+' '+pISO(d.date).getDate(),90,y+12);x.font='700 42px "DM Sans",sans-serif';x.textAlign='right';x.fillText(d.w.length?d.w.map(w=>hhmm(w[0])+'–'+hhmm(w[1])).join(' · '):'Completo',W-90,y+12)});
+ x.textAlign='left';x.fillStyle='#C4935A';const bw=640,bh=96,bx=90,by=1660;x.beginPath();x.roundRect?x.roundRect(bx,by,bw,bh,48):x.rect(bx,by,bw,bh);x.fill();x.fillStyle='#10293A';x.font='700 44px "DM Sans",sans-serif';x.fillText('Escríbeme para reservar',bx+44,by+63);
+ x.fillStyle=fg;x.font='500 34px "DM Sans",sans-serif';x.fillText(S.profile.ig+(S.profile.wa?' · '+S.profile.wa:''),90,1812);x.font='500 28px "DM Sans",sans-serif';x.fillText('Reg. N° '+S.profile.reg+' · '+S.profile.tagline,90,1862);
+ c.toBlob(b=>{if(!b){toast('No se pudo crear la imagen');return}const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='horas-disponibles.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);toast('Imagen descargada')},'image/png');
+}
+
+/* ============ AJUSTES ============ */
+routes.ajustes=()=>{
+ const p=S.profile,t=S.tarifas,h=S.horario;
+ return `${back('Hoy','#/hoy')}${header('Ajustes','Tu perfil y tus reglas')}
+ <form class="col" data-form="settings" novalidate>
+ <div class="eyebrow">Perfil (sale en informes y cotizaciones)</div>
+ <label class="f">Nombre<input name="name" value="${esc(p.name)}"></label>
+ <div class="row"><label class="f grow">N° registro profesional<input name="reg" value="${esc(p.reg)}"></label><label class="f grow">RUT<input name="rut" value="${esc(p.rut)}"></label></div>
+ <div class="row"><label class="f grow">WhatsApp<input type="tel" name="wa" value="${esc(p.wa)}" placeholder="+56 9 …"></label><label class="f grow">Correo<input type="email" name="email" value="${esc(p.email)}"></label></div>
+ <label class="f">Instagram<input name="ig" value="${esc(p.ig)}"></label>
+ <label class="f">Datos de transferencia (titular · banco · cuenta)<textarea name="bank" style="min-height:70px">${esc(p.bank)}</textarea></label>
+ <label class="f">Meta mensual (CLP)<input type="number" name="meta" min="0" step="10000" value="${p.meta}"></label>
+ <div class="eyebrow">Tarifas base</div>
+ <div class="row"><label class="f grow">Visita<input type="number" name="visita" value="${t.visita}"></label><label class="f grow">Turno por hora<input type="number" name="turnoHora" value="${t.turnoHora}"></label><label class="f grow">Pack<input type="number" name="pack" value="${t.pack}"></label></div>
+ <div class="eyebrow">Horario</div>
+ <div class="row"><label class="f grow">Desde<input type="time" name="ini" value="${h.ini}"></label><label class="f grow">Hasta<input type="time" name="fin" value="${h.fin}"></label></div>
+ <div class="row"><label class="f grow">Almuerzo desde<input type="time" name="almIni" value="${h.almIni}"></label><label class="f grow">hasta<input type="time" name="almFin" value="${h.almFin}"></label></div>
+ <div class="f"><span>Días de trabajo</span><div class="row" style="flex-wrap:wrap;margin-top:4px">${[1,2,3,4,5,6,0].map(d=>`<label class="chip row" style="display:inline-flex;align-items:center;gap:6px"><input type="checkbox" name="dias" value="${d}" style="width:auto;min-height:0" ${h.dias.includes(d)?'checked':''}>${DIAS3[d]}</label>`).join('')}</div></div>
+ <div id="confbox"></div><button class="btn" type="submit">Guardar ajustes</button></form>
+ <div class="eyebrow" style="margin-top:22px">Respaldo de tus datos</div>
+ <p class="sm mut">Todo vive solo en este teléfono. Si lo cambias o borras el navegador, se pierde. Descarga un respaldo cada semana.</p>
+ <div class="col"><button class="btn sec" data-act="export">Descargar respaldo</button><label class="btn sec" style="cursor:pointer">Restaurar respaldo<input type="file" accept="application/json" data-act="import" class="hide"></label>
+ <a class="btn sec" href="#/panel">Panel comercial</a><a class="btn sec" href="#/embudo">Embudo de clientes</a>
+ <button class="btn sec" data-act="demo">Cargar datos de ejemplo</button><button class="btn bad" data-act="wipe">Borrar todos los datos</button>
+ <button class="btn sec" id="installbtn" data-act="install" style="display:none">Instalar en el teléfono</button>
+ <div class="xs mut">Nurse App 1.0 · independiente de ASIRI La Boutique · diseño ASIRI Agencia</div></div>`;
+};
+
+/* ============ PORTAL FAMILIAR (solo lectura, enlace con PIN) ============ */
+routes.portal=([id])=>{
+ const p=P(id);if(!p)return `${back('Pacientes','#/pacientes')}${empty('Paciente no encontrada.')}`;
+ const pt=S.ui.portal||(S.ui.portal={});const cfg=pt[p.id]||(pt[p.id]={pin:newPin(),days:30,exp:addDays(today(),30),inf:true,cot:true,pay:true,rev:false});
+ save();
+ if(cfg.pin.length<6){cfg.pin=newPin();save()}setTimeout(async()=>{const a=$('#pview');if(a)a.href=await portalUrl(p)},0);
+ return `${back('Ficha','#/ficha/'+p.id)}<h2 style="margin:4px 0">Portal de ${esc((p.resp.name||'').split(' ')[0]||'la familia')}</h2><div class="sm mut">Acceso de solo lectura para ${esc(p.resp.name||'el responsable')} · vence ${fdate(cfg.exp)}</div>
+ <div class="col" style="margin-top:12px">
+ <div class="card col"><b>Acceso</b><div class="row"><button class="btn grow sm" data-act="pcopy" data-id="${p.id}">Copiar enlace</button><button class="btn sage grow sm" data-act="pwa" data-id="${p.id}">WhatsApp</button></div>
+ <div class="row sp"><span class="sm">PIN <b id="pinv">••••</b></span><button class="btn sec sm" data-act="pinshow" data-id="${p.id}">Mostrar</button></div>
+ <div class="row"><button class="btn sec sm grow" data-act="prenew" data-id="${p.id}">Renovar 30 días</button><button class="btn bad sm grow" data-act="prevoke" data-id="${p.id}">Cambiar PIN y revocar</button></div></div>
+ <div class="card col"><b>Qué puede ver</b>
+ ${[['inf','Informes en versión familiar','Solo los que tú apruebas'],['cot','Cotización','Con botón ACEPTO'],['pay','Pagos y datos de transferencia','']].map(r=>`<label class="row sp sm"><span>${r[1]}<br><span class="xs mut">${r[2]}</span></span><input type="checkbox" data-act="ptoggle" data-id="${p.id}" data-k="${r[0]}" style="width:26px;min-height:26px" ${cfg[r[0]]?'checked':''}></label>`).join('')}
+ <div class="row sp sm"><span>Versión clínica y ficha completa</span><span class="pill p-bad">Nunca</span></div></div>
+ <a class="btn sec" id="pview" href="#/portal/${p.id}" target="_blank" rel="noopener">Ver como lo ve ${esc((p.resp.name||'').split(' ')[0]||'la familia')}</a>
+ <div class="alert a-ok xs"><b>Privacidad:</b> lo que compartes viaja cifrado con el PIN de 6 dígitos. Sin el PIN, el enlace no muestra ni los nombres. Tras 3 intentos fallidos se bloquea unos segundos.</div><div class="alert a-warn xs"><b>Cómo funciona:</b> el enlace lleva una copia de lo que decidiste compartir, no un acceso a tu app. Para actualizarla, vuelve a enviar el enlace. El PIN es una barrera básica: no reenvíes el enlace. Para revocar, cambia el PIN y avisa a la familia (los enlaces viejos siguen leyéndose si alguien guardó el enlace y el PIN anterior; por eso el enlace vence).</div></div>`;
+};
+const PCACHE={};
+const toB=a=>{let t='';a.forEach(x=>t+=String.fromCharCode(x));return btoa(t).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')};
+const fromB=x=>Uint8Array.from(atob(x.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
+async function kdf(pin,salt){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pin),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:200000,hash:'SHA-256'},k,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
+async function sealPortal(payload,pin){const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));const key=await kdf(pin,salt);const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(JSON.stringify(payload))));return {v:2,vn:payload.vn,vr:payload.vr,e:payload.e,wa:payload.wa,s:toB(salt),i:toB(iv),c:toB(ct)}}
+async function openPortal(env,pin){const key=await kdf(pin,fromB(env.s));const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:fromB(env.i)},key,fromB(env.c));return JSON.parse(new TextDecoder().decode(pt))}
+const newPin=()=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return String(100000+a[0]%900000)};
+async function portalUrl(p){
+ const cfg=S.ui.portal[p.id];
+ const nx=S.appts.filter(a=>a.patientId===p.id&&a.status==='prog'&&(a.date+a.start)>=(today()+'00:00')).sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start));
+ const done=S.appts.filter(a=>a.patientId===p.id&&a.status==='hecha');
+ const rep=done.filter(a=>a.report?.approved||a.report?.sent).sort((a,b)=>(b.date+b.start).localeCompare(a.date+a.start))[0];
+ const q=S.quotes.filter(x=>x.patientId===p.id&&x.status!=='borrador').sort((a,b)=>b.date.localeCompare(a.date))[0];
+ const ch=S.charges.filter(c=>c.patientId===p.id&&c.status==='pend');
+ const total=nx.length+done.length;
+ const payload={v:1,rg:S.profile.reg,e:cfg.exp,pn:p.name.split(/[ ,]/)[0],fn:(p.resp.name||'').split(' ')[0],vn:S.profile.name,vr:S.profile.role,tg:S.profile.tagline,wa:S.profile.wa,
+  tx:p.indication?.text||'',nx:nx.slice(0,6).map(a=>({d:a.date,s:a.start,t:a.type})),dn:done.slice(-8).map(a=>({d:a.date,s:a.start})),tot:total,
+  rp:cfg.inf&&rep?{d:rep.date,s:rep.start,f:rep.report.family,o:rep.report.obs||''}:null,
+  q:cfg.cot&&q?{n:q.n,sv:q.servicio||q.modo,qty:q.qty,u:q.unit,t:qTotal(q),vd:addDays(q.date,q.valid),st:q.status}:null,
+  pg:cfg.pay?{ch:ch.map(c=>({c:c.concept,a:c.amount,d:c.due})),bank:S.profile.bank,email:S.profile.email}:null};
+ return location.href.split('#')[0]+'#/p/'+b64e(await sealPortal(payload,cfg.pin));
+}
+function portalRoute(code){
+ const app=$('#app');
+ let env;try{env=b64d(code.split('/')[0]);if(env.v!==2||!env.c)throw 0}catch(e){app.innerHTML=`<div class="alert a-bad" style="margin-top:30px">Este enlace no es válido. Pídele a Valeria que te envíe uno nuevo.</div>`;return}
+ if(env.e&&env.e<today()){app.innerHTML=`<div class="alert a-bad" style="margin-top:30px">Este enlace venció. Pídele a Valeria uno nuevo.</div>`;return}
+ const d=PCACHE[env.s];
+ if(!d){
+  document.title='Portal de la familia';
+  app.innerHTML=`<div class="col" style="padding-top:16px"><div class="row">${LOGO(52)}<div><b>${esc(env.vn)}</b><div class="xs mut">${esc(env.vr||'Enfermera')} · Portal de la familia</div></div></div>
+  <h1>Ingresa tu PIN</h1><p class="mut" style="margin:0">Es el PIN de 6 dígitos que ${esc(env.vn.split(' ')[0])} te entregó en persona. Hasta que lo escribas, este enlace no muestra ningún dato.</p>
+  <form class="card col" id="pinform"><label class="f">PIN<input id="pinin" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-describedby="pinerr" style="font-size:28px;letter-spacing:.4em;text-align:center"></label><div id="pinerr" class="alert a-bad hide" role="alert">PIN incorrecto.</div><button class="btn" type="submit" id="pinbtn">Entrar</button><a class="xs mut" href="${waLink(env.wa,'Hola, no tengo el PIN del portal')}" style="text-align:center;min-height:44px;display:flex;align-items:center;justify-content:center">No tengo el PIN</a></form>
+  <p class="xs mut">Enlace personal, vence el ${fdate(env.e)}. No lo reenvíes: solo tú y ${esc(env.vn.split(' ')[0])} deben ver esta información.</p></div>`;
+  $('#pinform').onsubmit=async ev=>{ev.preventDefault();
+   const err=$('#pinerr');let lk={n:0,until:0};try{lk=JSON.parse(sessionStorage.getItem('plk')||'{"n":0,"until":0}')}catch(e){}
+   if(Date.now()<lk.until){err.textContent='Demasiados intentos. Espera '+Math.ceil((lk.until-Date.now())/1000)+' segundos.';err.classList.remove('hide');return}
+   $('#pinbtn').disabled=true;
+   try{PCACHE[env.s]=await openPortal(env,$('#pinin').value.trim());try{sessionStorage.removeItem('plk')}catch(e){}portalRoute(code)}
+   catch(e){lk.n++;if(lk.n>=3)lk.until=Date.now()+30000*Math.pow(2,lk.n-3);try{sessionStorage.setItem('plk',JSON.stringify(lk))}catch(e2){}
+    err.textContent=lk.n>=3?'PIN incorrecto. Espera unos segundos antes de reintentar.':'PIN incorrecto.';err.classList.remove('hide');$('#pinbtn').disabled=false;$('#pinin').select()}
+  };
+  return;
+ }
+ document.title='Portal de la familia · '+d.vn;
+ const tab=code.split('/')[1]||'inicio';
+ const wa=t=>waLink(d.wa,t);
+ const nxt=d.nx[0];
+ const tabs=[['inicio','Inicio'],['informe','Informes'],['cuidado','Cuidado'],['pagos','Pagos'],['mensaje','Mensaje']];
+ let body='';
+ if(tab==='inicio'){
+  body=`<h1>Hola, ${esc(d.fn)}</h1><p class="mut" style="margin:0 0 10px">Así va el cuidado de ${esc(d.pn)}</p>
+  ${nxt?`<section class="navy"><span class="xs">Próxima visita</span><b class="big" style="font-size:26px;margin:4px 0">${fdate(nxt.d,true)} · ${nxt.s}</b><span class="xs">${esc(nxt.t)}</span><div class="row" style="margin-top:12px"><a class="btn amb grow" href="${wa('Hola '+d.vn.split(' ')[0]+', confirmo la visita de '+d.pn+' del '+fdate(nxt.d,true)+' a las '+nxt.s+'.')}">Confirmar</a><a class="btn sec grow" href="#/p/${code.split('/')[0]}/cuidado">Pedir cambio</a></div></section>`:'<div class="card">No hay visitas próximas.</div>'}
+  ${d.tot?`<section class="card"><b class="sm">Tratamiento · ${d.dn.length} de ${d.tot} visitas</b><div class="row" style="gap:4px;margin-top:8px">${[...Array(Math.min(d.tot,14))].map((_,i)=>`<i style="flex:1;height:10px;border-radius:5px;background:${i<d.dn.length?'var(--ok)':'#EFE7DC'}"></i>`).join('')}</div></section>`:''}
+  ${d.rp?`<section class="card"><div class="row sp"><b class="sm">Último informe · ${fdate(d.rp.d)}</b><a class="sm" style="text-decoration:underline;min-height:44px;display:flex;align-items:center" href="#/p/${code.split('/')[0]}/informe">Leer ›</a></div><p class="sm mut" style="margin:4px 0 0">${esc(d.rp.f.slice(0,160))}${d.rp.f.length>160?'…':''}</p></section>`:''}
+  ${d.pg&&d.pg.ch.length?`<section class="card row sp"><div><b class="sm">Pago pendiente</b><div class="xs mut">Vence ${fdate(d.pg.ch[0].d)}</div></div><b>${clp(d.pg.ch.reduce((s,c)=>s+c.a,0))}</b></section>`:''}
+  <p class="xs mut" style="text-align:center">En una emergencia llama al 131 (SAMU), no uses este portal.</p>`;
+ }else if(tab==='informe'){
+  body=`<h2>Informe del turno</h2>${d.rp?`<div class="mut sm">${fdate(d.rp.d,true)} · ${d.rp.s} · ${esc(d.vn)}</div><div class="paper" style="margin-top:10px"><span class="pill p-ok">Versión familiar · aprobada por ${esc(d.vn.split(' ')[0])}</span><p>${esc(d.rp.f)}</p>${d.rp.o?`<div class="eyebrow">Qué observar en casa</div><p>${esc(d.rp.o)}</p>`:''}<div class="alert a-bad xs">Sangrado abundante o falta de aire: llama al 131.</div></div><div class="row" style="margin-top:10px"><a class="btn grow" href="${wa('Recibido el informe del '+fdate(d.rp.d)+'. Gracias.')}">Recibido</a><a class="btn sec grow" href="${wa('Hola, tengo una duda sobre el informe del '+fdate(d.rp.d)+': ')}">Tengo una duda</a></div>`:'<div class="card">Aún no hay informes compartidos.</div>'}`;
+ }else if(tab==='cuidado'){
+  body=`<h2>Cuidado</h2><p class="sm mut">${esc(d.tx||'')}</p>${d.nx.map((n,i)=>`<div class="card row sp" style="margin-bottom:8px"><div><b>${fdate(n.d,true)} · ${n.s}</b><div class="xs mut">${esc(n.t)}</div></div><a class="btn sage sm" href="${wa('Hola, ¿podemos cambiar la visita del '+fdate(n.d,true)+' de las '+n.s+'? Me acomodaría: ')}">Pedir cambio</a></div>`).join('')||'<div class="card">Sin visitas próximas.</div>'}<p class="xs mut">${esc(d.vn.split(' ')[0])} revisa tu solicitud y te confirma por WhatsApp. Hasta entonces la visita sigue a la hora original. Solo ves tus horas; la agenda completa es privada.</p>`;
+ }else if(tab==='pagos'){
+  body=`<h2>Pagos</h2>${d.q?`<div class="card col"><b>Cotización N° ${esc(d.q.n)}</b><div class="sm mut">${esc(d.q.sv)} · ${d.q.qty} × ${clp(d.q.u)}</div><div class="row sp"><span class="sm">Total</span><b style="font-size:22px">${clp(d.q.t)}</b></div><div class="xs mut">Válida hasta ${fdate(d.q.vd)} · tarifas según indicación médica vigente.</div>${d.q.st==='aceptada'?'<span class="pill p-ok">Aceptada</span>':`<a class="btn" href="${wa('ACEPTO la cotización N° '+d.q.n+' por '+clp(d.q.t)+' de '+d.vn.split(' ')[0]+'. Autorizo que los informes se envíen a '+d.fn+'.')}">ACEPTO</a><a class="btn sec" href="${wa('Tengo una pregunta sobre la cotización N° '+d.q.n+': ')}">Tengo una pregunta</a>`}</div>`:''}
+  ${d.pg?`${d.pg.ch.map(c=>`<div class="card row sp" style="margin-top:8px"><div><b class="sm">${esc(c.c)}</b><div class="xs mut">Vence ${fdate(c.d)}</div></div><b>${clp(c.a)}</b></div>`).join('')||'<div class="card" style="margin-top:8px">Sin pagos pendientes.</div>'}
+  ${d.pg.bank?`<div class="card" style="margin-top:8px"><b class="sm">Datos para transferir</b><div class="sm" style="white-space:pre-line;margin-top:6px">${esc(d.pg.bank)}</div></div>`:''}
+  <a class="btn" style="margin-top:10px" href="${wa('Hola, ya transferí. Te envío el comprobante por aquí.')}">Avisar que ya transferí</a><p class="xs mut">${esc(d.vn.split(' ')[0])} confirma el pago y te envía la boleta de honorarios. Guárdala junto a la indicación médica para pedir el reembolso.</p>`:'<div class="card">Los pagos no están compartidos.</div>'}`;
+ }else{
+  const temas=['Duda sobre el informe','Cambiar una hora',d.pn+' se siente distinta','Pago o boleta'];
+  const cur=sessionStorage.getItem('pm')||temas[0];
+  body=`<h2>Escribir a ${esc(d.vn.split(' ')[0])}</h2><div class="alert a-bad" style="margin:8px 0"><b>Emergencia:</b> llama al 131 (SAMU). Este portal no es un canal de urgencia.</div>
+  <div class="row" style="flex-wrap:wrap">${temas.map(t=>`<button class="chip ${cur===t?'on':''}" data-pm="${esc(t)}">${esc(t)}</button>`).join('')}</div>
+  <label class="f" style="margin-top:10px">Tu mensaje<textarea id="pmsg">Hola ${esc(d.vn.split(' ')[0])}, ${esc(cur.toLowerCase())}: </textarea></label>
+  <a class="btn full" id="pmwa" style="margin-top:10px" href="${wa('Hola')}">Abrir en WhatsApp</a><p class="xs mut">Se abre tu WhatsApp con el mensaje listo. La conversación queda en tu teléfono, no en el portal.</p>`;
+ }
+ app.innerHTML=`<div class="row" style="margin-bottom:10px">${LOGO(40)}<div><b class="sm">${esc(d.vn)}</b><div class="xs mut">${esc(d.tg||d.vr)}</div></div></div>${body}
+ <div class="pfoot"><b>${esc(d.vn)}</b><br>Enfermera · Reg. N° ${esc(d.rg||'')}<br><i>${esc(d.tg||'')}</i></div>
+ <nav class="tabs" aria-label="Portal">${tabs.map(t=>`<a href="#/p/${code.split('/')[0]}/${t[0]}" class="${tab===t[0]?'on':''}" ${tab===t[0]?'aria-current="page"':''}>${t[1]}</a>`).join('')}</nav>`;
+ if(tab==='mensaje'){
+  const upd=()=>{$('#pmwa').href=wa($('#pmsg').value)};$('#pmsg').oninput=upd;upd();
+  app.querySelectorAll('[data-pm]').forEach(b=>b.onclick=()=>{sessionStorage.setItem('pm',b.dataset.pm);portalRoute(code)});
+ }
+}
+
+/* ============ eventos ============ */
+let recog=null;
+function dictate(targetSel,cb){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('Tu navegador no dicta por voz');return}
+ if(recog){try{recog.stop()}catch(e){}recog=null;return}
+ recog=new SR();recog.lang='es-CL';recog.interimResults=false;recog.maxAlternatives=1;
+ recog.onresult=e=>{const txt=e.results[0][0].transcript;cb(txt)};
+ recog.onerror=e=>{toast(e.error==='not-allowed'?'Permite el micrófono para dictar':'No te escuché bien, intenta de nuevo')};
+ recog.onend=()=>{recog=null;const b=$('#micbtn');if(b)b.style.outline=''};
+ try{recog.start();const b=$('#micbtn');if(b)b.style.outline='3px solid var(--bad)'}catch(e){recog=null}
+}
+function startVisit(id){
+ const a=A(id);if(!a)return;
+ if(a.status==='prog'){const cf=S.appts.find(x=>x.status==='curso'&&x.id!==id);if(cf){toast('Ya tienes una visita en curso');location.hash='#/visita/'+cf.id;return}
+  a.status='curso';a.record=a.record||{};a.record.start=new Date().toISOString();save()}
+ location.hash='#/visita/'+id;
+}
+function usePhrase(txt){S.ui.voz=parsePhrase(txt);save();route()}
+document.addEventListener('click',async ev=>{
+ const el=ev.target.closest('[data-act]');
+ if(ev.target.closest('[data-stop]')&&!el)return;
+ if(!el)return;
+ if(el.dataset.act==='closesheet'&&ev.target.closest('[data-stop]')&&!ev.target.closest('button[data-act="closesheet"]'))return;
+ const act=el.dataset.act,id=el.dataset.id;
+ switch(act){
+ case 'closesheet':closeSheet();break;
+ case 'menu':sheet(`<h2>Más</h2><div class="col" style="margin-top:12px"><a class="btn sec" href="#/panel">Panel comercial</a><a class="btn sec" href="#/embudo">Embudo de clientes</a><a class="btn sec" href="#/disponibilidad">Horas disponibles</a><a class="btn sec" href="#/voz">Agendar por voz</a><a class="btn sec" href="#/ajustes">Ajustes y respaldo</a></div>`);break;
+ case 'demo':if(S.patients.length&&!await ask('Esto reemplaza lo que tengas. ¿Cargar datos de ejemplo?'))break;demo();toast('Datos de ejemplo cargados');route();break;
+ case 'cleardemo':if(await ask('Se quitan los datos de ejemplo. Tu perfil y ajustes se mantienen. ¿Continuar?')){const k=S.profile,tf=S.tarifas,hr=S.horario;S=DEFAULTS();S.profile=k;S.tarifas=tf;S.horario=hr;saveNow();toast('Listo, parte con tu primera paciente');route()}break;
+ case 'wipe':if(await ask('Se borrarán TODAS tus pacientes, citas y cobros de este teléfono. ¿Seguro?')&&await ask('Última confirmación: no se puede deshacer.')){const k=S.profile,tf=S.tarifas,hr=S.horario;S=DEFAULTS();S.profile=k;S.tarifas=tf;S.horario=hr;saveNow();toast('Datos borrados');location.hash='#/hoy';route()}break;
+ case 'start':startVisit(id);break;
+ case 'aptopen':{const a=A(id);if(!a)break;if(a.status==='hecha'&&a.report)location.hash='#/informe/'+a.id;else if(a.status==='curso')location.hash='#/visita/'+a.id;else apptForm(a)}break;
+ case 'agpick':S.ui.agDate=el.dataset.d;if(el.dataset.mode)S.ui.agMode=el.dataset.mode;save();route();break;
+ case 'agmode':S.ui.agMode=el.dataset.m;save();route();break;
+ case 'agshift':S.ui.agDate=addDays(S.ui.agDate||today(),Number(el.dataset.n));save();route();break;
+ case 'newappt':apptForm(null,el.dataset.pat?{patientId:el.dataset.pat}:null);break;
+ case 'usesug':{const f=el.closest('form');f.elements.date.value=el.dataset.d;f.elements.start.value=el.dataset.s;f.querySelector('#confbox').innerHTML='<div class="alert a-ok">Hora cambiada. Guarda para confirmar.</div>';break}
+ case 'forceappt':saveAppt(el.closest('form'),true);break;
+ case 'cancelappt':if(await ask('¿Cancelar esta atención?')){A(id).status='cancel';save();closeSheet();route();toast('Atención cancelada')}break;
+ case 'mic':dictate('#phr',t=>{$('#phr').value=t;usePhrase(t)});break;
+ case 'dictnote':dictate('#nota',t=>{const n=$('#nota');n.value=(n.value?n.value+' ':'')+t});break;
+ case 'vozsug':{const v=S.ui.voz;v.date=el.dataset.d;v.time=el.dataset.s;save();route();break}
+ case 'vozfix':{const v=S.ui.voz;v.patient=P($('#vp').value);v.date=$('#vd').value;v.time=$('#vt').value;v.ok=!!(v.patient&&v.date&&v.time);v.notes=v.notes.filter(n=>!/reconoc|entendí el día|entendí la hora/.test(n));save();route();break}
+ case 'vozclear':S.ui.voz=null;save();route();break;
+ case 'vozok':{const v=S.ui.voz;if(!v?.ok)break;if(conflicts(v.date,v.time,v.dur,v.travel).length){toast('Hay un choque, elige otra hora');break}
+  S.appts.push({id:uid(),patientId:v.patient.id,type:v.type,date:v.date,start:v.time,dur:v.dur,travel:v.travel,price:v.price,status:'prog',zone:v.patient.zone,record:null,report:null});
+  S.ui.voz=null;S.ui.agDate=v.date;save();toast('Turno agendado');location.hash='#/agenda';break}
+ case 'newpat':patForm();break;
+ case 'editpat':patForm(P(id));break;
+ case 'delpat':if(await ask('¿Eliminar esta paciente y todo su historial?')){S.patients=S.patients.filter(p=>p.id!==id);S.appts=S.appts.filter(a=>a.patientId!==id);S.charges=S.charges.filter(c=>c.patientId!==id);S.quotes=S.quotes.filter(q=>q.patientId!==id);save();closeSheet();location.hash='#/pacientes';route()}break;
+ case 'ftab':S.ui.ftab=el.dataset.t;save();route();break;
+ case 'consent':{const p=P(id);if(p.consent){if(await ask('¿Anular el consentimiento? Se bloqueará el envío de informes.')){p.consent=null}}else{if(!p.resp.name||!p.resp.phone){toast('Primero anota el responsable y su WhatsApp');patForm(p);break}if(await ask('¿Confirmas que '+p.resp.name+' firmó la autorización para recibir informes?')){p.consent={date:today()}}}save();route();break}
+ case 'recipe':break;
+ case 'imode':S.ui.imode=el.dataset.m;save();route();break;
+ case 'sendrpt':{const a=A(id),p=P(a.patientId);const ok=$('#chk4');if(!ok?.checked||!p.consent){toast('Confirma el número y el consentimiento');break}
+  const rp=a.report;rp.approved=true;rp.sent=true;rp.sentAt=new Date().toISOString();save();
+  const msg=`Hola ${p.resp.name.split(' ')[0]}, te cuento cómo estuvo ${p.name.split(/[ ,]/)[0]} hoy.\n\n${rp.family}\n\n${rp.obs||''}\n\n${S.profile.name} · Enfermera\n${S.profile.tagline}\n(En una emergencia llama al 131)`;
+  window.open(waLink(p.resp.phone,msg),'_blank','noopener');route();break}
+ case 'printrpt':case 'printq':window.print();break;
+ case 'remind':{const c=S.charges.find(x=>x.id===id),p=P(c.patientId);const dd=Math.round((pISO(c.due)-pISO(today()))/864e5);
+  const msg=`Hola ${(p.resp.name||p.name).split(' ')[0]}, te escribo por el pago de ${c.concept} (${clp(c.amount)}), ${dd<0?'que venció hace '+(-dd)+' día'+(dd===-1?'':'s'):dd===0?'que vence hoy':'que vence el '+fdate(c.due)}.${S.profile.bank?'\nDatos para transferir:\n'+S.profile.bank:''}\nGracias. ${S.profile.name}`;
+  if(!p.resp.phone){toast('Falta el WhatsApp en la ficha');break}window.open(waLink(p.resp.phone,msg),'_blank','noopener');break}
+ case 'pay':{const c=S.charges.find(x=>x.id===id);if(await ask('¿Registrar el pago de '+clp(c.amount)+'?')){c.status='pagado';c.paidAt=today();const l=S.leads.find(x=>x.patientId===c.patientId&&x.stage===4);if(l)l.stage=5;save();route();toast('Pago registrado')}break}
+ case 'boleta':boletaSheet(id);break;
+ case 'copy':try{await navigator.clipboard.writeText(el.dataset.t);toast('Copiado')}catch(e){toast('No se pudo copiar')}break;
+ case 'newcharge':sheet(`<h2>Nuevo cobro</h2><form class="col" data-form="charge" style="margin-top:12px" novalidate><label class="f">Paciente<select name="patientId" required><option value="">Elige…</option>${S.patients.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></label><label class="f">Concepto<input name="concept" required placeholder="Turno 4 h"></label><div class="row"><label class="f grow">Monto<input type="number" name="amount" min="1" step="500" required></label><label class="f grow">Vence<input type="date" name="due" value="${addDays(today(),7)}" required></label></div><div id="confbox"></div><div class="row"><button class="btn grow" type="submit">Guardar</button><button class="btn sec" type="button" data-act="closesheet">Cancelar</button></div></form>`);break;
+ case 'qmodo':{const d=S.ui.qdraft;d.modo=el.dataset.m;d.unit=S.tarifas[el.dataset.k]||d.unit;if(d.modo==='Turno por horas'){d.qty=4;d.dur=240}else{d.dur=30;if(d.modo==='Visita de procedimiento')d.qty=Math.min(d.qty,14)}save();route();break}
+ case 'qsend':{const q=Q(id),p=P(q.patientId);
+  if(q.status==='borrador'){q.status='enviada';q.date=today();
+   // reserva tentativa
+   (q.slots||[]).forEach(s=>{if(!conflicts(s.date,s.start,q.dur||30,15).length)S.appts.push({id:uid(),patientId:q.patientId,type:(q.servicio||q.modo)+' (tentativa)',date:s.date,start:s.start,dur:q.dur||30,travel:15,price:q.unit,status:'prog',tent:q.id,zone:q.zone,record:null,report:null})});
+   if(!S.leads.find(l=>l.patientId===q.patientId&&l.stage===1))S.leads.push({id:uid(),name:p.name,need:q.servicio||q.modo,source:p.source,stage:1,amount:qTotal(q),note:'Enviada hoy',patientId:q.patientId});
+   save()}
+  const msg=`Hola ${(q.resp||'').split(' ')[0]}, te envío la cotización N° ${q.n} para ${p.name.split(/[ ,]/)[0]}:\n${q.servicio||q.modo}\n${q.qty} × ${clp(q.unit)} = ${clp(qTotal(q))}\nVigente hasta el ${fdate(addDays(q.date,q.valid))}.${q.slots?.length?'\nHoras propuestas: '+q.slots.map(s=>fdate(s.date)+' '+s.start).join(', '):''}\nPara reservar responde ACEPTO.\n${S.profile.name} · Enfermera`;
+  window.open(waLink(p.resp.phone,msg),'_blank','noopener');route();break}
+ case 'qaccept':{const q=Q(id);q.status='aceptada';
+  S.appts.filter(a=>a.tent===q.id).forEach(a=>{a.type=a.type.replace(' (tentativa)','');delete a.tent});
+  if(!S.charges.find(c=>c.quoteId===q.id))S.charges.push({id:uid(),patientId:q.patientId,quoteId:q.id,concept:(q.servicio||q.modo)+' · cotización '+q.n,amount:qTotal(q),due:addDays(today(),7),status:'pend',boleta:''});
+  const l=S.leads.find(x=>x.patientId===q.patientId&&x.stage===1);if(l){l.stage=2;l.note='Falta agendar las horas';if(q.slots?.length)l.note=''}
+  save();route();toast('Cotización aceptada');break}
+ case 'qdel':if(await ask('¿Eliminar la cotización? Se liberan las horas tentativas.')){S.appts=S.appts.filter(a=>a.tent!==id);S.quotes=S.quotes.filter(q=>q.id!==id);save();location.hash='#/cotizar'}break;
+ case 'efilter':S.ui.efilter=el.dataset.f;save();route();break;
+ case 'newlead':leadForm();break;
+ case 'ledit':leadForm(S.leads.find(l=>l.id===id));break;
+ case 'ldel':if(await ask('¿Eliminar este cliente del embudo?')){S.leads=S.leads.filter(l=>l.id!==id);save();closeSheet();route()}break;
+ case 'lmove':{const l=S.leads.find(x=>x.id===id);l.stage=Math.max(0,Math.min(STAGES.length-1,l.stage+Number(el.dataset.n)));save();route();break}
+ case 'dispwk':S.ui.dispThis=el.dataset.v==='1';save();route();break;
+ case 'dlcard':downloadCard();break;
+ case 'dispvar':S.ui.dispVar=el.dataset.v;save();route();break;
+ case 'copyavail':try{await navigator.clipboard.writeText(availText());toast('Texto copiado')}catch(e){toast('No se pudo copiar')}break;
+ case 'pcopy':{const p=P(id);await ensurePin(p);try{await navigator.clipboard.writeText(await portalUrl(p));toast('Enlace copiado')}catch(e){toast('No se pudo copiar')}break}
+ case 'pwa':{const p=P(id);if(!p.resp.phone){toast('Falta el WhatsApp del responsable');break}await ensurePin(p);const cfg=S.ui.portal[p.id];window.open(waLink(p.resp.phone,`Hola ${p.resp.name.split(' ')[0]}, este es tu enlace personal para seguir el cuidado de ${p.name.split(/[ ,]/)[0]}. Vence el ${fdate(cfg.exp)}. El PIN te lo entrego en persona.\n${await portalUrl(p)}`),'_blank','noopener');break}
+ case 'pinshow':{const b=$('#pinv'),cfg=S.ui.portal[id];b.textContent=b.textContent==='••••'?cfg.pin:'••••';break}
+ case 'prenew':{const cfg=S.ui.portal[id];cfg.exp=addDays(today(),30);save();route();toast('Renovado 30 días')}break;
+ case 'prevoke':{if(await ask('Se genera un PIN nuevo. El enlace anterior deja de abrir con el PIN viejo.')){const cfg=S.ui.portal[id];cfg.pin=newPin();save();route();toast('PIN nuevo generado')}break}
+ case 'export':{const b=new Blob([JSON.stringify(S)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='nurse-app-respaldo-'+today()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);S.lastBackup=Date.now();save();toast('Respaldo descargado');if(location.hash==='#/hoy')route();break}
+ case 'install':if(window._bip){window._bip.prompt();window._bip=null}break;
+ }
+});
+document.addEventListener('change',async ev=>{
+ const el=ev.target;
+ if(el.dataset.act==='recipe'){const f=el.files[0];if(!f)return;const p=P(el.dataset.id);p.indication=p.indication||{};p.indication.photo=await shrink(f);p.indication.date=today();save();route();toast('Foto guardada')}
+ else if(el.dataset.act==='import'){const f=el.files[0];if(!f)return;try{const o=JSON.parse(await f.text());if(!o.patients||!o.appts)throw 0;if(!await ask('Esto reemplaza tus datos actuales por el respaldo. ¿Continuar?'))return;S=Object.assign(DEFAULTS(),o);saveNow();toast('Respaldo restaurado');route()}catch(e){toast('Ese archivo no es un respaldo válido')}}
+ else if(el.dataset.act==='dispphoto'){const f=el.files[0];if(!f)return;S.ui.dispPhoto=await shrink(f);save();loadDispImg();route();toast('Foto lista')}
+ else if(el.dataset.act==='ptoggle'){const cfg=S.ui.portal[el.dataset.id];cfg[el.dataset.k]=el.checked;save()}
+});
+document.addEventListener('input',ev=>{
+ const el=ev.target;
+ if(el.id==='pq'){S.ui.pq=el.value;const pos=el.selectionStart;route();const n=$('#pq');if(n){n.focus();n.setSelectionRange(pos,pos)}}
+ else if(el.id==='chk4'){$('#sendrpt').disabled=!el.checked}
+ else if(el.dataset.act==='rptedit'){const a=A(el.dataset.id);a.report[el.dataset.m==='fam'?'family':'clinical']=el.value;a.report.approved=false;save();const pp=$('#rptpaper p');if(pp)pp.textContent=el.value}
+ else if(el.dataset.act==='rptobs'){const a=A(el.dataset.id);a.report.obs=el.value;save()}
+ else if(el.closest('form[data-form="visit"]')&&['pa','fc','temp','sat'].includes(el.name)){vitWarn(el.closest('form'));const a=A(el.closest('form').dataset.id);a.record=a.record||{};a.record.nota=el.form.elements.nota.value;save()}
+ else if(el.closest('form[data-form="quote"]')&&el.dataset.live){syncQuote(el.closest('form'),false)}
+});
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape')closeSheet();if((ev.key==='Enter'||ev.key===' ')&&ev.target.matches('.apt[tabindex]')){ev.preventDefault();ev.target.click()}});
+function syncQuote(f,rerender){
+ const d=S.ui.qdraft;const o=Object.fromEntries(new FormData(f));
+ Object.assign(d,{patientId:o.patientId,servicio:o.servicio,qty:Number(o.qty)||0,unit:Number(o.unit)||0,zone:o.zone,valid:Number(o.valid)||7,disc:Number(o.disc)||0,startDate:o.startDate,hour:o.hour,dur:Number(o.dur)||30});
+ if(o.patientId&&!d.zone)d.zone=P(o.patientId)?.zone||'';
+ save();
+ if(rerender!==false||true){const ae=document.activeElement;const nm=ae&&ae.name;const pos=ae&&ae.selectionStart;const t=ae&&ae.type;route();if(nm){const n=document.querySelector(`[name="${nm}"]`);if(n){n.focus();try{if(!['date','time','number'].includes(t))n.setSelectionRange(pos,pos)}catch(e){}}}}
+}
+document.addEventListener('submit',async ev=>{
+ const f=ev.target.closest('form[data-form]');if(!f)return;ev.preventDefault();
+ const kind=f.dataset.form;const o=Object.fromEntries(new FormData(f));const box=f.querySelector('#confbox');
+ const bad=m=>{if(box)box.innerHTML=`<div class="alert a-bad" role="alert">${m}</div>`};
+ switch(kind){
+ case 'appt':saveAppt(f,false);break;
+ case 'phrase':if(!o.txt.trim()){toast('Escribe o dicta una frase');break}usePhrase(o.txt);break;
+ case 'pat':{if(!o.name.trim())return bad('Falta el nombre.');
+  const risks=o.risks.split(',').map(x=>x.trim()).filter(Boolean);
+  const data={name:o.name.trim(),age:Number(o.age)||0,zone:o.zone.trim(),svc:o.svc,source:o.source,resp:{name:o.rname.trim(),rel:o.rrel.trim(),phone:o.rphone.trim()},risks,notes:o.notes.trim()};
+  if(o.id){const p=P(o.id);Object.assign(p,data);p.indication=Object.assign(p.indication||{},{text:o.ind.trim()})}
+  else{S.patients.push(Object.assign({id:uid(),consent:null,phase:'consulta',indication:{text:o.ind.trim(),date:today()}},data))}
+  save();closeSheet();toast('Paciente guardada');route();break}
+ case 'visit':closeVisit(f);break;
+ case 'boleta':{const c=S.charges.find(x=>x.id===f.dataset.id);const n=o.n.trim();if(!/^\d+$/.test(n)){toast('El N° debe ser numérico');break}c.boleta=n;if(!/^Boleta N°/.test(c.concept))c.concept='Boleta N° '+n+' · '+c.concept;S.counters.boleta=Math.max(S.counters.boleta,Number(n));save();closeSheet();route();toast('Boleta registrada');break}
+ case 'charge':{if(!o.patientId||!o.concept.trim()||!(Number(o.amount)>0))return bad('Completa paciente, concepto y monto.');S.charges.push({id:uid(),patientId:o.patientId,concept:o.concept.trim(),amount:Number(o.amount),due:o.due,status:'pend',boleta:''});save();closeSheet();route();toast('Cobro creado');break}
+ case 'quote':{syncQuote(f,false);const d=S.ui.qdraft;
+  if(!d.patientId)return bad('Elige la paciente.');if(!d.servicio.trim())return bad('Describe el servicio.');if(!(d.qty>0)||!(d.unit>=0))return bad('Revisa cantidad y valor.');
+  const p=P(d.patientId);S.counters.quote++;
+  const q={id:uid(),n:pad4(S.counters.quote),patientId:d.patientId,resp:p.resp.name,modo:d.modo,servicio:d.servicio.trim(),qty:d.qty,unit:d.unit,disc:d.disc,zone:d.zone,valid:d.valid,status:'borrador',date:today(),dur:d.dur,slots:tentSlots(d)};
+  S.quotes.push(q);S.ui.qdraft=null;save();location.hash='#/cotizacion/'+q.id;break}
+ case 'lead':{if(!o.name.trim())return bad('Falta el nombre.');const data={name:o.name.trim(),need:o.need.trim(),source:o.source,amount:Number(o.amount)||0,stage:Number(o.stage),note:o.note.trim()};if(o.id)Object.assign(S.leads.find(l=>l.id===o.id),data);else S.leads.push(Object.assign({id:uid()},data));save();closeSheet();route();break}
+ case 'settings':{
+  Object.assign(S.profile,{name:o.name.trim()||S.profile.name,reg:o.reg.trim(),rut:o.rut.trim(),wa:o.wa.trim(),email:o.email.trim(),ig:o.ig.trim(),bank:o.bank.trim(),meta:Number(o.meta)||0});
+  Object.assign(S.tarifas,{visita:Number(o.visita)||0,turnoHora:Number(o.turnoHora)||0,pack:Number(o.pack)||0});
+  const dias=new FormData(f).getAll('dias').map(Number);
+  if(toMin(o.fin)<=toMin(o.ini))return bad('El horario de término debe ser posterior al de inicio.');
+  Object.assign(S.horario,{ini:o.ini,fin:o.fin,almIni:o.almIni,almFin:o.almFin,dias});save();toast('Ajustes guardados');break}
+ }
+});
+const pad4=n=>String(n).padStart(4,'0');
+async function ensurePin(p){}
+function shrink(file){return new Promise(res=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.6))};im.onerror=()=>res('');im.src=r.result};r.readAsDataURL(file)})}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window._bip=e;const b=$('#installbtn');if(b)b.style.display=''});
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+window.NURSE={PCACHE,openPortal,get S(){return S},set S(v){S=v},route,conflicts,suggest,parsePhrase,qTotal,freeWindows,today,addDays,genFamily,tentSlots,startVisit,closeVisit,waLink,demo,DEFAULTS,saveNow,b64e,b64d,portalUrl,sha,A,P,loadOf,dayAppts};
+loadDispImg();
+route();
+</script>
