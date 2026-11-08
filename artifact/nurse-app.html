@@ -255,6 +255,7 @@ function route(){
  const act=({hoy:'hoy',agenda:'agenda',pacientes:'pac',ficha:'pac',cobros:'cobros',cotizar:'cot',cotizacion:'cot'})[name]||'';
  nav(act);
  try{app.innerHTML=fn(parts.slice(1))}catch(e){console.error(e);app.innerHTML=`<div class="alert a-bad">Algo falló al abrir esta pantalla. Tus datos están a salvo. <a href="#/hoy" style="text-decoration:underline">Volver al inicio</a></div>`}
+ try{hydrateMedia()}catch(e){}
  document.title=(({hoy:'Hoy',agenda:'Agenda',pacientes:'Pacientes',ficha:'Ficha',cobros:'Cobros',cotizar:'Cotizar',embudo:'Clientes',panel:'Panel',visita:'Visita en curso',informe:'Informe',disponibilidad:'Disponibilidad',ajustes:'Ajustes',voz:'Agendar'})[name]||'Nurse App')+' · Nurse App';
  window.scrollTo(0,0);
 }
@@ -574,7 +575,8 @@ routes.visita=([id])=>{
  <label class="f">Nota para el informe<textarea name="nota" id="nota" placeholder="Dicta una nota para el informe…">${esc(r.nota||'')}</textarea></label>
  ${('webkitSpeechRecognition' in window||'SpeechRecognition' in window)?'<button type="button" class="btn sec" data-act="dictnote">🎙 Dictar nota</button>':''}
  <button class="btn full" style="min-height:54px;font-size:16px" type="submit">Cerrar visita y generar informe</button>
- </form>`;
+ </form>
+ ${mediaCard(a)}`;
 };
 function tickTimer(){const t=$('#timer');if(!t)return;const m=location.hash.match(/#\/visita\/(\w+)/);if(!m)return;const a=A(m[1]);if(!a?.record?.start)return;const sec=Math.max(0,Math.floor((Date.now()-new Date(a.record.start).getTime())/1000));t.textContent='En curso · '+pad(Math.floor(sec/60))+':'+pad(sec%60)}
 setInterval(tickTimer,1000);
@@ -621,6 +623,57 @@ function closeVisit(f){
  save();toast('Visita cerrada');location.hash='#/informe/'+a.id;
 }
 
+/* ============ EVIDENCIA (fotos y videos por paciente) ============ */
+const MDB={db:null,open(){return this.db||(this.db=new Promise((res,rej)=>{const r=indexedDB.open('nurse-media',1);r.onupgradeneeded=()=>r.result.createObjectStore('m');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}))},
+ async tx(mode,fn){const db=await this.open();return new Promise((res,rej)=>{const t=db.transaction('m',mode);const out=fn(t.objectStore('m'));t.oncomplete=()=>res(out&&out.result);t.onerror=()=>rej(t.error)})},
+ put(k,b){return this.tx('readwrite',s=>s.put(b,k))},get(k){return this.tx('readonly',s=>s.get(k))},del(k){return this.tx('readwrite',s=>s.delete(k))}};
+function imgBlob(f,max=1280,q=.72){return new Promise((res,rej)=>{const u=URL.createObjectURL(f);const im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>b?res(b):rej('blob'),'image/jpeg',q)};im.onerror=()=>{URL.revokeObjectURL(u);rej('img')};im.src=u})}
+const slug=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'');
+function mediaName(p,a,i,ty){const ext=/mp4/.test(ty)?'mp4':/quicktime/.test(ty)?'mov':/webm/.test(ty)?'webm':'jpg';return slug(p.name)+'_'+a.date+'_'+String(i).padStart(2,'0')+'.'+ext}
+function mediaCard(a){
+ const p=P(a.patientId);const first=esc(p.name.split(/[ ,]/)[0]);
+ return `<section class="card col noprint" id="mediabox" data-appt="${a.id}"><div class="row sp"><b>Evidencia para la familia</b><span class="xs mut">fotos y videos</span></div>
+ <div class="xs mut">Pide permiso a la familia antes de fotografiar o grabar. Quedan en este teléfono hasta que los guardes en la carpeta de ${first} en Drive.</div>
+ <div id="mgrid" class="row" style="flex-wrap:wrap;gap:8px"></div>
+ <label class="btn sec" style="cursor:pointer">+ Foto o video<input type="file" accept="image/*,video/*" multiple data-act="mediaadd" data-id="${a.id}" hidden></label>
+ <div class="row"><button type="button" class="btn sec grow" data-act="mediadrive" data-id="${a.id}">Guardar todo en Drive</button><button type="button" class="btn cta grow" data-act="mediafam" data-id="${a.id}">Enviar a la familia</button></div>
+ <label class="f">Carpeta Drive para la familia de ${first} (enlace)<input data-act="drivelink" data-id="${p.id}" inputmode="url" value="${esc(p.drive||'')}" placeholder="https://drive.google.com/drive/folders/…"></label>
+ <div class="xs mut">«Guardar todo» es tu registro privado. «Enviar a la familia» manda solo lo marcado con «Mostrar a la familia» (elige WhatsApp o Drive). La carpeta para la familia debe tener solo lo que ellos pueden ver; el enlace aparece en su portal con PIN.</div></section>`;
+}
+let MURLS=[];
+async function hydrateMedia(){
+ MURLS.forEach(u=>URL.revokeObjectURL(u));MURLS=[];
+ const box=$('#mediabox');if(!box)return;const a=A(box.dataset.appt);if(!a)return;
+ let h='';
+ for(const m of (a.media||[])){let u='';try{const b=await MDB.get(m.id);if(b){u=URL.createObjectURL(b);MURLS.push(u)}}catch(e){}
+  h+=`<div style="width:calc(50% - 4px);border:1px solid #EBDFCB;border-radius:12px;padding:6px;display:flex;flex-direction:column;gap:6px">${u?(m.t==='v'?`<video src="${u}" muted preload="metadata" playsinline controls style="width:100%;border-radius:8px;max-height:140px"></video>`:`<img src="${u}" alt="Foto de la visita" style="width:100%;height:110px;object-fit:cover;border-radius:8px">`):'<div class="xs mut" style="height:110px;display:flex;align-items:center;justify-content:center;text-align:center">No está en este teléfono</div>'}
+  <input data-act="mcap" data-id="${a.id}" data-m="${m.id}" value="${esc(m.cap||'')}" placeholder="Qué muestra (opcional)" maxlength="80" style="min-height:40px">
+  <label class="row xs"><input type="checkbox" data-act="mfam" data-id="${a.id}" data-m="${m.id}" style="width:22px;min-height:22px" ${m.fam?'checked':''}> Mostrar a la familia</label>
+  <button type="button" class="btn sec sm" data-act="mediadel" data-id="${a.id}" data-m="${m.id}">Quitar</button></div>`}
+ const g=$('#mgrid');if(g)g.innerHTML=h||'<div class="xs mut">Aún no hay fotos ni videos de esta visita.</div>';
+}
+async function addMedia(a,files){
+ a.media=a.media||[];let n=0;
+ for(const f of files){
+  try{const isV=/^video\//.test(f.type);
+   if(isV&&f.size>80*1048576){toast('Video muy pesado (máx. 80 MB). Grábalo más corto.');continue}
+   const blob=isV?f:await imgBlob(f);const id=uid();await MDB.put(id,blob);
+   a.media.push({id,t:isV?'v':'i',ty:blob.type||f.type,cap:'',fam:false,at:Date.now()});n++}
+  catch(e){toast('No pude guardar «'+(f.name||'archivo')+'»')}}
+ save();if(n)toast(n+(n>1?' archivos guardados':' archivo guardado'));hydrateMedia();
+}
+async function shareMedia(a,onlyFam){
+ const p=P(a.patientId);const list=(a.media||[]).filter(m=>!onlyFam||m.fam);
+ if(!list.length){toast(onlyFam?'Marca alguna con «Mostrar a la familia»':'No hay archivos que guardar');return 0}
+ const files=[];let i=0;
+ for(const m of list){const b=await MDB.get(m.id);if(!b)continue;i++;files.push(new File([b],mediaName(p,a,i,b.type),{type:b.type}))}
+ if(!files.length){toast('Los archivos no están en este teléfono');return 0}
+ const data={files,title:'Evidencia · '+p.name.split(/[ ,]/)[0],text:onlyFam?'Fotos de la visita del '+fdate(a.date):''};
+ try{if(navigator.canShare&&navigator.canShare({files})){await navigator.share(data);list.forEach(m=>m.saved=true);save();return files.length}}catch(e){if(e&&e.name==='AbortError')return 0}
+ files.forEach((f,k)=>{const u=URL.createObjectURL(f);const l=document.createElement('a');l.href=u;l.download=f.name;document.body.appendChild(l);setTimeout(()=>{l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),3000)},k*400)});
+ toast('Descargando '+files.length+' archivo'+(files.length>1?'s':'')+'. Súbelos a la carpeta de Drive.');return files.length;
+}
+
 /* ============ INFORME ============ */
 routes.informe=([id])=>{
  const a=A(id);if(!a||!a.report)return `${back('Hoy','#/hoy')}${empty('No hay informe para esta atención.')}`;
@@ -644,6 +697,7 @@ routes.informe=([id])=>{
   ${ok?`<label class="row sm"><input type="checkbox" id="chk4" style="width:24px;min-height:24px"> Confirmo que el número termina en <b>${last4}</b> y es el de ${esc((p.resp.name||'').split(' ')[0])}.</label>`:`<div class="alert a-bad">Para enviar necesitas el consentimiento y el WhatsApp del responsable. <a href="#/ficha/${p.id}" style="text-decoration:underline">Ir a la ficha</a></div>`}
   <div class="row"><button class="btn cta grow" id="sendrpt" data-act="sendrpt" data-id="${a.id}" disabled>Enviar por WhatsApp</button><button class="btn sec" data-act="printrpt">PDF</button></div>
   <div class="xs mut">Se abre WhatsApp con el mensaje listo; tú tocas enviar. Nada sale sin tu aprobación.</div></section>
+ ${mediaCard(a)}
  </div>`;
 };
 
@@ -898,6 +952,7 @@ async function portalUrl(p){
   tx:p.indication?.text||'',nx:nx.slice(0,6).map(a=>({d:a.date,s:a.start,t:a.type})),dn:done.slice(-8).map(a=>({d:a.date,s:a.start})),tot:total,
   rp:cfg.inf&&rep?{d:rep.date,s:rep.start,f:rep.report.family,o:rep.report.obs||''}:null,
   tl:done.slice().sort((x,y)=>(y.date+y.start).localeCompare(x.date+x.start)).slice(0,8).map(a=>({d:a.date,s:a.start,t:a.type,x:(a.report&&(a.report.approved||a.report.sent))?String(a.report.family||'').split(/(?<=[.!?])s/)[0].slice(0,110):''})),
+  ev:(()=>{const fm=a=>(a.media||[]).filter(m=>m.fam);const l=done.filter(a=>fm(a).length).sort((x,y)=>(y.date+y.start).localeCompare(x.date+x.start)).slice(0,12).map(a=>({d:a.date,s:a.start,i:fm(a).filter(m=>m.t==='i').length,v:fm(a).filter(m=>m.t==='v').length,c:fm(a).filter(m=>m.cap).map(m=>m.cap).slice(0,4)}));const u=/^https:\/\//i.test(p.drive||'')?p.drive:'';return l.length||u?{u,l}:null})(),
   q:cfg.cot&&q?{n:q.n,sv:q.servicio||q.modo,qty:q.qty,u:q.unit,t:qTotal(q),vd:addDays(q.date,q.valid),st:q.status}:null,
   pg:cfg.pay?{ch:ch.map(c=>({c:c.concept,a:c.amount,d:c.due})),bank:S.profile.bank,email:S.profile.email}:null};
  return location.href.split('#')[0]+'#/p/'+b64e(await sealPortal(payload,cfg.pin));
@@ -927,7 +982,7 @@ function portalRoute(code){
  const tab=code.split('/')[1]||'inicio';
  const wa=t=>waLink(d.wa,t);
  const nxt=d.nx[0];
- const tabs=[['inicio','Inicio'],['historia','Historia'],['informe','Informes'],['cuidado','Cuidado'],['pagos','Pagos'],['mensaje','Mensaje']];
+ const tabs=[['inicio','Inicio'],['historia','Historia'],...(d.ev?[['fotos','Fotos']]:[]),['informe','Informes'],['cuidado','Cuidado'],['pagos','Pagos'],['mensaje','Mensaje']];
  let body='';
  if(tab==='inicio'){
   body=`<h1>Hola, ${esc(d.fn)}</h1><p class="mut" style="margin:0 0 10px">Así va el cuidado de ${esc(d.pn)}</p>
@@ -938,6 +993,10 @@ function portalRoute(code){
   <p class="xs mut" style="text-align:center">En una emergencia llama al 131 (SAMU), no uses este portal.</p>`;
  }else if(tab==='historia'){
   const tl=d.tl||[];body=`<h2>Historia del cuidado</h2><p class="sm mut">Lo que se ha hecho con ${esc(d.pn)}, visita a visita.</p><div class="tline">${d.nx.slice(0,1).map(n=>`<div class="tl-i next"><i></i><div><b>${fdate(n.d,true)} · ${n.s}</b><div class="xs mut">Próxima: ${esc(n.t)}</div></div></div>`).join('')}${tl.map(h=>`<div class="tl-i"><i></i><div><b>${fdate(h.d,true)} · ${h.s}</b><div class="xs mut">${esc(h.t)}</div>${h.x?`<p class="sm" style="margin:4px 0 0">${esc(h.x)}</p>`:''}</div></div>`).join('')||'<div class="card">Aún no hay visitas realizadas.</div>'}</div><p class="xs mut">Cada resumen lo revisa y aprueba ${esc(d.vn.split(' ')[0])} antes de compartirse.</p>`;
+ }else if(tab==='fotos'&&d.ev){
+  body=`<h2>Fotos y videos</h2><p class="sm mut">Evidencia de cómo va ${esc(d.pn)}, que ${esc(d.vn.split(' ')[0])} compartió con la autorización de la familia.</p>
+  ${d.ev.l.map(v=>`<div class="card" style="margin-bottom:8px"><b class="sm">${fdate(v.d,true)} · ${v.s}</b><div class="xs mut">${v.i?v.i+(v.i>1?' fotos':' foto'):''}${v.i&&v.v?' · ':''}${v.v?v.v+(v.v>1?' videos':' video'):''}</div>${v.c.map(c=>`<div class="sm" style="margin-top:4px">· ${esc(c)}</div>`).join('')}</div>`).join('')||'<div class="card">Aún no hay fotos compartidas.</div>'}
+  ${d.ev.u?`<a class="btn cta" href="${esc(d.ev.u)}" target="_blank" rel="noopener" style="margin-top:6px">Abrir carpeta con las fotos y videos</a><p class="xs mut">Se abre en Google Drive. No reenvíes este enlace: es solo para la familia de ${esc(d.pn)}.</p>`:`<a class="btn" href="${wa('Hola '+d.vn.split(' ')[0]+', ¿me puedes enviar las fotos de la visita?')}">Pedir las fotos por WhatsApp</a>`}`;
  }else if(tab==='informe'){
   body=`<h2>Informe del turno</h2>${d.rp?`<div class="mut sm">${fdate(d.rp.d,true)} · ${d.rp.s} · ${esc(d.vn)}</div><div class="paper" style="margin-top:10px"><span class="pill p-ok">Versión familiar · aprobada por ${esc(d.vn.split(' ')[0])}</span><p>${esc(d.rp.f)}</p>${d.rp.o?`<div class="eyebrow">Qué observar en casa</div><p>${esc(d.rp.o)}</p>`:''}<div class="alert a-bad xs">Sangrado abundante o falta de aire: llama al 131.</div></div><div class="row" style="margin-top:10px"><a class="btn grow" href="${wa('Recibido el informe del '+fdate(d.rp.d)+'. Gracias.')}">Recibido</a><a class="btn sec grow" href="${wa('Hola, tengo una duda sobre el informe del '+fdate(d.rp.d)+': ')}">Tengo una duda</a></div>`:'<div class="card">Aún no hay informes compartidos.</div>'}`;
  }else if(tab==='cuidado'){
@@ -1068,6 +1127,9 @@ document.addEventListener('click',async ev=>{
  case 'prenew':{const cfg=S.ui.portal[id];cfg.exp=addDays(today(),30);save();route();toast('Renovado 30 días')}break;
  case 'prevoke':{if(await ask('Se genera un PIN nuevo. El enlace anterior deja de abrir con el PIN viejo.')){const cfg=S.ui.portal[id];cfg.pin=newPin();save();route();toast('PIN nuevo generado')}break}
  case 'export':{const b=new Blob([JSON.stringify(S)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='nurse-app-respaldo-'+today()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);S.lastBackup=Date.now();save();toast('Respaldo descargado');if(location.hash==='#/hoy')route();break}
+ case 'mediadel':{const a=A(id);if(!a)break;if(!await ask('¿Quitar esta foto o video de este teléfono? Si ya lo guardaste en Drive, allá queda.'))break;const m=(a.media||[]).find(x=>x.id===el.dataset.m);if(m){try{await MDB.del(m.id)}catch(e){}a.media=a.media.filter(x=>x!==m);save();hydrateMedia()}break}
+ case 'mediadrive':{const a=A(id);if(a)await shareMedia(a,false);break}
+ case 'mediafam':{const a=A(id);if(a)await shareMedia(a,true);break}
  case 'install':if(window._bip){window._bip.prompt();window._bip=null}break;
  }
 });
@@ -1081,6 +1143,9 @@ document.addEventListener('change',async ev=>{
    if(!o.patients||!o.appts)throw 'fmt';if(!await ask('Esto reemplaza tus datos actuales por el respaldo. ¿Continuar?')){el.value='';return}
    S=Object.assign(DEFAULTS(),o);saveNow();route();toast('Respaldo restaurado')}catch(e){toast('Ese archivo no es un respaldo de Nurse App')}el.value=''}
  else if(el.dataset.act==='dispphoto'){const f=el.files[0];if(!f)return;S.ui.dispPhoto=await shrink(f);save();loadDispImg();route();toast('Foto lista')}
+ else if(el.dataset.act==='mediaadd'){const a=A(el.dataset.id);const fs=[...el.files];el.value='';if(a&&fs.length)await addMedia(a,fs)}
+ else if(el.dataset.act==='mcap'||el.dataset.act==='mfam'){const a=A(el.dataset.id);const m=a&&(a.media||[]).find(x=>x.id===el.dataset.m);if(m){if(el.dataset.act==='mcap')m.cap=el.value.trim().slice(0,80);else m.fam=el.checked;save()}}
+ else if(el.dataset.act==='drivelink'){const p=P(el.dataset.id);const v=el.value.trim();if(v&&!/^https:\/\//i.test(v)){toast('El enlace debe empezar con https://');el.value=p.drive||'';return}p.drive=v;save();toast(v?'Enlace guardado':'Enlace quitado')}
  else if(el.dataset.act==='ptoggle'){const cfg=S.ui.portal[el.dataset.id];cfg[el.dataset.k]=el.checked;save()}
 });
 document.addEventListener('input',ev=>{
@@ -1138,7 +1203,7 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window._bip
 if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 (function(){try{if(sessionStorage.getItem('splash'))return;sessionStorage.setItem('splash','1')}catch(e){}
  const s=document.createElement('div');s.className='splash';s.setAttribute('aria-hidden','true');s.innerHTML=LOGO(112,true)+'<div class="tl">Cuidados que acompañan.<br>En cada etapa de la vida.</div>';document.body.appendChild(s);setTimeout(()=>s.remove(),2200)})();
-window.NURSE={sealBackup,openBackup,parseLeadMsg,outbox,PCACHE,openPortal,get S(){return S},set S(v){S=v},route,conflicts,suggest,parsePhrase,qTotal,freeWindows,today,addDays,genFamily,tentSlots,startVisit,closeVisit,waLink,demo,DEFAULTS,saveNow,b64e,b64d,portalUrl,sha,A,P,loadOf,dayAppts};
+window.NURSE={MDB,imgBlob,addMedia,shareMedia,mediaName,hydrateMedia,sealBackup,openBackup,parseLeadMsg,outbox,PCACHE,openPortal,get S(){return S},set S(v){S=v},route,conflicts,suggest,parsePhrase,qTotal,freeWindows,today,addDays,genFamily,tentSlots,startVisit,closeVisit,waLink,demo,DEFAULTS,saveNow,b64e,b64d,portalUrl,sha,A,P,loadOf,dayAppts};
 loadDispImg();
 route();
 </script>

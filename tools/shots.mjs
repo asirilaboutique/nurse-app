@@ -51,6 +51,16 @@ if (vid) { await ev(`window.NURSE.startVisit(${JSON.stringify(vid)});1`); await 
 // informe familiar de una visita hecha
 const iid = await ev(`(()=>{const N=window.NURSE;const a=N.S.appts.find(x=>x.status==='hecha'&&x.report);return a?a.id:''})()`);
 if (iid) { await go('#/informe/' + iid); await shot('07_informe_familiar'); }
+// Evidencia (fotos de ejemplo dibujadas, no son pacientes)
+if (iid) {
+  await ev(`(async()=>{const N=window.NURSE;const a=N.A(${JSON.stringify(iid)});
+   const mk=(c1,c2)=>new Promise(r=>{const c=document.createElement('canvas');c.width=900;c.height=700;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,900,700);g.addColorStop(0,c1);g.addColorStop(1,c2);x.fillStyle=g;x.fillRect(0,0,900,700);x.fillStyle='rgba(255,255,255,.35)';x.beginPath();x.arc(450,330,170,0,7);x.fill();x.fillStyle='rgba(255,255,255,.55)';x.font='42px sans-serif';x.textAlign='center';x.fillText('Foto de ejemplo',450,600);c.toBlob(b=>r(new File([b],'e.png',{type:'image/png'})),'image/png')});
+   a.media=[];await N.addMedia(a,[await mk('#E3EEF9','#2E9C8F'),await mk('#F4EBDD','#C9785D')]);
+   a.media[0].cap='Herida limpia, bordes sanos';a.media[0].fam=true;a.media[1].cap='Curación terminada';a.media[1].fam=true;
+   N.P(a.patientId).drive='https://drive.google.com/drive/folders/ejemplo';return 1})()`);
+  await go('#/informe/' + iid); await sleep(700);
+  await sleep(3200); await scrollTo('#mediabox'); await shot('21_evidencia_en_la_visita');
+}
 await go('#/cobros'); await shot('08_cobros');
 const qid = await ev(`(()=>{const q=window.NURSE.S.quotes[0];return q?q.id:''})()`);
 if (qid) { await go('#/cotizacion/' + qid); await shot('09_cotizacion'); }
@@ -71,7 +81,7 @@ const code = await ev(portal);
 // pantalla de PIN (sin datos)
 await ev(`(()=>{Object.keys(window.NURSE.PCACHE).forEach(k=>delete window.NURSE.PCACHE[k]);location.hash='#/p/${code}';return 1})()`); await sleep(700); await shot('14_portal_pin');
 await ev(`(async()=>{const N=window.NURSE;const env=N.b64d(${JSON.stringify(code)}.split('/')[0]);N.PCACHE[env.s]=await N.openPortal(env,'${PIN}');return 1})()`);
-for (const [tab, name] of [['inicio', '15_portal_inicio'], ['historia', '16_portal_historia'], ['informe', '17_portal_informe'], ['cuidado', '18_portal_cuidado'], ['pagos', '19_portal_pagos'], ['mensaje', '20_portal_mensaje']]) {
+for (const [tab, name] of [['inicio', '15_portal_inicio'], ['historia', '16_portal_historia'], ['informe', '17_portal_informe'], ['cuidado', '18_portal_cuidado'], ['pagos', '19_portal_pagos'], ['fotos', '22_portal_fotos'], ['mensaje', '20_portal_mensaje']]) {
   await ev(`location.hash='#/p/${code}/${tab}';1`); await sleep(500); await shot(name);
 }
 // Pantalla de bienvenida
