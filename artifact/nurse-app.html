@@ -917,16 +917,17 @@ routes.ajustes=()=>{
 /* ============ PORTAL FAMILIAR (solo lectura, enlace con PIN) ============ */
 routes.portal=([id])=>{
  const p=P(id);if(!p)return `${back('Pacientes','#/pacientes')}${empty('Paciente no encontrada.')}`;
- const pt=S.ui.portal||(S.ui.portal={});const cfg=pt[p.id]||(pt[p.id]={pin:newPin(),days:30,exp:addDays(today(),30),inf:true,cot:true,pay:true,rev:false});
- save();
- if(cfg.pin.length<6){cfg.pin=newPin();save()}setTimeout(async()=>{const a=$('#pview');if(a)a.href=await portalUrl(p)},0);
+ const pt=S.ui.portal||(S.ui.portal={});const cfg=pt[p.id]||(pt[p.id]={pin:newPin(),days:30,exp:addDays(today(),30),inf:true,cot:true,pay:true,rev:false,evi:true});
+ if(cfg.evi===undefined)cfg.evi=true;save();
+ if(cfg.pin.length<6){cfg.pin=newPin();save()}setTimeout(async()=>{const a=$('#pview');if(a)a.href=await portalUrl(p);const b=$('#psync');if(b){const s=cfg.sent;if(!s){b.className='alert a-warn xs';b.innerHTML='<b>Aún no has enviado el enlace.</b> Cópialo o mándalo por WhatsApp.'}else if(s.sig!==PSIG[p.id]){b.className='alert a-warn xs';b.innerHTML='<b>Hay cambios nuevos</b> desde el último envío ('+fdate(s.at)+'). Vuelve a enviar el enlace para que la familia los vea.'}else{b.className='alert a-ok xs';b.innerHTML='<b>Al día.</b> La familia tiene lo último (enviado el '+fdate(s.at)+').'}}},0);
  return `${back('Ficha','#/ficha/'+p.id)}<h2 style="margin:4px 0">Portal de ${esc((p.resp.name||'').split(' ')[0]||'la familia')}</h2><div class="sm mut">Acceso de solo lectura para ${esc(p.resp.name||'el responsable')} · vence ${fdate(cfg.exp)}</div>
  <div class="col" style="margin-top:12px">
+ <div id="psync" class="alert xs" role="status">Revisando…</div>
  <div class="card col"><b>Acceso</b><div class="row"><button class="btn grow sm" data-act="pcopy" data-id="${p.id}">Copiar enlace</button><button class="btn sage grow sm" data-act="pwa" data-id="${p.id}">WhatsApp</button></div>
  <div class="row sp"><span class="sm">PIN <b id="pinv">••••</b></span><button class="btn sec sm" data-act="pinshow" data-id="${p.id}">Mostrar</button></div>
  <div class="row"><button class="btn sec sm grow" data-act="prenew" data-id="${p.id}">Renovar 30 días</button><button class="btn bad sm grow" data-act="prevoke" data-id="${p.id}">Cambiar PIN y revocar</button></div></div>
  <div class="card col"><b>Qué puede ver</b>
- ${[['inf','Informes en versión familiar','Solo los que tú apruebas'],['cot','Cotización','Con botón ACEPTO'],['pay','Pagos y datos de transferencia','']].map(r=>`<label class="row sp sm"><span>${r[1]}<br><span class="xs mut">${r[2]}</span></span><input type="checkbox" data-act="ptoggle" data-id="${p.id}" data-k="${r[0]}" style="width:26px;min-height:26px" ${cfg[r[0]]?'checked':''}></label>`).join('')}
+ ${[['inf','Informes en versión familiar','Solo los que tú apruebas'],['cot','Cotización','Con botón ACEPTO'],['pay','Pagos y datos de transferencia',''],['evi','Fotos y videos','Solo lo que marcas «para la familia», con enlace a tu carpeta Drive']].map(r=>`<label class="row sp sm"><span>${r[1]}<br><span class="xs mut">${r[2]}</span></span><input type="checkbox" data-act="ptoggle" data-id="${p.id}" data-k="${r[0]}" style="width:26px;min-height:26px" ${cfg[r[0]]?'checked':''}></label>`).join('')}
  <div class="row sp sm"><span>Versión clínica y ficha completa</span><span class="pill p-bad">Nunca</span></div></div>
  <a class="btn sec" id="pview" href="#/portal/${p.id}" target="_blank" rel="noopener">Ver como lo ve ${esc((p.resp.name||'').split(' ')[0]||'la familia')}</a>
  <div class="alert a-ok xs"><b>Privacidad:</b> lo que compartes viaja cifrado con el PIN de 6 dígitos. Sin el PIN, el enlace no muestra ni los nombres. Tras 3 intentos fallidos se bloquea unos segundos.</div><div class="alert a-warn xs"><b>Cómo funciona:</b> el enlace lleva una copia de lo que decidiste compartir, no un acceso a tu app. Para actualizarla, vuelve a enviar el enlace. El PIN es una barrera básica: no reenvíes el enlace. Para revocar, cambia el PIN y avisa a la familia (los enlaces viejos siguen leyéndose si alguien guardó el enlace y el PIN anterior; por eso el enlace vence).</div></div>`;
@@ -940,7 +941,7 @@ async function sealBackup(obj,pass){const salt=crypto.getRandomValues(new Uint8A
 async function openBackup(env,pass){const key=await kdf(pass,fromB(env.s));const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:fromB(env.i)},key,fromB(env.c));return JSON.parse(new TextDecoder().decode(pt))}
 async function openPortal(env,pin){const key=await kdf(pin,fromB(env.s));const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:fromB(env.i)},key,fromB(env.c));return JSON.parse(new TextDecoder().decode(pt))}
 const newPin=()=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return String(100000+a[0]%900000)};
-async function portalUrl(p){
+async function portalUrl(p,mark){
  const cfg=S.ui.portal[p.id];
  const nx=S.appts.filter(a=>a.patientId===p.id&&a.status==='prog'&&(a.date+a.start)>=(today()+'00:00')).sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start));
  const done=S.appts.filter(a=>a.patientId===p.id&&a.status==='hecha');
@@ -948,15 +949,18 @@ async function portalUrl(p){
  const q=S.quotes.filter(x=>x.patientId===p.id&&x.status!=='borrador').sort((a,b)=>b.date.localeCompare(a.date))[0];
  const ch=S.charges.filter(c=>c.patientId===p.id&&c.status==='pend');
  const total=nx.length+done.length;
- const payload={v:1,rg:S.profile.reg,e:cfg.exp,pn:p.name.split(/[ ,]/)[0],fn:(p.resp.name||'').split(' ')[0],vn:S.profile.name,vr:S.profile.role,tg:S.profile.tagline,wa:S.profile.wa,
+ const payload={v:1,g:today(),rg:S.profile.reg,e:cfg.exp,pn:p.name.split(/[ ,]/)[0],fn:(p.resp.name||'').split(' ')[0],vn:S.profile.name,vr:S.profile.role,tg:S.profile.tagline,wa:S.profile.wa,
   tx:p.indication?.text||'',nx:nx.slice(0,6).map(a=>({d:a.date,s:a.start,t:a.type})),dn:done.slice(-8).map(a=>({d:a.date,s:a.start})),tot:total,
   rp:cfg.inf&&rep?{d:rep.date,s:rep.start,f:rep.report.family,o:rep.report.obs||''}:null,
   tl:done.slice().sort((x,y)=>(y.date+y.start).localeCompare(x.date+x.start)).slice(0,8).map(a=>({d:a.date,s:a.start,t:a.type,x:(a.report&&(a.report.approved||a.report.sent))?String(a.report.family||'').split(/(?<=[.!?])s/)[0].slice(0,110):''})),
-  ev:(()=>{const fm=a=>(a.media||[]).filter(m=>m.fam);const l=done.filter(a=>fm(a).length).sort((x,y)=>(y.date+y.start).localeCompare(x.date+x.start)).slice(0,12).map(a=>({d:a.date,s:a.start,i:fm(a).filter(m=>m.t==='i').length,v:fm(a).filter(m=>m.t==='v').length,c:fm(a).filter(m=>m.cap).map(m=>m.cap).slice(0,4)}));const u=/^https:\/\//i.test(p.drive||'')?p.drive:'';return l.length||u?{u,l}:null})(),
+  ev:(()=>{const fm=a=>(a.media||[]).filter(m=>m.fam);const l=done.filter(a=>fm(a).length).sort((x,y)=>(y.date+y.start).localeCompare(x.date+x.start)).slice(0,12).map(a=>({d:a.date,s:a.start,i:fm(a).filter(m=>m.t==='i').length,v:fm(a).filter(m=>m.t==='v').length,c:fm(a).filter(m=>m.cap).map(m=>m.cap).slice(0,4)}));const u=/^https:\/\//i.test(p.drive||'')?p.drive:'';return cfg.evi!==false&&(l.length||u)?{u,l}:null})(),
   q:cfg.cot&&q?{n:q.n,sv:q.servicio||q.modo,qty:q.qty,u:q.unit,t:qTotal(q),vd:addDays(q.date,q.valid),st:q.status}:null,
   pg:cfg.pay?{ch:ch.map(c=>({c:c.concept,a:c.amount,d:c.due})),bank:S.profile.bank,email:S.profile.email}:null};
+ const sg=JSON.stringify({...payload,g:0});let hs=0;for(let i=0;i<sg.length;i++)hs=(hs*31+sg.charCodeAt(i))|0;PSIG[p.id]=String(hs);
+ if(mark){cfg.sent={sig:PSIG[p.id],at:today()};save()}
  return location.href.split('#')[0]+'#/p/'+b64e(await sealPortal(payload,cfg.pin));
 }
+const PSIG={};
 function portalRoute(code){
  const app=$('#app');
  let env;try{env=b64d(code.split('/')[0]);if(env.v!==2||!env.c)throw 0}catch(e){app.innerHTML=`<div class="alert a-bad" style="margin-top:30px">Este enlace no es válido. Pídele a Valeria que te envíe uno nuevo.</div>`;return}
@@ -1015,6 +1019,7 @@ function portalRoute(code){
   <a class="btn full" id="pmwa" style="margin-top:10px" href="${wa('Hola')}">Abrir en WhatsApp</a><p class="xs mut">Se abre tu WhatsApp con el mensaje listo. La conversación queda en tu teléfono, no en el portal.</p>`;
  }
  app.innerHTML=`<div style="margin-bottom:12px">${LOCKUP(44)}</div>${body}
+ ${d.g?(Math.round((new Date(today())-new Date(d.g))/864e5)>7?`<div class="alert a-warn xs" style="margin-top:12px"><b>Esta información es del ${fdate(d.g)}.</b> Puede haber novedades: pídele a ${esc(d.vn.split(' ')[0])} el enlace actualizado.</div>`:`<p class="xs mut" style="margin-top:12px;text-align:center">Actualizado el ${fdate(d.g)}</p>`):''}
  <div class="pfoot"><b>${esc(d.vn)}</b><br>Enfermera · Reg. N° ${esc(d.rg||'')}<br><i>${esc(d.tg||'')}</i></div>
  <nav class="tabs" aria-label="Portal">${tabs.map(t=>`<a href="#/p/${code.split('/')[0]}/${t[0]}" class="${tab===t[0]?'on':''}" ${tab===t[0]?'aria-current="page"':''}>${t[1]}</a>`).join('')}</nav>`;
  if(tab==='mensaje'){
@@ -1113,7 +1118,7 @@ document.addEventListener('click',async ev=>{
  case 'dlcard':downloadCard();break;
  case 'dispvar':S.ui.dispVar=el.dataset.v;save();route();break;
  case 'copyavail':try{await navigator.clipboard.writeText(availText());toast('Texto copiado')}catch(e){toast('No se pudo copiar')}break;
- case 'pcopy':{const p=P(id);await ensurePin(p);try{await navigator.clipboard.writeText(await portalUrl(p));toast('Enlace copiado')}catch(e){toast('No se pudo copiar')}break}
+ case 'pcopy':{const p=P(id);await ensurePin(p);try{await navigator.clipboard.writeText(await portalUrl(p,true));toast('Enlace copiado')}catch(e){toast('No se pudo copiar')}break}
  case 'pasteok':{const v=S.ui.paste;if(!v)break;S.leads.push({id:uid(),name:v.name||'Contacto nuevo',need:v.need,source:'WhatsApp',stage:0,amount:0,note:'Hoy',phone:v.phone||''});S.ui.paste=null;save();route();toast('Cliente guardado en el embudo');break}
  case 'pasteclear':S.ui.paste=null;route();break;
  case 'bakenc':{const pw=($('#bakpass')||{}).value||'';if(pw.length<8){toast('La clave debe tener al menos 8 caracteres');break}
@@ -1122,7 +1127,7 @@ document.addEventListener('click',async ev=>{
   catch(e){const u=URL.createObjectURL(file);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}
   S.lastBackup=Date.now();save();toast('Respaldo cifrado listo. Guárdalo en tu Drive.');break}
  case 'osend':{const i=outbox().find(x=>x.k===el.dataset.k);if(!i||!i.phone)break;window.open(waLink(i.phone,i.msg),'_blank','noopener');S.ui.sent[i.k]=today();save();route();toast('Marcado como enviado hoy');break}
- case 'pwa':{const p=P(id);if(!p.resp.phone){toast('Falta el WhatsApp del responsable');break}await ensurePin(p);const cfg=S.ui.portal[p.id];window.open(waLink(p.resp.phone,`Hola ${p.resp.name.split(' ')[0]}, este es tu enlace personal para seguir el cuidado de ${p.name.split(/[ ,]/)[0]}. Vence el ${fdate(cfg.exp)}. El PIN te lo entrego en persona.\n${await portalUrl(p)}`),'_blank','noopener');break}
+ case 'pwa':{const p=P(id);if(!p.resp.phone){toast('Falta el WhatsApp del responsable');break}await ensurePin(p);const cfg=S.ui.portal[p.id];window.open(waLink(p.resp.phone,`Hola ${p.resp.name.split(' ')[0]}, este es tu enlace personal para seguir el cuidado de ${p.name.split(/[ ,]/)[0]}. Vence el ${fdate(cfg.exp)}. El PIN te lo entrego en persona.\n${await portalUrl(p,true)}`),'_blank','noopener');break}
  case 'pinshow':{const b=$('#pinv'),cfg=S.ui.portal[id];b.textContent=b.textContent==='••••'?cfg.pin:'••••';break}
  case 'prenew':{const cfg=S.ui.portal[id];cfg.exp=addDays(today(),30);save();route();toast('Renovado 30 días')}break;
  case 'prevoke':{if(await ask('Se genera un PIN nuevo. El enlace anterior deja de abrir con el PIN viejo.')){const cfg=S.ui.portal[id];cfg.pin=newPin();save();route();toast('PIN nuevo generado')}break}
