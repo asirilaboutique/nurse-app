@@ -18,6 +18,8 @@ a{color:inherit;text-decoration:none}
 button,input,select,textarea{font:inherit;color:inherit}
 #app{max-width:560px;margin:0 auto;padding:18px 18px calc(96px + env(safe-area-inset-bottom));min-height:100vh}
 #app.wide{max-width:1280px}
+#app.portal{background:#F6EFE8;max-width:520px;padding-top:26px;line-height:1.6}#app.portal .col{gap:16px}#app.portal h1{font-size:40px}#app.portal .card,#app.portal .paper{padding:18px}#app.portal .navy{padding:22px}
+.pfoot{margin-top:22px;text-align:center;font-size:12px;color:var(--mut)}.pfoot b{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--navy)}
 h1,h2{font-family:'Cormorant Garamond',serif;margin:0;line-height:1.05}
 h1{font-size:32px;font-weight:700}h2{font-size:24px;font-weight:700}
 .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:700}
@@ -61,7 +63,10 @@ nav.tabs svg{width:24px;height:24px}
 .bar{height:10px;border-radius:5px;background:#EFE7DC}.bar i{display:block;height:10px;border-radius:5px;background:var(--navy)}
 .paper{background:#fff;border:1px solid var(--line);border-radius:6px;padding:20px;font-size:13px;line-height:1.5}
 .paper table{width:100%;border-collapse:collapse}.paper td,.paper th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
-.card916{aspect-ratio:9/16;width:100%;max-width:320px;background:var(--navy);color:var(--blush);border-radius:18px;padding:26px 22px;display:flex;flex-direction:column;margin:0 auto}
+.card916{aspect-ratio:9/16;width:100%;max-width:320px;background:var(--navy);color:var(--blush);border-radius:18px;padding:26px 22px;display:flex;flex-direction:column;margin:0 auto;position:relative;overflow:hidden}
+.card916.v-blush{background:var(--blush);color:var(--navy)}.card916.v-blush .dl{border-color:#C9B29C!important}.card916.v-blush .dt{color:var(--navy)!important}.card916.v-blush .dk{color:#7A5A2E!important}.card916.v-blush .dh{color:var(--navy)!important}.card916.v-blush .dh i{color:#7A5A2E!important}
+.card916.v-foto{background-size:cover;background-position:center;color:#fff}.card916.v-foto:before{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(16,41,58,.78),rgba(16,41,58,.62) 40%,rgba(16,41,58,.9))}.card916.v-foto>*{position:relative}
+.demo{background:var(--warnbg);color:var(--warnfg)}
 @media(min-width:900px){#app{padding-bottom:40px}nav.tabs{max-width:560px}}
 @media print{nav.tabs,.noprint,.sheetbg,.toast{display:none!important}#app{max-width:none;padding:0}body{background:#fff}}
 .hide{display:none!important}
@@ -103,12 +108,12 @@ const b64d=s=>JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g,'+').repl
 
 /* ============ estado ============ */
 const KEY='nurseapp.v1';
-const DEFAULTS=()=>({v:1,profile:{name:'Valeria Inzunza',role:'Enfermera · cuidados domiciliarios',reg:'',rut:'',wa:'',email:'',bank:'',holder:'',ig:'@valeria.inzunza.enfermera',tagline:'Cuidados que acompañan. En cada etapa de la vida.',meta:800000},
+const DEFAULTS=()=>({v:1,profile:{name:'Valeria Inzunza',role:'Enfermera · cuidados domiciliarios',reg:'475283',rut:'',wa:'',email:'',bank:'',holder:'',ig:'@valeria.inzunza.enfermera',tagline:'Cuidados que acompañan. En cada etapa de la vida.',meta:800000},
  tarifas:{visita:18000,turnoHora:13500,pack:15000,traslado:0},
  horario:{ini:'08:00',fin:'20:00',almIni:'13:00',almFin:'14:00',margen:15,dias:[1,2,3,4,5,6]},
  patients:[],appts:[],quotes:[],charges:[],leads:[],counters:{quote:12,boleta:0},ui:{}});
 let S=load();
-function load(){try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);const d=DEFAULTS();return Object.assign(d,o,{profile:Object.assign(d.profile,o.profile),tarifas:Object.assign(d.tarifas,o.tarifas),horario:Object.assign(d.horario,o.horario)})}}catch(e){console.warn('load',e)}return DEFAULTS()}
+function load(){try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);const d=DEFAULTS();return Object.assign(d,o,{profile:Object.assign(d.profile,o.profile,{reg:(o.profile&&o.profile.reg)||d.profile.reg}),tarifas:Object.assign(d.tarifas,o.tarifas),horario:Object.assign(d.horario,o.horario)})}}catch(e){console.warn('load',e)}return DEFAULTS()}
 let saveT=null;
 function save(){clearTimeout(saveT);saveT=setTimeout(saveNow,150)}
 function saveNow(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){toast('No hay espacio para guardar. Exporta un respaldo y borra fotos.');return false}}
@@ -196,7 +201,7 @@ function demo(){
   mk({name:'Elena Vidal',need:'Boleta N° 128',source:'Recomendación',stage:4,amount:54000,note:'Vence en 2 días',patientId:elena.id}),
   mk({name:'Marta Díaz',need:'Alta hace 7 días',source:'Instagram',stage:5,amount:0,note:'Preguntar cómo sigue'}),
  ];
- S.counters={quote:12,boleta:128};
+ S.counters={quote:12,boleta:128};S.demo=true;
  save();
 }
 const STAGES=['Consulta','Cotización enviada','Aceptada','En tratamiento','Boleta y cobro','Seguimiento'];
@@ -211,6 +216,7 @@ const ICON={
  mic:'<rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
  menu:'<path d="M4 7h16M4 12h16M4 17h16"/>'
 };
+const LOGO=(sz,light)=>`<svg width="${sz}" height="${sz}" viewBox="0 0 64 64" role="img" aria-label="Valeria Enfermera" style="flex:none"><circle cx="32" cy="32" r="32" fill="${light?'#E8D5C4':'#1B3A4B'}"/><circle cx="32" cy="32" r="24" fill="none" stroke="${light?'#1B3A4B':'#E8D5C4'}" stroke-width="2"/><path d="M32 19v26M19 32h26" stroke="#C4935A" stroke-width="7" stroke-linecap="round"/><path d="M33 19c8 0 12 5 12 10-7 0-12-3-12-10z" fill="#8BA888"/></svg>`;
 const svg=(k,sz)=>`<svg width="${sz||24}" height="${sz||24}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg>`;
 function toast(m){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2800)}
 function sheet(html){const s=$('#sheet');s.innerHTML=`<div class="sheetbg" data-act="closesheet"><div class="sheet" role="dialog" aria-modal="true" data-stop>${html}</div></div>`;const f=s.querySelector('input,select,textarea,button.btn');if(f&&innerWidth>700)f.focus()}
@@ -231,10 +237,10 @@ function route(){
  const parts=h.replace(/^#\//,'').split('/');
  const name=parts[0]||'hoy';
  const app=$('#app');
- app.classList.toggle('wide',name==='embudo'||name==='panel');
+ app.classList.toggle('wide',name==='embudo'||name==='panel');app.classList.remove('portal');
  closeSheet();
- if(name==='p'){app.classList.remove('wide');$('#nav').innerHTML='';portalRoute(parts.slice(1).join('/'));window.scrollTo(0,0);return}
- const fn=routes[name]||routes.hoy;
+ if(name==='p'){app.classList.remove('wide');app.classList.add('portal');document.body.style.background='#F6EFE8';$('#nav').innerHTML='';portalRoute(parts.slice(1).join('/'));window.scrollTo(0,0);return}
+ document.body.style.background='';const fn=routes[name]||routes.hoy;
  const act=({hoy:'hoy',agenda:'agenda',pacientes:'pac',ficha:'pac',cobros:'cobros',cotizar:'cot',cotizacion:'cot'})[name]||'';
  nav(act);
  try{app.innerHTML=fn(parts.slice(1))}catch(e){console.error(e);app.innerHTML=`<div class="alert a-bad">Algo falló al abrir esta pantalla. Tus datos están a salvo. <a href="#/hoy" style="text-decoration:underline">Volver al inicio</a></div>`}
@@ -255,10 +261,12 @@ routes.hoy=()=>{
  const greet=d.getHours()<12?'Buenos días':d.getHours()<20?'Buenas tardes':'Buenas noches';
  const nconf=list.filter(a=>conflicts(a.date,a.start,a.dur,a.travel,a.id).length).length;
  const trav=list.reduce((s,a)=>s+(a.travel||0),0);
- return `${header(greet+', '+esc(S.profile.name.split(' ')[0]),cap(DIAS[d.getDay()])+' '+d.getDate()+' de '+MESES[d.getMonth()],`<div class="row"><a href="#/ajustes" aria-label="Ajustes" class="row" style="width:44px;height:44px;border-radius:22px;background:var(--navy);color:var(--blush);justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:20px">${esc(initials(S.profile.name))}</a>${menuBtn()}</div>`)}
+ return `${header(greet+', '+esc(S.profile.name.split(' ')[0]),cap(DIAS[d.getDay()])+' '+d.getDate()+' de '+MESES[d.getMonth()],`<div class="row"><a href="#/ajustes" aria-label="Ajustes y perfil" class="row" style="width:44px;height:44px;justify-content:center">${LOGO(44)}</a>${menuBtn()}</div>`)}
  <div class="col">
  <section class="navy row" aria-label="Resumen del día"><div class="grow"><b class="big">${list.length}</b><span class="xs">atenciones hoy</span></div><div class="grow"><b class="big">${mins?dur(mins):'0 h'}</b><span class="xs">de cuidado</span></div><div class="grow"><b class="big">${nconf}</b><span class="xs">choques de agenda</span></div></section>
  ${S.patients.length===0&&S.appts.length===0?`<div class="card"><b>Bienvenida a tu Nurse App</b><p class="sm mut" style="margin:6px 0 12px">Parte agregando tu primera paciente, o carga datos de ejemplo para recorrer la app sin riesgo. Todo se guarda solo en este teléfono.</p><div class="row"><a class="btn grow" href="#/pacientes" data-new="1">Agregar paciente</a><button class="btn sec grow" data-act="demo">Cargar ejemplo</button></div></div>`:''}
+ ${S.demo?`<div class="alert demo row sp" role="status"><span><b>Estás viendo datos de ejemplo.</b><br>Nada de esto es real.</span><button class="btn sec sm" data-act="cleardemo">Empezar con los míos</button></div>`:''}
+ ${(!S.demo&&S.patients.length&&(!S.lastBackup||(Date.now()-S.lastBackup)>7*864e5))?`<div class="alert a-warn row sp"><span><b>Haz un respaldo.</b><br>${S.lastBackup?'Hace más de una semana.':'Aún no has guardado ninguno.'}</span><button class="btn sm" data-act="export">Respaldar</button></div>`:''}
  <div class="eyebrow" style="margin-top:4px">Tu día</div>
  ${list.length?list.map(aptCard).join(''):empty('Hoy no tienes atenciones agendadas.','<a class="btn" href="#/voz">Agendar algo</a>')}
  ${list.length>1?`<section class="card row" aria-label="Ruta del día"><svg width="64" height="40" viewBox="0 0 64 40" fill="none" aria-hidden="true"><path d="M8 30C18 30 20 10 32 10S46 28 56 14" stroke="#3F6B4E" stroke-width="2" stroke-dasharray="3 5" stroke-linecap="round"/><circle cx="8" cy="30" r="4" fill="#C4935A"/><circle cx="32" cy="10" r="4" fill="#1B3A4B"/><circle cx="56" cy="14" r="4" fill="#3F6B4E"/></svg><div><b class="sm">Traslados del día</b><div class="xs mut">${trav} min en total · ${new Set(list.map(a=>a.zone)).size} sector(es)</div></div></section>`:''}
@@ -562,7 +570,7 @@ routes.informe=([id])=>{
  <h2 style="margin:4px 0 10px">Informe del turno</h2>
  <div class="seg" style="margin-bottom:12px"><button class="${mode==='fam'?'on':''}" data-act="imode" data-m="fam">Familiar</button><button class="${mode==='cli'?'on':''}" data-act="imode" data-m="cli">Clínico</button></div>
  <div class="col">
- <div class="paper" id="rptpaper"><div class="row"><div style="width:40px;height:40px;border-radius:20px;background:var(--navy);color:var(--blush);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:700">${esc(initials(S.profile.name))}</div><div><b>${esc(S.profile.name)}</b><div class="xs mut">${esc(S.profile.role)}</div></div></div>
+ <div class="paper" id="rptpaper"><div class="row">${LOGO(44)}<div><b>${esc(S.profile.name)}</b><div class="xs mut">${esc(S.profile.role)}</div></div></div>
  <div class="xs mut" style="margin:6px 0"><i>${esc(S.profile.tagline)}</i></div>
  <b>${esc(p.name)} · ${fdate(a.date,true).toLowerCase()} · ${a.start} a ${hhmm(toMin(a.start)+dur0)}</b>
  ${mode==='fam'?`<p>${esc(rp.family)}</p><div class="eyebrow" style="margin-top:10px">Qué observar en casa</div><p>${esc(rp.obs||'')}</p><p class="xs mut">En una emergencia llama al 131 (SAMU).</p>`:`<p>${esc(rp.clinical)}</p>`}
@@ -644,7 +652,7 @@ routes.cotizacion=([id])=>{
  const p=P(q.patientId);const tot=qTotal(q);
  const exp=addDays(q.date,q.valid);const expired=q.status==='enviada'&&exp<today();
  return `${back('Cotizar','#/cotizar')}<div class="row sp" style="margin:4px 0 10px"><h2>Cotización N° ${q.n}</h2><span class="pill ${q.status==='aceptada'?'p-ok':expired?'p-bad':'p-warn'}">${expired?'vencida':q.status}</span></div>
- <div class="col"><div class="paper" id="qpaper"><div class="row"><div style="width:44px;height:44px;border-radius:22px;background:var(--navy);color:var(--blush);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:18px">${esc(initials(S.profile.name))}</div><div><b>${esc(S.profile.name)}</b><div class="xs mut">${esc(S.profile.role)}</div></div></div>
+ <div class="col"><div class="paper" id="qpaper"><div class="row">${LOGO(48)}<div><b>${esc(S.profile.name)}</b><div class="xs mut">${esc(S.profile.role)}</div></div></div>
  <p style="margin:12px 0 2px"><b>Cotización N° ${q.n}</b><br><span class="xs mut">Emitida ${fdate(q.date,true)} · Vigente hasta ${fdate(exp,true)}</span></p>
  <p>Para: <b>${esc(q.resp||p?.resp?.name||'')}</b> · Paciente: <b>${esc(p?.name||'')}</b></p>
  <p><b>${esc(q.servicio||q.modo)}</b><br><span class="xs mut">Se realiza únicamente con indicación médica vigente.</span></p>
@@ -730,25 +738,34 @@ routes.disponibilidad=()=>{
  const days=dispWeek();const ws=days[0].date,we=days[5].date;
  return `${back('Agenda','#/agenda')}${header('Horas disponibles','Publicable en historias')}
  <div class="col"><div class="seg"><button class="${!S.ui.dispThis?'on':''}" data-act="dispwk" data-v="0">Próxima semana</button><button class="${S.ui.dispThis?'on':''}" data-act="dispwk" data-v="1">Esta semana</button></div>
- <div class="card916" id="c916"><div class="row"><div style="width:40px;height:40px;border-radius:20px;background:var(--blush);color:var(--navy);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:700">${esc(initials(S.profile.name))}</div><div class="xs" style="letter-spacing:.12em;text-transform:uppercase;font-weight:700">${esc(S.profile.name)} · Enfermera</div></div>
- <div class="xs" style="letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#D9A978;margin-top:18px">Semana del ${pISO(ws).getDate()} al ${pISO(we).getDate()} de ${MESES[pISO(we).getMonth()]}</div>
- <div style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:700;color:#fff;line-height:.98;margin-top:6px">Horas<br><i style="font-weight:600;color:var(--blush)">disponibles</i></div>
- <div class="col" style="gap:7px;margin-top:16px">${days.map(d=>`<div class="row sp" style="border-bottom:1px solid #3B5C6E;padding-bottom:6px"><span style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:${d.w.length?'#fff':'#9FB3BF'}">${cap(DIAS[pISO(d.date).getDay()])} ${pISO(d.date).getDate()}</span><span class="xs" style="font-weight:700;color:${d.w.length?'var(--blush)':'#9FB3BF'}">${d.w.length?d.w.map(w=>hhmm(w[0])+'–'+hhmm(w[1])).join(' · '):'Completo'}</span></div>`).join('')}</div>
- <div style="margin-top:auto"><div style="background:var(--amber);color:#10293A;border-radius:999px;padding:11px 18px;font-weight:700;font-size:14px;display:inline-block">Escríbeme para reservar</div><div class="xs" style="margin-top:8px">${esc(S.profile.ig)}${S.profile.wa?' · '+esc(S.profile.wa):''}<br><i>${esc(S.profile.tagline)}</i></div></div></div>
+ <div class="card916 v-${S.ui.dispVar||'marino'}" id="c916" style="${dispStyle()}"><div class="row">${LOGO(44,true)}<div class="xs" style="letter-spacing:.12em;text-transform:uppercase;font-weight:700">${esc(S.profile.name)} · Enfermera</div></div>
+ <div class="xs dk" style="letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#D9A978;margin-top:18px">Semana del ${pISO(ws).getDate()} al ${pISO(we).getDate()} de ${MESES[pISO(we).getMonth()]}</div>
+ <div class="dh" style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:700;color:#fff;line-height:.98;margin-top:6px">Horas<br><i style="font-weight:600;color:var(--blush)">disponibles</i></div>
+ <div class="col" style="gap:7px;margin-top:16px">${days.map(d=>`<div class="row sp dl" style="border-bottom:1px solid #3B5C6E;padding-bottom:6px"><span class="dt" style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:${d.w.length?'#fff':'#9FB3BF'}">${cap(DIAS[pISO(d.date).getDay()])} ${pISO(d.date).getDate()}</span><span class="xs dt" style="font-weight:700;color:${d.w.length?'var(--blush)':'#9FB3BF'}">${d.w.length?d.w.map(w=>hhmm(w[0])+'–'+hhmm(w[1])).join(' · '):'Completo'}</span></div>`).join('')}</div>
+ <div style="margin-top:auto"><div style="background:var(--amber);color:#10293A;border-radius:999px;padding:11px 18px;font-weight:700;font-size:14px;display:inline-block">Escríbeme para reservar</div><div class="xs" style="margin-top:8px">${esc(S.profile.ig)}${S.profile.wa?' · '+esc(S.profile.wa):''}<br>Reg. N° ${esc(S.profile.reg)}<br><i>${esc(S.profile.tagline)}</i></div></div></div>
+ <div class="seg" role="group" aria-label="Estilo de la imagen">${[['marino','Marino'],['blush','Claro'],['foto','Con foto']].map(v=>`<button class="${(S.ui.dispVar||'marino')===v[0]?'on':''}" data-act="dispvar" data-v="${v[0]}">${v[1]}</button>`).join('')}</div>
+ ${(S.ui.dispVar==='foto')?`<label class="btn sec" style="cursor:pointer">${S.ui.dispPhoto?'Cambiar foto':'Elegir foto'}<input type="file" accept="image/*" data-act="dispphoto" class="hide"></label>`:''}
  <div class="row"><button class="btn grow" data-act="dlcard">Descargar imagen</button><button class="btn sec" data-act="copyavail">Copiar texto</button></div>
  <div class="xs mut">Solo se publican horas que de verdad te calzan. Tu agenda completa y tus pacientes nunca aparecen.</div></div>`;
 };
+function dispStyle(){return (S.ui.dispVar==='foto'&&S.ui.dispPhoto)?"background-image:url('"+S.ui.dispPhoto+"')":''}
 function availText(){const d=dispWeek();return `Horas disponibles · ${S.profile.name}, enfermera\n`+d.map(x=>`${cap(DIAS[pISO(x.date).getDay()])} ${pISO(x.date).getDate()}: ${x.w.length?x.w.map(w=>hhmm(w[0])+'–'+hhmm(w[1])).join(' y '):'completo'}`).join('\n')+`\nEscríbeme para reservar ${S.profile.ig}`}
+let dispImg=null;
+function drawLogo(x,px,py,sz,light){x.save();x.translate(px,py);const k=sz/64;x.scale(k,k);x.fillStyle=light?'#E8D5C4':'#1B3A4B';x.beginPath();x.arc(32,32,32,0,7);x.fill();x.strokeStyle=light?'#1B3A4B':'#E8D5C4';x.lineWidth=2;x.beginPath();x.arc(32,32,24,0,7);x.stroke();x.strokeStyle='#C4935A';x.lineWidth=7;x.lineCap='round';x.beginPath();x.moveTo(32,19);x.lineTo(32,45);x.moveTo(19,32);x.lineTo(45,32);x.stroke();x.fillStyle='#8BA888';x.fill(new Path2D('M33 19c8 0 12 5 12 10-7 0-12-3-12-10z'));x.restore()}
+function loadDispImg(){if(S.ui.dispPhoto){const i=new Image();i.onload=()=>{dispImg=i};i.src=S.ui.dispPhoto}}
 function downloadCard(){
  const days=dispWeek();const W=1080,H=1920;const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
- x.fillStyle='#1B3A4B';x.fillRect(0,0,W,H);x.fillStyle='#274B5F';x.beginPath();x.arc(W-60,60,330,0,7);x.fill();
- x.fillStyle='#E8D5C4';x.beginPath();x.arc(150,150,60,0,7);x.fill();x.fillStyle='#1B3A4B';x.font='700 56px "Cormorant Garamond",serif';x.textAlign='center';x.fillText(initials(S.profile.name),150,170);
- x.textAlign='left';x.fillStyle='#E8D5C4';x.font='700 32px "DM Sans",sans-serif';x.fillText((S.profile.name+' · ENFERMERA').toUpperCase(),240,160);
- const ws=days[0].date,we=days[5].date;x.fillStyle='#D9A978';x.fillText(`SEMANA DEL ${pISO(ws).getDate()} AL ${pISO(we).getDate()} DE ${MESES[pISO(we).getMonth()].toUpperCase()}`,90,420);
- x.fillStyle='#fff';x.font='700 190px "Cormorant Garamond",serif';x.fillText('Horas',90,620);x.fillStyle='#E8D5C4';x.font='italic 600 190px "Cormorant Garamond",serif';x.fillText('disponibles',90,810);
- days.forEach((d,i)=>{const y=980+i*105;x.strokeStyle='#3B5C6E';x.lineWidth=2;x.beginPath();x.moveTo(90,y+30);x.lineTo(W-90,y+30);x.stroke();x.fillStyle=d.w.length?'#fff':'#9FB3BF';x.font='700 56px "Cormorant Garamond",serif';x.textAlign='left';x.fillText(cap(DIAS[pISO(d.date).getDay()])+' '+pISO(d.date).getDate(),90,y+12);x.font='700 42px "DM Sans",sans-serif';x.textAlign='right';x.fillText(d.w.length?d.w.map(w=>hhmm(w[0])+'–'+hhmm(w[1])).join(' · '):'Completo',W-90,y+12)});
+ const V=S.ui.dispVar||'marino';const light=V==='blush';const fg=light?'#1B3A4B':'#E8D5C4',acc=light?'#7A5A2E':'#D9A978',line=light?'#C9B29C':'#3B5C6E',dim=light?'#6B7C85':'#9FB3BF',big=light?'#1B3A4B':'#fff';
+ x.fillStyle=light?'#E8D5C4':'#1B3A4B';x.fillRect(0,0,W,H);
+ if(V==='foto'&&dispImg){const k=Math.max(W/dispImg.width,H/dispImg.height);x.drawImage(dispImg,(W-dispImg.width*k)/2,(H-dispImg.height*k)/2,dispImg.width*k,dispImg.height*k);const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'rgba(16,41,58,.8)');g.addColorStop(.4,'rgba(16,41,58,.66)');g.addColorStop(1,'rgba(16,41,58,.92)');x.fillStyle=g;x.fillRect(0,0,W,H)}
+ else if(!light){x.fillStyle='#274B5F';x.beginPath();x.arc(W-60,60,330,0,7);x.fill()}
+ drawLogo(x,90,90,120,V==='blush');
+ x.textAlign='left';x.fillStyle=fg;x.font='700 32px "DM Sans",sans-serif';x.fillText((S.profile.name+' · ENFERMERA').toUpperCase(),240,160);
+ const ws=days[0].date,we=days[5].date;x.fillStyle=acc;x.fillText(`SEMANA DEL ${pISO(ws).getDate()} AL ${pISO(we).getDate()} DE ${MESES[pISO(we).getMonth()].toUpperCase()}`,90,420);
+ x.fillStyle=big;x.font='700 190px "Cormorant Garamond",serif';x.fillText('Horas',90,620);x.fillStyle=fg;x.font='italic 600 190px "Cormorant Garamond",serif';x.fillText('disponibles',90,810);
+ days.forEach((d,i)=>{const y=980+i*105;x.strokeStyle=line;x.lineWidth=2;x.beginPath();x.moveTo(90,y+30);x.lineTo(W-90,y+30);x.stroke();x.fillStyle=d.w.length?big:dim;x.font='700 56px "Cormorant Garamond",serif';x.textAlign='left';x.fillText(cap(DIAS[pISO(d.date).getDay()])+' '+pISO(d.date).getDate(),90,y+12);x.font='700 42px "DM Sans",sans-serif';x.textAlign='right';x.fillText(d.w.length?d.w.map(w=>hhmm(w[0])+'–'+hhmm(w[1])).join(' · '):'Completo',W-90,y+12)});
  x.textAlign='left';x.fillStyle='#C4935A';const bw=640,bh=96,bx=90,by=1660;x.beginPath();x.roundRect?x.roundRect(bx,by,bw,bh,48):x.rect(bx,by,bw,bh);x.fill();x.fillStyle='#10293A';x.font='700 44px "DM Sans",sans-serif';x.fillText('Escríbeme para reservar',bx+44,by+63);
- x.fillStyle='#E8D5C4';x.font='500 34px "DM Sans",sans-serif';x.fillText(S.profile.ig+(S.profile.wa?' · '+S.profile.wa:''),90,1820);
+ x.fillStyle=fg;x.font='500 34px "DM Sans",sans-serif';x.fillText(S.profile.ig+(S.profile.wa?' · '+S.profile.wa:''),90,1812);x.font='500 28px "DM Sans",sans-serif';x.fillText('Reg. N° '+S.profile.reg+' · '+S.profile.tagline,90,1862);
  c.toBlob(b=>{if(!b){toast('No se pudo crear la imagen');return}const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='horas-disponibles.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);toast('Imagen descargada')},'image/png');
 }
 
@@ -805,7 +822,7 @@ function portalUrl(p){
  const q=S.quotes.filter(x=>x.patientId===p.id&&x.status!=='borrador').sort((a,b)=>b.date.localeCompare(a.date))[0];
  const ch=S.charges.filter(c=>c.patientId===p.id&&c.status==='pend');
  const total=nx.length+done.length;
- const payload={v:1,pw:cfg.pinHash||'',e:cfg.exp,pn:p.name.split(/[ ,]/)[0],fn:(p.resp.name||'').split(' ')[0],vn:S.profile.name,vr:S.profile.role,tg:S.profile.tagline,wa:S.profile.wa,
+ const payload={v:1,rg:S.profile.reg,pw:cfg.pinHash||'',e:cfg.exp,pn:p.name.split(/[ ,]/)[0],fn:(p.resp.name||'').split(' ')[0],vn:S.profile.name,vr:S.profile.role,tg:S.profile.tagline,wa:S.profile.wa,
   tx:p.indication?.text||'',nx:nx.slice(0,6).map(a=>({d:a.date,s:a.start,t:a.type})),dn:done.slice(-8).map(a=>({d:a.date,s:a.start})),tot:total,
   rp:cfg.inf&&rep?{d:rep.date,s:rep.start,f:rep.report.family,o:rep.report.obs||''}:null,
   q:cfg.cot&&q?{n:q.n,sv:q.servicio||q.modo,qty:q.qty,u:q.unit,t:qTotal(q),vd:addDays(q.date,q.valid),st:q.status}:null,
@@ -821,7 +838,7 @@ function portalRoute(code){
  let ok=false;try{ok=sessionStorage.getItem(key)==='1'}catch(e){}
  if(!d.pw)ok=true;
  if(!ok){
-  app.innerHTML=`<div class="col" style="padding-top:16px"><div class="row"><div style="width:44px;height:44px;border-radius:22px;background:var(--navy);color:var(--blush);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:20px">${esc(initials(d.vn))}</div><div><b>${esc(d.vn)}</b><div class="xs mut">Portal de la familia</div></div></div>
+  app.innerHTML=`<div class="col" style="padding-top:16px"><div class="row">${LOGO(52)}<div><b>${esc(d.vn)}</b><div class="xs mut">Portal de la familia</div></div></div>
   <h1>Hola, ${esc(d.fn)}</h1><p class="mut" style="margin:0">${esc(d.vn.split(' ')[0])} te compartió el seguimiento de ${esc(d.pn)}.</p>
   <form class="card col" id="pinform"><b>Confirma que eres tú</b><label class="f">PIN de 4 dígitos que te entregó en la primera visita<input id="pinin" inputmode="numeric" maxlength="4" autocomplete="one-time-code" aria-describedby="pinerr" style="font-size:28px;letter-spacing:.5em;text-align:center"></label><div id="pinerr" class="alert a-bad hide" role="alert">PIN incorrecto.</div><button class="btn" type="submit">Entrar</button><a class="xs mut" href="${waLink(d.wa,'Hola, no tengo el PIN del portal de '+d.pn)}" style="text-align:center;min-height:44px;display:flex;align-items:center;justify-content:center">No tengo el PIN</a></form>
   <p class="xs mut">Enlace personal, vence el ${fdate(d.e)}. No lo reenvíes: solo tú y ${esc(d.vn.split(' ')[0])} ven esta información.</p></div>`;
@@ -857,7 +874,8 @@ function portalRoute(code){
   <label class="f" style="margin-top:10px">Tu mensaje<textarea id="pmsg">Hola ${esc(d.vn.split(' ')[0])}, ${esc(cur.toLowerCase())}: </textarea></label>
   <a class="btn full" id="pmwa" style="margin-top:10px" href="${wa('Hola')}">Abrir en WhatsApp</a><p class="xs mut">Se abre tu WhatsApp con el mensaje listo. La conversación queda en tu teléfono, no en el portal.</p>`;
  }
- app.innerHTML=`<div class="row" style="margin-bottom:10px"><div style="width:38px;height:38px;border-radius:19px;background:var(--navy);color:var(--blush);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:700">${esc(initials(d.vn))}</div><div><b class="sm">${esc(d.vn)}</b><div class="xs mut">${esc(d.tg||d.vr)}</div></div></div>${body}
+ app.innerHTML=`<div class="row" style="margin-bottom:10px">${LOGO(40)}<div><b class="sm">${esc(d.vn)}</b><div class="xs mut">${esc(d.tg||d.vr)}</div></div></div>${body}
+ <div class="pfoot"><b>${esc(d.vn)}</b><br>Enfermera · Reg. N° ${esc(d.rg||'')}<br><i>${esc(d.tg||'')}</i></div>
  <nav class="tabs" aria-label="Portal">${tabs.map(t=>`<a href="#/p/${code.split('/')[0]}/${t[0]}" class="${tab===t[0]?'on':''}" ${tab===t[0]?'aria-current="page"':''}>${t[1]}</a>`).join('')}</nav>`;
  if(tab==='mensaje'){
   const upd=()=>{$('#pmwa').href=wa($('#pmsg').value)};$('#pmsg').oninput=upd;upd();
@@ -893,6 +911,7 @@ document.addEventListener('click',async ev=>{
  case 'closesheet':closeSheet();break;
  case 'menu':sheet(`<h2>Más</h2><div class="col" style="margin-top:12px"><a class="btn sec" href="#/panel">Panel comercial</a><a class="btn sec" href="#/embudo">Embudo de clientes</a><a class="btn sec" href="#/disponibilidad">Horas disponibles</a><a class="btn sec" href="#/voz">Agendar por voz</a><a class="btn sec" href="#/ajustes">Ajustes y respaldo</a></div>`);break;
  case 'demo':if(S.patients.length&&!confirm('Esto reemplaza lo que tengas. ¿Cargar datos de ejemplo?'))break;demo();toast('Datos de ejemplo cargados');route();break;
+ case 'cleardemo':if(confirm('Se quitan los datos de ejemplo. Tu perfil y ajustes se mantienen. ¿Continuar?')){const k=S.profile,tf=S.tarifas,hr=S.horario;S=DEFAULTS();S.profile=k;S.tarifas=tf;S.horario=hr;saveNow();toast('Listo, parte con tu primera paciente');route()}break;
  case 'wipe':if(confirm('Se borrarán TODAS tus pacientes, citas y cobros de este teléfono. ¿Seguro?')&&confirm('Última confirmación: no se puede deshacer.')){const k=S.profile,tf=S.tarifas,hr=S.horario;S=DEFAULTS();S.profile=k;S.tarifas=tf;S.horario=hr;saveNow();toast('Datos borrados');location.hash='#/hoy';route()}break;
  case 'start':startVisit(id);break;
  case 'aptopen':{const a=A(id);if(!a)break;if(a.status==='hecha'&&a.report)location.hash='#/informe/'+a.id;else if(a.status==='curso')location.hash='#/visita/'+a.id;else apptForm(a)}break;
@@ -952,13 +971,14 @@ document.addEventListener('click',async ev=>{
  case 'lmove':{const l=S.leads.find(x=>x.id===id);l.stage=Math.max(0,Math.min(STAGES.length-1,l.stage+Number(el.dataset.n)));save();route();break}
  case 'dispwk':S.ui.dispThis=el.dataset.v==='1';save();route();break;
  case 'dlcard':downloadCard();break;
+ case 'dispvar':S.ui.dispVar=el.dataset.v;save();route();break;
  case 'copyavail':try{await navigator.clipboard.writeText(availText());toast('Texto copiado')}catch(e){toast('No se pudo copiar')}break;
  case 'pcopy':{const p=P(id);await ensurePin(p);try{await navigator.clipboard.writeText(portalUrl(p));toast('Enlace copiado')}catch(e){toast('No se pudo copiar')}break}
  case 'pwa':{const p=P(id);if(!p.resp.phone){toast('Falta el WhatsApp del responsable');break}await ensurePin(p);const cfg=S.ui.portal[p.id];window.open(waLink(p.resp.phone,`Hola ${p.resp.name.split(' ')[0]}, este es tu enlace personal para seguir el cuidado de ${p.name.split(/[ ,]/)[0]}. Vence el ${fdate(cfg.exp)}. El PIN te lo entrego en persona.\n${portalUrl(p)}`),'_blank','noopener');break}
  case 'pinshow':{const b=$('#pinv'),cfg=S.ui.portal[id];b.textContent=b.textContent==='••••'?cfg.pin:'••••';break}
  case 'prenew':{const cfg=S.ui.portal[id];cfg.exp=addDays(today(),30);save();route();toast('Renovado 30 días')}break;
  case 'prevoke':{if(confirm('Se genera un PIN nuevo. El enlace anterior deja de abrir con el PIN viejo.')){const cfg=S.ui.portal[id];cfg.pin=String(1000+Math.floor(Math.random()*9000));cfg.pinHash='';save();route();toast('PIN nuevo generado')}break}
- case 'export':{const b=new Blob([JSON.stringify(S)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='nurse-app-respaldo-'+today()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);toast('Respaldo descargado');break}
+ case 'export':{const b=new Blob([JSON.stringify(S)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='nurse-app-respaldo-'+today()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);S.lastBackup=Date.now();save();toast('Respaldo descargado');if(location.hash==='#/hoy')route();break}
  case 'install':if(window._bip){window._bip.prompt();window._bip=null}break;
  }
 });
@@ -966,6 +986,7 @@ document.addEventListener('change',async ev=>{
  const el=ev.target;
  if(el.dataset.act==='recipe'){const f=el.files[0];if(!f)return;const p=P(el.dataset.id);p.indication=p.indication||{};p.indication.photo=await shrink(f);p.indication.date=today();save();route();toast('Foto guardada')}
  else if(el.dataset.act==='import'){const f=el.files[0];if(!f)return;try{const o=JSON.parse(await f.text());if(!o.patients||!o.appts)throw 0;if(!confirm('Esto reemplaza tus datos actuales por el respaldo. ¿Continuar?'))return;S=Object.assign(DEFAULTS(),o);saveNow();toast('Respaldo restaurado');route()}catch(e){toast('Ese archivo no es un respaldo válido')}}
+ else if(el.dataset.act==='dispphoto'){const f=el.files[0];if(!f)return;S.ui.dispPhoto=await shrink(f);save();loadDispImg();route();toast('Foto lista')}
  else if(el.dataset.act==='ptoggle'){const cfg=S.ui.portal[el.dataset.id];cfg[el.dataset.k]=el.checked;save()}
 });
 document.addEventListener('input',ev=>{
@@ -1021,6 +1042,7 @@ function shrink(file){return new Promise(res=>{const r=new FileReader();r.onload
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window._bip=e;const b=$('#installbtn');if(b)b.style.display=''});
 if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 window.NURSE={get S(){return S},set S(v){S=v},route,conflicts,suggest,parsePhrase,qTotal,freeWindows,today,addDays,genFamily,tentSlots,startVisit,closeVisit,waLink,demo,DEFAULTS,saveNow,b64e,b64d,portalUrl,sha,A,P,loadOf,dayAppts};
+loadDispImg();
 route();
 </script>
 </body>

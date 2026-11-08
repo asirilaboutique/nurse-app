@@ -34,7 +34,7 @@ t('cancelada libera la hora',()=>{fresh();const a=N.S.appts.find(x=>x.start==='1
 t('ignora la propia cita al editar',()=>{fresh();const a=N.S.appts.find(x=>x.start==='10:00'&&x.date===N.today());eq(N.conflicts(a.date,a.start,a.dur,a.travel,a.id).length,0)});
 t('sugerencias libres de choque y sin almuerzo',()=>{fresh();const s=N.suggest(N.today(),60,15,5,540);eq(s.length,5);s.forEach(x=>{ok(!N.conflicts(x.date,x.start,60,15).length,'choca '+x.date+x.start);ok(!(toMin(x.start)<840&&toMin(x.start)+60>780),'cae en almuerzo '+x.start)})});
 t('no sugiere días no laborales',()=>{fresh();N.S.horario.dias=[1];const s=N.suggest(N.today(),30,0,3,0);s.forEach(x=>eq(new Date(x.date+'T00:00').getDay(),1))});
-t('horas libres excluyen almuerzo y citas',()=>{fresh();const w=N.freeWindows(N.today());ok(w.length>0);w.forEach(([a,b])=>ok(b-a>=60));ok(!w.some(([a,b])=>a<780&&b>840))});
+t('horas libres excluyen almuerzo y citas',()=>{fresh();const w=N.freeWindows(nextDow(2));ok(w.length>0);w.forEach(([a,b])=>ok(b-a>=60));ok(!w.some(([a,b])=>a<780&&b>840))});
 t('carga del día baja/media/alta/libre',()=>{fresh();const e=N.addDays(N.today(),30);N.S.appts.push({id:'x1',patientId:N.S.patients[0].id,date:e,start:'09:00',dur:60,travel:0,status:'prog',type:'t',zone:''});eq(N.loadOf(e),'baja');N.S.appts.push({id:'x2',patientId:N.S.patients[0].id,date:e,start:'11:00',dur:150,travel:0,status:'prog',type:'t',zone:''});eq(N.loadOf(e),'media');N.S.appts.push({id:'x3',patientId:N.S.patients[0].id,date:e,start:'14:00',dur:200,travel:0,status:'prog',type:'t',zone:''});eq(N.loadOf(e),'alta');eq(N.loadOf(N.addDays(e,1)),'libre')});
 t('pantalla Agenda renderiza día, semana y mes sin error',async()=>{fresh();for(const m of['dia','semana','mes']){N.S.ui.agMode=m;await go('#/agenda');N.route();ok(txt().includes('Agenda'),m)}N.S.ui.agMode='dia'});
 
@@ -96,7 +96,7 @@ t('filtro del embudo oculta otras necesidades',async()=>{fresh();N.S.ui.efilter=
 cur=R[7]=[];
 const mkPortal=async(mut)=>{fresh();const p=N.S.patients[0];N.S.ui.portal={};N.S.ui.portal[p.id]={pin:'4821',days:30,exp:N.addDays(N.today(),30),inf:true,cot:true,pay:true,rev:false};if(mut)mut(N.S.ui.portal[p.id]);N.S.ui.portal[p.id].pinHash=await N.sha('4821|'+N.S.ui.portal[p.id].exp);return {p,url:N.portalUrl(p)}};
 t('enlace del portal se decodifica',async()=>{const {url}=await mkPortal();const d=N.b64d(url.split('#/p/')[1]);eq(d.pn,'Rosa');eq(d.fn,'Camila')});
-t('el enlace NO incluye ficha clínica ni versión clínica',async()=>{const {url}=await mkPortal();const d=N.b64d(url.split('#/p/')[1]);const ok0=['v','pw','e','pn','fn','vn','vr','tg','wa','tx','nx','dn','tot','rp','q','pg'];Object.keys(d).forEach(k=>ok(ok0.includes(k),'campo no permitido '+k));ok(!JSON.stringify(d.rp||{}).includes('PA '))});
+t('el enlace NO incluye ficha clínica ni versión clínica',async()=>{const {url}=await mkPortal();const d=N.b64d(url.split('#/p/')[1]);const ok0=['rg','v','pw','e','pn','fn','vn','vr','tg','wa','tx','nx','dn','tot','rp','q','pg'];Object.keys(d).forEach(k=>ok(ok0.includes(k),'campo no permitido '+k));ok(!JSON.stringify(d.rp||{}).includes('PA '))});
 t('portal pide PIN y rechaza uno incorrecto',async()=>{const {url}=await mkPortal();sessionStorage.clear();location.hash='#/p/'+url.split('#/p/')[1];await wait(120);ok(/Confirma que eres tú/.test(txt()));document.querySelector('#pinin').value='0000';document.querySelector('#pinform').requestSubmit();await wait(150);ok(!document.querySelector('#pinerr').classList.contains('hide'))});
 t('portal abre con el PIN correcto',async()=>{const {url}=await mkPortal();sessionStorage.clear();location.hash='#/p/'+url.split('#/p/')[1];await wait(120);document.querySelector('#pinin').value='4821';document.querySelector('#pinform').requestSubmit();await wait(200);ok(/Hola, Camila/.test(txt())&&/Próxima visita/.test(txt()))});
 t('enlace vencido se rechaza',async()=>{const {url}=await mkPortal(c=>{c.exp=N.addDays(N.today(),-1)});location.hash='#/p/'+url.split('#/p/')[1];await wait(120);ok(/venció/.test(txt()))});
@@ -157,11 +157,25 @@ t('renderizado completo de la app < 200 ms por pantalla',async()=>{fresh();for(c
 t('sin errores de consola en la sesión',()=>{ok(!window.__errs||window.__errs.length===0,JSON.stringify(window.__errs))});
 t('tamaño del HTML razonable (<200 KB) para carga móvil',async()=>{const b=(await (await fetch('index.html')).text()).length;ok(b<200000,b+' bytes')});
 
+
+/* R11 · Marca, registro y siguiente nivel */
+cur=R[11]=[];
+t('registro N° 475283 por defecto en el perfil',()=>{N.S=N.DEFAULTS();eq(N.S.profile.reg,'475283')});
+t('el logo SVG aparece en Hoy con nombre accesible',async()=>{fresh();await go('#/hoy');ok(document.querySelector('#app svg[aria-label="Valeria Enfermera"]'))});
+t('informe y cotización muestran el registro',async()=>{fresh();const a=N.S.appts.find(x=>x.status==='hecha');await go('#/informe/'+a.id);ok(/Reg. 475283/.test(document.querySelector('#rptpaper').innerText));const q=N.S.quotes[0];await go('#/cotizacion/'+q.id);ok(/Reg. 475283/.test(document.querySelector('#qpaper').innerText))});
+t('portal muestra registro y logo',async()=>{fresh();const p=N.S.patients[0];N.S.ui.portal={};N.S.ui.portal[p.id]={pin:'4821',exp:N.addDays(N.today(),30),inf:true,cot:true,pay:true};N.S.ui.portal[p.id].pinHash='';const u=N.portalUrl(p);sessionStorage.clear();location.hash='#/p/'+u.split('#/p/')[1];await wait(150);ok(/Reg. N° 475283/.test(txt()));ok(document.querySelector('#app.portal svg[aria-label="Valeria Enfermera"]'))});
+t('portal usa fondo sobrio y al salir se restaura',async()=>{await go('#/hoy');ok(!document.querySelector('#app').classList.contains('portal'));eq(document.body.style.background,'')});
+t('imagen de horas: 3 variantes se renderizan',async()=>{fresh();for(const v of['marino','blush','foto']){N.S.ui.dispVar=v;await go('#/disponibilidad');ok(document.querySelector('#c916.v-'+v),v)}N.S.ui.dispVar='marino'});
+t('variante clara mantiene contraste del texto',async()=>{fresh();N.S.ui.dispVar='blush';await go('#/disponibilidad');const c=getComputedStyle(document.querySelector('#c916 .dt')).color;ok(c==='rgb(27, 58, 75)',c);N.S.ui.dispVar='marino'});
+t('aviso de datos de ejemplo y salida limpia',async()=>{fresh();await go('#/hoy');ok(/datos de ejemplo/.test(txt()));const cf=window.confirm;window.confirm=()=>true;click('[data-act=cleardemo]');window.confirm=cf;eq(N.S.patients.length,0);ok(!N.S.demo);eq(N.S.profile.reg,'475283')});
+t('recordatorio de respaldo aparece y se apaga al respaldar',async()=>{fresh();N.S.demo=false;N.S.lastBackup=0;await go('#/hoy');ok(/Haz un respaldo/.test(txt()));click('[data-act=export]');await wait(100);ok(!/Haz un respaldo/.test(txt()))});
+t('ícono PWA y manifest con la marca nueva',async()=>{const s=await (await fetch('icon.svg')).text();ok(s.includes('#8BA888')&&s.includes('#C4935A'))});
+
 window.__errs=[];window.addEventListener('error',e=>window.__errs.push(e.message));
 window.runRound=async function(n){
  const res=[];
  for(const x of R[n]){try{await x.fn();res.push({ok:true,name:x.name})}catch(e){res.push({ok:false,name:x.name,err:String(e.message).slice(0,200)})}}
  return {round:n,pass:res.filter(r=>r.ok).length,total:res.length,fails:res.filter(r=>!r.ok)};
 };
-window.runAll=async function(){const o=[];for(let i=1;i<=10;i++)o.push(await runRound(i));return o};
+window.runAll=async function(){const o=[];for(let i=1;i<=11;i++)o.push(await runRound(i));return o};
 })();
