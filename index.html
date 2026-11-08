@@ -69,6 +69,7 @@ nav.tabs svg{width:24px;height:24px}
 .card916.v-foto{background-size:cover;background-position:center;color:#fff}.card916.v-foto:before{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(16,41,58,.78),rgba(16,41,58,.62) 40%,rgba(16,41,58,.9))}.card916.v-foto>*{position:relative}
 .demo{background:var(--warnbg);color:var(--warnfg)}
 @media(min-width:900px){#app{padding-bottom:90px}nav.tabs{max-width:none;justify-content:center}nav.tabs a{flex:0 0 120px}}
+.tline{position:relative;padding-left:22px;display:flex;flex-direction:column;gap:14px;margin:14px 0}.tline:before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:var(--line)}.tl-i{position:relative}.tl-i>i{position:absolute;left:-22px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--turq);border:3px solid var(--bg)}.tl-i.next>i{background:var(--terra)}
 .splash{position:fixed;inset:0;z-index:99;background:#14275F;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;pointer-events:none;animation:spOut .5s 1.5s forwards}
 .splash .tl{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;color:#E3EEF9;text-align:center;padding:0 24px}
 .splash svg{width:112px;height:112px}.splash svg path:last-child{stroke-dasharray:160;stroke-dashoffset:160;animation:spDr 1s .25s ease forwards}
@@ -273,14 +274,16 @@ window.addEventListener('hashchange',route);
 /* ============ HOY ============ */
 function outbox(){
  const t=today(),tm=addDays(t,1),sent=(S.ui.sent=S.ui.sent||{}),items=[];
+ S.charges.filter(c=>c.status==='pend'&&c.due<=tm).forEach(c=>{const p=P(c.patientId);if(!p)return;const dd=Math.round((pISO(c.due)-pISO(t))/864e5);
+  items.push({k:'c'+c.id,kind:'Cobro',who:p.name,phone:p.resp&&p.resp.phone,why:clp(c.amount)+' · '+(dd<0?'atrasado '+(-dd)+' d':dd===0?'vence hoy':'vence mañana'),msg:`Hola ${String(p.resp&&p.resp.name||p.name).split(' ')[0]}, te escribo por el pago de ${c.concept} (${clp(c.amount)}), ${dd<0?'que venció hace '+(-dd)+' día'+(dd===-1?'':'s'):dd===0?'que vence hoy':'que vence mañana'}.${S.profile.bank?'\nDatos para transferir:\n'+S.profile.bank:''}\nGracias. ${S.profile.name}`})});
  const first=n=>String(n||'').split(/[ ,]/)[0];
  const sig=' — '+first(S.profile.name)+', Enfermera a domicilio';
  S.appts.filter(a=>a.date===tm&&a.status==='prog'&&!a.tent).forEach(a=>{const p=P(a.patientId);if(!p)return;
   items.push({k:'r'+a.id,kind:'Recordatorio',who:p.name,phone:p.resp&&p.resp.phone,why:'Mañana '+a.start,msg:`Hola ${first(p.resp&&p.resp.name)}, te recuerdo la atención de ${first(p.name)} mañana a las ${a.start} (${a.type}). Si necesitas cambiar la hora, avísame por aquí.${sig}`})});
  S.leads.filter(l=>l.stage===1&&/sin respuesta/i.test(l.note||'')).forEach(l=>{const p=l.patientId&&P(l.patientId);
-  items.push({k:'q'+l.id,kind:'Cotización',who:l.name,phone:p&&p.resp&&p.resp.phone,why:'Sin respuesta',msg:`Hola, ¿pudiste revisar la cotización de ${l.need||'la atención'}? Si tienes dudas o quieres ajustar algo, lo vemos juntas.${sig}`})});
+  items.push({k:'q'+l.id,kind:'Cotización',who:l.name,phone:(p&&p.resp&&p.resp.phone)||l.phone,why:'Sin respuesta',msg:`Hola, ¿pudiste revisar la cotización de ${l.need||'la atención'}? Si tienes dudas o quieres ajustar algo, lo vemos juntas.${sig}`})});
  S.leads.filter(l=>l.stage===5&&/c[oó]mo sigue/i.test(l.note||'')).forEach(l=>{const p=l.patientId&&P(l.patientId);
-  items.push({k:'a'+l.id,kind:'Seguimiento',who:l.name,phone:p&&p.resp&&p.resp.phone,why:'Alta reciente',msg:`Hola, quería saber cómo sigue ${first(l.name)} después del alta. Quedo atenta por si necesitas algo.${sig}`})});
+  items.push({k:'a'+l.id,kind:'Seguimiento',who:l.name,phone:(p&&p.resp&&p.resp.phone)||l.phone,why:'Alta reciente',msg:`Hola, quería saber cómo sigue ${first(l.name)} después del alta. Quedo atenta por si necesitas algo.${sig}`})});
  return items.filter(i=>sent[i.k]!==t);
 }
 function outboxHtml(){
@@ -446,6 +449,35 @@ function parsePhrase(txt){
  out.ok=!!(best&&date&&time);
  return out;
 }
+/* ===== Entrada rápida: pegar mensaje de WhatsApp ===== */
+function parseLeadMsg(txt){
+ const raw=String(txt||'').trim();const n=norm(raw);const o={raw,ok:false};
+ const pm=raw.replace(/[\s().-]/g,'').match(/(?:\+?56)?(9\d{8})/);o.phone=pm?pm[1]:'';
+ const cm=raw.match(/(?:soy|me llamo|mi nombre es)\s+([A-Za-zÁÉÍÓÚÑáéíóúñ]+(?:\s+[A-Za-zÁÉÍÓÚÑáéíóúñ]+)?)/i);
+ o.contact=cm?cm[1].replace(/\s+(y|e|y mi|necesito|busco|quiero|tengo)\b.*$/i,'').trim():'';
+ const rm=raw.match(/mi\s+(mam[aá]|pap[aá]|abuel[oa]|t[ií][oa]|esposo|esposa|hij[oa]|hermano|hermana|suegr[oa]|beb[eé])(?:\s+(?:se llama|que se llama)?\s*([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+))?/);
+ o.rel=rm?rm[1]:'';o.patient=rm&&rm[2]?rm[2]:'';
+ const am=n.match(/(\d{1,3})\s*(anos|meses)/);o.age=am?am[1]+' '+am[2].replace('anos','años'):'';
+ let svc='';
+ if(/paliativ/.test(n))svc='Paliativo';else if(/curaci/.test(n))svc='Curaciones';else if(/inyecc|anticoag|enoxa/.test(n))svc='Inyecciones';
+ else if(/bebe|recien nacido|lactan/.test(n)||/mes(es)?\b/.test(am?am[2]:''))svc='Bebé';
+ else if(/turno|noche|cuidado|acompan/.test(n))svc='Turno por horas';else if(/control|signos|presion/.test(n))svc='Control de signos';
+ else if(/adulto mayor|abuel|mama|papa|anciano/.test(n))svc='Adulto mayor';
+ o.svc=svc;
+ o.name=o.patient?o.patient+(o.contact?' (familia de '+o.contact.split(' ')[0]+')':''):o.contact?'Familia '+o.contact.split(' ').slice(-1)[0]:'';
+ o.need=[svc||'Por definir',o.rel?o.rel:'',o.age].filter(Boolean).join(' · ');
+ o.ok=!!(o.phone||o.name);
+ return o;
+}
+function pasteCard(v){
+ return `<section class="card col" aria-live="polite"><b class="sm">Esto entendí del mensaje · confírmalo</b>
+ <div class="sm"><div class="row sp"><span class="mut">Contacto</span><b>${esc(v.name||'—')}</b></div>
+ <div class="row sp"><span class="mut">WhatsApp</span><b>${v.phone?'+56 '+esc(v.phone):'—'}</b></div>
+ <div class="row sp"><span class="mut">Necesita</span><b>${esc(v.need)}</b></div></div>
+ ${v.phone?'':'<div class="alert a-warn">No encontré un número. Quedará sin WhatsApp hasta que lo agregues.</div>'}
+ ${v.name?'':'<div class="alert a-warn">No encontré el nombre. Se guardará como "Contacto nuevo".</div>'}
+ <div class="row"><button class="btn cta grow" data-act="pasteok">Guardar en clientes</button><button class="btn sec" data-act="pasteclear">Descartar</button></div></section>`;
+}
 routes.voz=()=>{
  const v=S.ui.voz;const can='webkitSpeechRecognition' in window||'SpeechRecognition' in window;
  return `${back('Cerrar','#/hoy')}${header('Agendar','por frase o voz')}
@@ -454,6 +486,8 @@ routes.voz=()=>{
  <div class="row"><button class="btn grow" type="submit">Entender</button>${can?`<button type="button" class="btn amb" id="micbtn" data-act="mic" style="width:52px;padding:0" aria-label="Dictar con el micrófono">${svg('mic')}</button>`:''}</div>
  <div id="phint" class="xs mut">${can?'Toca el micrófono y habla en español.':'Tu navegador no dicta por voz; escribe la frase.'} Nunca guardo nada sin tu confirmación.</div></form>
  ${v?phraseCard(v):''}
+ <form data-form="paste" class="col card" novalidate><b class="sm">¿Te escribieron por WhatsApp?</b><span class="xs mut">Pega el mensaje y armo la ficha del cliente. No se guarda nada sin tu confirmación.</span><label class="f">Mensaje pegado<textarea name="txt" id="pastetxt" placeholder="Hola, soy María Soto, mi mamá Rosa tiene 82 años y necesita curaciones. Mi cel +56 9 8765 4321">${esc(S.ui.paste?.raw||'')}</textarea></label><button class="btn sec" type="submit">Entender mensaje</button></form>
+ ${S.ui.paste?pasteCard(S.ui.paste):''}
  <div class="row" style="flex-wrap:wrap"><a class="chip row" href="#/agenda" style="display:inline-flex;align-items:center">Ver agenda</a><button class="chip" data-act="newappt">Formulario completo</button></div>
  </div>`;
 };
@@ -592,6 +626,7 @@ function closeVisit(f){
  r.vit={pa:fd.get('pa')||'',fc:fd.get('fc')||'',temp:fd.get('temp')||'',sat:fd.get('sat')||''};
  r.vig=fd.getAll('vig');r.nota=fd.get('nota')||'';r.end=new Date().toISOString();
  a.record=r;a.status='hecha';
+ if(a.price&&!a.tent&&!S.charges.some(c=>c.apptId===a.id)&&!S.charges.some(c=>c.patientId===p.id&&c.status==='pend'&&/^(Tratamiento|Cotizaci)/.test(c.concept))){S.charges.push({id:uid(),patientId:p.id,concept:(a.type||'Visita')+' · '+fdate(a.date),amount:a.price,due:addDays(today(),3),status:'pend',boleta:'',apptId:a.id});a.chargeMade=true}
  const g=genFamily(a,p,r);
  a.report={family:g.texto,obs:g.obs,clinical:genClinical(a,p,r),approved:false,sent:false};
  save();toast('Visita cerrada');location.hash='#/informe/'+a.id;
@@ -828,6 +863,7 @@ routes.ajustes=()=>{
  <div id="confbox"></div><button class="btn" type="submit">Guardar ajustes</button></form>
  <div class="eyebrow" style="margin-top:22px">Respaldo de tus datos</div>
  <p class="sm mut">Todo vive solo en este teléfono. Si lo cambias o borras el navegador, se pierde. Descarga un respaldo cada semana.</p>
+ <section class="card col"><b class="sm">Respaldo cifrado para tu Drive</b><span class="xs mut">Se cifra con una clave que solo tú sabes (mínimo 8 caracteres). Si la pierdes, nadie puede abrirlo, ni yo. En el teléfono se abre el menú de compartir: elige Drive.</span><label class="f">Clave del respaldo<input type="password" id="bakpass" autocomplete="new-password" minlength="8"></label><div class="row"><button class="btn grow" data-act="bakenc">Respaldar cifrado</button><label class="btn sec grow" style="cursor:pointer">Restaurar<input type="file" accept=".nursebak,application/json" data-act="importenc" class="hide"></label></div></section>
  <div class="col"><button class="btn sec" data-act="export">Descargar respaldo</button><label class="btn sec" style="cursor:pointer">Restaurar respaldo<input type="file" accept="application/json" data-act="import" class="hide"></label>
  <a class="btn sec" href="#/panel">Panel comercial</a><a class="btn sec" href="#/embudo">Embudo de clientes</a>
  <button class="btn sec" data-act="demo">Cargar datos de ejemplo</button><button class="btn bad" data-act="wipe">Borrar todos los datos</button>
@@ -857,6 +893,8 @@ const toB=a=>{let t='';a.forEach(x=>t+=String.fromCharCode(x));return btoa(t).re
 const fromB=x=>Uint8Array.from(atob(x.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
 async function kdf(pin,salt){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pin),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:200000,hash:'SHA-256'},k,{name:'AES-GCM',length:256},false,['encrypt','decrypt'])}
 async function sealPortal(payload,pin){const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));const key=await kdf(pin,salt);const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(JSON.stringify(payload))));return {v:2,vn:payload.vn,vr:payload.vr,e:payload.e,wa:payload.wa,s:toB(salt),i:toB(iv),c:toB(ct)}}
+async function sealBackup(obj,pass){const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));const key=await kdf(pass,salt);const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(JSON.stringify(obj))));return {nurseBackup:1,s:toB(salt),i:toB(iv),c:toB(ct)}}
+async function openBackup(env,pass){const key=await kdf(pass,fromB(env.s));const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:fromB(env.i)},key,fromB(env.c));return JSON.parse(new TextDecoder().decode(pt))}
 async function openPortal(env,pin){const key=await kdf(pin,fromB(env.s));const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:fromB(env.i)},key,fromB(env.c));return JSON.parse(new TextDecoder().decode(pt))}
 const newPin=()=>{const a=new Uint32Array(1);crypto.getRandomValues(a);return String(100000+a[0]%900000)};
 async function portalUrl(p){
@@ -870,6 +908,7 @@ async function portalUrl(p){
  const payload={v:1,rg:S.profile.reg,e:cfg.exp,pn:p.name.split(/[ ,]/)[0],fn:(p.resp.name||'').split(' ')[0],vn:S.profile.name,vr:S.profile.role,tg:S.profile.tagline,wa:S.profile.wa,
   tx:p.indication?.text||'',nx:nx.slice(0,6).map(a=>({d:a.date,s:a.start,t:a.type})),dn:done.slice(-8).map(a=>({d:a.date,s:a.start})),tot:total,
   rp:cfg.inf&&rep?{d:rep.date,s:rep.start,f:rep.report.family,o:rep.report.obs||''}:null,
+  tl:done.slice().sort((x,y)=>(y.date+y.start).localeCompare(x.date+x.start)).slice(0,8).map(a=>({d:a.date,s:a.start,t:a.type,x:(a.report&&(a.report.approved||a.report.sent))?String(a.report.family||'').split(/(?<=[.!?])s/)[0].slice(0,110):''})),
   q:cfg.cot&&q?{n:q.n,sv:q.servicio||q.modo,qty:q.qty,u:q.unit,t:qTotal(q),vd:addDays(q.date,q.valid),st:q.status}:null,
   pg:cfg.pay?{ch:ch.map(c=>({c:c.concept,a:c.amount,d:c.due})),bank:S.profile.bank,email:S.profile.email}:null};
  return location.href.split('#')[0]+'#/p/'+b64e(await sealPortal(payload,cfg.pin));
@@ -899,7 +938,7 @@ function portalRoute(code){
  const tab=code.split('/')[1]||'inicio';
  const wa=t=>waLink(d.wa,t);
  const nxt=d.nx[0];
- const tabs=[['inicio','Inicio'],['informe','Informes'],['cuidado','Cuidado'],['pagos','Pagos'],['mensaje','Mensaje']];
+ const tabs=[['inicio','Inicio'],['historia','Historia'],['informe','Informes'],['cuidado','Cuidado'],['pagos','Pagos'],['mensaje','Mensaje']];
  let body='';
  if(tab==='inicio'){
   body=`<h1>Hola, ${esc(d.fn)}</h1><p class="mut" style="margin:0 0 10px">Así va el cuidado de ${esc(d.pn)}</p>
@@ -908,6 +947,8 @@ function portalRoute(code){
   ${d.rp?`<section class="card"><div class="row sp"><b class="sm">Último informe · ${fdate(d.rp.d)}</b><a class="sm" style="text-decoration:underline;min-height:44px;display:flex;align-items:center" href="#/p/${code.split('/')[0]}/informe">Leer ›</a></div><p class="sm mut" style="margin:4px 0 0">${esc(d.rp.f.slice(0,160))}${d.rp.f.length>160?'…':''}</p></section>`:''}
   ${d.pg&&d.pg.ch.length?`<section class="card row sp"><div><b class="sm">Pago pendiente</b><div class="xs mut">Vence ${fdate(d.pg.ch[0].d)}</div></div><b>${clp(d.pg.ch.reduce((s,c)=>s+c.a,0))}</b></section>`:''}
   <p class="xs mut" style="text-align:center">En una emergencia llama al 131 (SAMU), no uses este portal.</p>`;
+ }else if(tab==='historia'){
+  const tl=d.tl||[];body=`<h2>Historia del cuidado</h2><p class="sm mut">Lo que se ha hecho con ${esc(d.pn)}, visita a visita.</p><div class="tline">${d.nx.slice(0,1).map(n=>`<div class="tl-i next"><i></i><div><b>${fdate(n.d,true)} · ${n.s}</b><div class="xs mut">Próxima: ${esc(n.t)}</div></div></div>`).join('')}${tl.map(h=>`<div class="tl-i"><i></i><div><b>${fdate(h.d,true)} · ${h.s}</b><div class="xs mut">${esc(h.t)}</div>${h.x?`<p class="sm" style="margin:4px 0 0">${esc(h.x)}</p>`:''}</div></div>`).join('')||'<div class="card">Aún no hay visitas realizadas.</div>'}</div><p class="xs mut">Cada resumen lo revisa y aprueba ${esc(d.vn.split(' ')[0])} antes de compartirse.</p>`;
  }else if(tab==='informe'){
   body=`<h2>Informe del turno</h2>${d.rp?`<div class="mut sm">${fdate(d.rp.d,true)} · ${d.rp.s} · ${esc(d.vn)}</div><div class="paper" style="margin-top:10px"><span class="pill p-ok">Versión familiar · aprobada por ${esc(d.vn.split(' ')[0])}</span><p>${esc(d.rp.f)}</p>${d.rp.o?`<div class="eyebrow">Qué observar en casa</div><p>${esc(d.rp.o)}</p>`:''}<div class="alert a-bad xs">Sangrado abundante o falta de aire: llama al 131.</div></div><div class="row" style="margin-top:10px"><a class="btn grow" href="${wa('Recibido el informe del '+fdate(d.rp.d)+'. Gracias.')}">Recibido</a><a class="btn sec grow" href="${wa('Hola, tengo una duda sobre el informe del '+fdate(d.rp.d)+': ')}">Tengo una duda</a></div>`:'<div class="card">Aún no hay informes compartidos.</div>'}`;
  }else if(tab==='cuidado'){
@@ -1025,6 +1066,13 @@ document.addEventListener('click',async ev=>{
  case 'dispvar':S.ui.dispVar=el.dataset.v;save();route();break;
  case 'copyavail':try{await navigator.clipboard.writeText(availText());toast('Texto copiado')}catch(e){toast('No se pudo copiar')}break;
  case 'pcopy':{const p=P(id);await ensurePin(p);try{await navigator.clipboard.writeText(await portalUrl(p));toast('Enlace copiado')}catch(e){toast('No se pudo copiar')}break}
+ case 'pasteok':{const v=S.ui.paste;if(!v)break;S.leads.push({id:uid(),name:v.name||'Contacto nuevo',need:v.need,source:'WhatsApp',stage:0,amount:0,note:'Hoy',phone:v.phone||''});S.ui.paste=null;save();route();toast('Cliente guardado en el embudo');break}
+ case 'pasteclear':S.ui.paste=null;route();break;
+ case 'bakenc':{const pw=($('#bakpass')||{}).value||'';if(pw.length<8){toast('La clave debe tener al menos 8 caracteres');break}
+  const env=await sealBackup(S,pw);const name='nurse-app-respaldo-cifrado-'+today()+'.nursebak';const file=new File([JSON.stringify(env)],name,{type:'application/json'});
+  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Respaldo Nurse App'})}else throw 0}
+  catch(e){const u=URL.createObjectURL(file);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}
+  S.lastBackup=Date.now();save();toast('Respaldo cifrado listo. Guárdalo en tu Drive.');break}
  case 'osend':{const i=outbox().find(x=>x.k===el.dataset.k);if(!i||!i.phone)break;window.open(waLink(i.phone,i.msg),'_blank','noopener');S.ui.sent[i.k]=today();save();route();toast('Marcado como enviado hoy');break}
  case 'pwa':{const p=P(id);if(!p.resp.phone){toast('Falta el WhatsApp del responsable');break}await ensurePin(p);const cfg=S.ui.portal[p.id];window.open(waLink(p.resp.phone,`Hola ${p.resp.name.split(' ')[0]}, este es tu enlace personal para seguir el cuidado de ${p.name.split(/[ ,]/)[0]}. Vence el ${fdate(cfg.exp)}. El PIN te lo entrego en persona.\n${await portalUrl(p)}`),'_blank','noopener');break}
  case 'pinshow':{const b=$('#pinv'),cfg=S.ui.portal[id];b.textContent=b.textContent==='••••'?cfg.pin:'••••';break}
@@ -1038,6 +1086,11 @@ document.addEventListener('change',async ev=>{
  const el=ev.target;
  if(el.dataset.act==='recipe'){const f=el.files[0];if(!f)return;const p=P(el.dataset.id);p.indication=p.indication||{};p.indication.photo=await shrink(f);p.indication.date=today();save();route();toast('Foto guardada')}
  else if(el.dataset.act==='import'){const f=el.files[0];if(!f)return;try{const o=JSON.parse(await f.text());if(!o.patients||!o.appts)throw 0;if(!await ask('Esto reemplaza tus datos actuales por el respaldo. ¿Continuar?'))return;S=Object.assign(DEFAULTS(),o);saveNow();toast('Respaldo restaurado');route()}catch(e){toast('Ese archivo no es un respaldo válido')}}
+ else if(el.dataset.act==='importenc'){const f=el.files[0];if(!f)return;const pw=($('#bakpass')||{}).value||'';
+  try{const env=JSON.parse(await f.text());if(!env.nurseBackup)throw 'fmt';if(!pw){toast('Escribe la clave del respaldo y vuelve a elegir el archivo');el.value='';return}
+   let o;try{o=await openBackup(env,pw)}catch(e){toast('Clave incorrecta o archivo dañado');el.value='';return}
+   if(!o.patients||!o.appts)throw 'fmt';if(!await ask('Esto reemplaza tus datos actuales por el respaldo. ¿Continuar?')){el.value='';return}
+   S=Object.assign(DEFAULTS(),o);saveNow();route();toast('Respaldo restaurado')}catch(e){toast('Ese archivo no es un respaldo de Nurse App')}el.value=''}
  else if(el.dataset.act==='dispphoto'){const f=el.files[0];if(!f)return;S.ui.dispPhoto=await shrink(f);save();loadDispImg();route();toast('Foto lista')}
  else if(el.dataset.act==='ptoggle'){const cfg=S.ui.portal[el.dataset.id];cfg[el.dataset.k]=el.checked;save()}
 });
@@ -1064,6 +1117,7 @@ document.addEventListener('submit',async ev=>{
  const bad=m=>{if(box)box.innerHTML=`<div class="alert a-bad" role="alert">${m}</div>`};
  switch(kind){
  case 'appt':saveAppt(f,false);break;
+ case 'paste':if(!o.txt.trim()){toast('Pega el mensaje');break}S.ui.paste=parseLeadMsg(o.txt);route();break;
  case 'phrase':if(!o.txt.trim()){toast('Escribe o dicta una frase');break}usePhrase(o.txt);break;
  case 'pat':{if(!o.name.trim())return bad('Falta el nombre.');
   const risks=o.risks.split(',').map(x=>x.trim()).filter(Boolean);
@@ -1095,7 +1149,7 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window._bip
 if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 (function(){try{if(sessionStorage.getItem('splash'))return;sessionStorage.setItem('splash','1')}catch(e){}
  const s=document.createElement('div');s.className='splash';s.setAttribute('aria-hidden','true');s.innerHTML=LOGO(112,true)+'<div class="tl">Cuidados que acompañan.<br>En cada etapa de la vida.</div>';document.body.appendChild(s);setTimeout(()=>s.remove(),2200)})();
-window.NURSE={outbox,PCACHE,openPortal,get S(){return S},set S(v){S=v},route,conflicts,suggest,parsePhrase,qTotal,freeWindows,today,addDays,genFamily,tentSlots,startVisit,closeVisit,waLink,demo,DEFAULTS,saveNow,b64e,b64d,portalUrl,sha,A,P,loadOf,dayAppts};
+window.NURSE={sealBackup,openBackup,parseLeadMsg,outbox,PCACHE,openPortal,get S(){return S},set S(v){S=v},route,conflicts,suggest,parsePhrase,qTotal,freeWindows,today,addDays,genFamily,tentSlots,startVisit,closeVisit,waLink,demo,DEFAULTS,saveNow,b64e,b64d,portalUrl,sha,A,P,loadOf,dayAppts};
 loadDispImg();
 route();
 </script>
