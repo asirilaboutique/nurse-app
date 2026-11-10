@@ -1,0 +1,339 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body style="margin:0"><title>Director Valeria Enfermera</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#F6F1E8;--card:#FFFDF8;--fg:#14275F;--muted:#5B6787;--line:#E2D8C6;--acc:#2E9C8F;--warm:#C9785D;--ok:#2E7D5B;--no:#B4483A;
+--display:'Cormorant Garamond',Georgia,serif;--body:'DM Sans',system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1A33;--card:#16244A;--fg:#EEF1F8;--muted:#A9B4CF;--line:#2A3A66;--acc:#4CC2B3;--warm:#E39B80;--ok:#5CC49A;--no:#E07A6C;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F1A33;--card:#16244A;--fg:#EEF1F8;--muted:#A9B4CF;--line:#2A3A66;--acc:#4CC2B3;--warm:#E39B80;--ok:#5CC49A;--no:#E07A6C;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5}
+.w{max-width:860px;margin:0 auto;padding-block:20px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.k{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--warm);font-weight:700}
+h1{font-family:var(--display);font-size:clamp(34px,6vw,52px);line-height:1.02;margin:8px 0 10px;text-wrap:balance}
+h1 i{color:var(--acc)}
+h2{font-family:var(--display);font-size:30px;margin:36px 0 4px}
+h3{font-size:15px;margin:22px 0 8px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+p.s{color:var(--muted);margin:0 0 14px;max-width:62ch}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 18px}
+.tabs button{font-size:14px;padding:8px 14px}.tabs button[aria-current="true"]{background:var(--warm);color:var(--card);border-color:var(--warm)}
+.arch{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:8px;padding:12px 14px;margin:10px 0 18px;font-size:15px}
+.sets{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:14px 0}
+.set{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:10px;padding:12px 14px;font-size:14px}
+.set b{display:block;font-size:17px}.set span{color:var(--muted)}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;padding:2px 8px;border-radius:99px;color:#fff;background:var(--c);margin-left:6px;vertical-align:middle}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 0;display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:14px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.chip{padding:3px 10px;border-radius:99px;border:1px solid var(--line);font-variant-numeric:tabular-nums}
+.chip.ok{color:var(--ok);border-color:var(--ok)}.chip.no{color:var(--no);border-color:var(--no)}
+.list{display:flex;flex-direction:column;gap:10px}
+.it{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:8px;padding:12px 14px;display:grid;grid-template-columns:44px 1fr;gap:4px 10px}
+.it.ok{border-left-color:var(--ok)}.it.no{border-left-color:var(--no)}.it.ed{border-left-color:var(--warm)}
+.code{font-weight:700;color:var(--warm);font-variant-numeric:tabular-nums}
+.tx{min-width:0;font-size:17px}
+.dir{grid-column:2;font-size:13px;color:var(--muted)}
+.tx textarea{width:100%;font:inherit;color:var(--fg);background:transparent;border:1px dashed var(--line);border-radius:6px;padding:6px;resize:vertical}
+.ac{grid-column:2;display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+button{font:inherit;font-size:13px;border:1px solid var(--line);background:transparent;color:var(--fg);padding:5px 11px;border-radius:99px;cursor:pointer}
+button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button.ok[aria-pressed="true"]{background:var(--ok);color:var(--card);border-color:var(--ok)}
+button.no[aria-pressed="true"]{background:var(--no);color:var(--card);border-color:var(--no)}
+button.ia{border-color:var(--acc);color:var(--acc)}
+.sug{grid-column:2;display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.sug button{text-align:left;border-radius:8px;font-size:15px}
+.note{font-size:13px;color:var(--muted)}
+.big{font-size:15px;padding:9px 16px;background:var(--acc);color:var(--card);border-color:var(--acc)}
+.modes{position:sticky;top:0;z-index:20;display:flex;gap:6px;justify-content:center;padding:8px;background:var(--bg);border-bottom:1px solid var(--line)}
+.modes button{font-size:14px;padding:7px 14px}.modes button[aria-current="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+[hidden]{display:none!important}
+#cla,#tp{position:fixed;inset:0;z-index:30;background:#000;color:#fff;display:flex;flex-direction:column}
+.ctl{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:10px;padding-bottom:max(10px,env(safe-area-inset-bottom));background:#111}
+.ctl button{color:#fff;border-color:#555;font-size:16px;padding:10px 16px;min-height:44px}
+.ctl .gold{background:#F2C14E;color:#000;border-color:#F2C14E}
+.slate{flex:1;display:grid;grid-template-rows:auto 1fr auto;margin:12px;border:6px solid #fff;min-height:0}
+.stripes{height:46px;background:repeating-linear-gradient(-45deg,#fff 0 28px,#000 28px 56px);border-bottom:6px solid #fff}
+.sg{display:grid;grid-template-rows:1fr 1.3fr 1fr;min-height:0}
+.cell{padding:1vh 4vw;display:flex!important;flex-direction:column;justify-content:center;align-items:center!important;text-align:center;min-width:0;min-height:0}
+.cell+.cell{border-top:3px solid #fff}
+.cell small{font:700 clamp(12px,1.8vh,18px)/1 var(--body);letter-spacing:.2em;color:#bbb;margin-bottom:.6vh}
+.cell b{font:700 min(13vh,30vw)/1 var(--body);font-variant-numeric:tabular-nums}
+.cell.mid b{font-size:min(16vh,34vw)}
+.slate{max-width:calc(100vw - 24px);overflow:hidden}
+.sfoot{flex-direction:column;align-items:center;text-align:center}.sfoot>span{white-space:normal!important;overflow-wrap:anywhere}
+#cla .ctl button{padding:10px 12px;font-size:15px}
+.sfoot{border-top:3px solid #fff;padding:8px 14px;font-size:clamp(13px,2.4vh,20px);display:flex;justify-content:space-between;gap:10px;min-width:0}
+.sfoot>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#solo{position:fixed;inset:0;z-index:30;background:#000;color:#fff;display:flex;flex-direction:column}
+#soTop{display:flex;justify-content:space-between;gap:8px;padding:10px 14px;font:700 15px var(--body);letter-spacing:.08em;color:#F2C14E;flex-wrap:wrap}
+#soMain{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:2vh 6vw;gap:2vh;min-height:0;overflow:hidden}
+#soPh{font:700 clamp(16px,3vh,26px) var(--body);letter-spacing:.2em;padding:6px 16px;border-radius:99px;background:#333}
+#soPh.rec{background:#D3271E}#soPh.ver{background:#2E6FD8}#soPh.prep{background:#B8860B}#soPh.pau{background:#555}
+#soT{font:700 min(22vh,40vw)/1 var(--body);font-variant-numeric:tabular-nums}
+#soTx{font:600 var(--tps,7vw)/1.2 var(--body);text-wrap:balance;max-width:100%}
+#solo.mir #soTx{transform:scaleX(-1)}
+#soBar{height:10px;background:#222}#soFill{height:100%;width:0;background:#D3271E}
+#soNext{color:#888;font-size:15px}
+#soObs{color:#F2C14E;font:500 clamp(15px,2.6vh,22px) var(--body);max-width:90%}
+#soCam{position:fixed;right:10px;bottom:130px;width:120px;border-radius:8px;transform:scaleX(-1);opacity:.85}
+#soG{position:fixed;right:10px;left:10px;bottom:104px;font-size:13px;color:#F2C14E;text-align:right}
+#solo .ctl select{font:inherit;background:#111;color:#fff;border:1px solid #555;border-radius:99px;padding:8px}
+.big2{font-size:20px!important;padding:12px 20px!important}
+#flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:40;transition:opacity .2s}
+.ptip{display:none;text-align:center;color:#F2C14E;padding:6px;font-size:14px}
+@media (orientation:portrait){.ptip{display:block}}
+#tpBody{flex:1;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:4vh 6vw;gap:4vh}
+#tpCode{color:#F2C14E;font:700 18px var(--body);letter-spacing:.15em}
+#tpTxt{font:600 var(--tps,9vw)/1.2 var(--body);text-wrap:balance}
+#tpNext{color:#888;font-size:max(16px,calc(var(--tps,9vw)*.35))}
+#tp.mir #tpBody{transform:scaleX(-1)}
+.log{font-size:14px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<nav class="modes" aria-label="Modo"><button data-m="ap" aria-current="true">✓ Guion</button><button data-m="cla">🎬 Claqueta</button><button data-m="tp">📜 Teleprompter</button><button data-m="solo">🎥 Modo sola</button></nav>
+<div id="ap">
+<div class="w">
+<div class="k">Valeria Enfermera · director audiovisual</div>
+<div class="tabs" role="tablist"><button data-r="r2" aria-current="true">Rodaje 2 · 10-nov</button><button data-r="r1">Rodaje 1 · 7-nov (archivado)</button></div>
+<div id="hdr"></div>
+<div class="bar" aria-live="polite"><b id="bt">Progreso</b><span class="chip ok" id="nOk">0 ✓</span><span class="chip no" id="nNo">0 ✗</span><span class="chip" id="nPend"></span><span class="note" id="st">Conectando…</span></div>
+<div id="body"></div>
+<h2>Rodaje</h2><p class="s"><b>Teléfono A</b> (frente a la cámara, vertical): 🎬 Claqueta. <b>Teléfono B</b> (bajo el lente): 📜 Teleprompter. Se mueven juntos. En el rodaje 2 el orden va <b>por set</b>, para no mover luces ni cámara más de 3 veces.</p>
+<div class="log" id="log">Sin tomas todavía.</div>
+<p class="note" style="margin-top:28px">Reglas: tu voz en primera persona, español de Chile, siempre Talca, sin promesas clínicas, sin pacientes reales, sin escasez falsa, procedimientos solo con indicación médica, nunca "profesional".</p>
+</div>
+</div>
+<div id="cla" hidden>
+<div class="slate"><div class="stripes"></div>
+<div class="sg"><div class="cell"><small>SET</small><b id="sSet">1</b></div><div class="cell mid"><small>FRASE</small><b id="sId">G1</b></div><div class="cell"><small>TOMA</small><b id="sTk">1</b></div></div>
+<div class="sfoot"><span>VALERIA ENFERMERA · <span id="sRd"></span> · <span id="sDate"></span></span><span id="sTx"></span></div></div>
+<div class="ctl"><button id="cPrev">◀ Frase</button><button id="cTk">＋ Toma</button><button id="cClap" class="gold">👏 Claqueta</button><button id="cBad" style="background:#B4483A;border-color:#B4483A">✗ Mala</button><button id="cGood">★ Buena</button><button id="cNext">Frase ▶</button><button data-m="ap" aria-label="Salir">✕</button></div>
+</div>
+<div id="tp" hidden>
+<div id="tpBody"><div id="tpCode"></div><div id="tpTxt"></div><div id="tpNext"></div></div>
+<div class="ctl"><button id="tPrev">◀</button><button id="tMinus">A−</button><button id="tPlus">A＋</button><button id="tMir">⇋ Espejo</button><button id="tNext">▶</button><button data-m="ap" aria-label="Salir">✕</button></div>
+</div>
+<div id="solo" hidden>
+<div id="soTop"><span id="soId"></span><span id="soCnt"></span></div>
+<div id="soBar"><div id="soFill"></div></div>
+<div id="soMain"><div id="soPh">LISTA</div><div id="soT">20</div><div id="soTx"></div><div id="soObs"></div><div id="soNext"></div></div>
+<video id="soCam" playsinline muted hidden></video><div id="soG"></div>
+<div class="ctl"><button id="soGo" class="gold big2">▶ Partir</button><button id="soBad" class="big2" style="background:#B4483A;border-color:#B4483A">👎 Mala</button><button id="soGood" class="big2" style="background:#2E7D5B;border-color:#2E7D5B">👍 Buena</button><button id="soSkip" aria-label="Saltar frase">⏭</button>
+<select id="soDur" aria-label="Segundos por escena"><option value="10">⏱ 10 s</option><option value="15">⏱ 15 s</option><option value="20" selected>⏱ 20 s</option><option value="25">⏱ 25 s</option><option value="30">⏱ 30 s</option><option value="40">⏱ 40 s</option><option value="50">⏱ 50 s</option><option value="60">⏱ 60 s</option></select>
+<button id="soCamB">📷 Gestos</button><button id="soMic">🎙 Voz</button><button id="soMir" aria-label="Espejo">⇋</button><button data-m="ap" aria-label="Salir">✕</button></div>
+</div>
+<div id="flash"></div>
+
+<script>
+/* ---------- RODAJE 1 (archivado, material final ya creado) ---------- */
+const D1={G:["¿Tu mamá vive sola en Talca y tú no?","¿Cuándo fue la última vez que alguien revisó los remedios de tu papá?","Si vives en Santiago y tus papás en Talca, esto es para ti.","Llamas a tu mamá y no contesta. Ese nudo en la guata, lo conozco.","Tus papás te cuidaron toda la vida. Ahora, ¿quién los cuida a ellos?","Soy Valeria y soy enfermera a domicilio en Talca.","Esto no te lo explican cuando te dan el alta.","¿Te operas este mes? Escucha esto antes de irte a la casa.","Te dieron el alta… ¿y ahora quién hace las curaciones?","Si sientes que tu papá ya no es el mismo de antes, escucha esto.","Cuidar a alguien que amas cansa. Y está bien decirlo.","¿Hace cuánto que no tienes una tarde para ti?","No regales otra bata. Regala una tarde libre.","El mejor regalo de Navidad no se compra en el mall.","¿Tu hermana cuida a tu mamá todos los días? Mira esto.","Mamá recién parida, esto es para ti.","Nadie te prepara para cuidar a tus papás.","¿Sabías que existe la enfermería a domicilio en Talca?","Enfermera con nombre, cara y título. Esa soy yo.","8 años cuidando pacientes. Hoy los cuido en su casa.","Me preguntaron: «¿atiendes adultos mayores en su casa?»","Me preguntaron: «¿y si yo vivo en Santiago?»","Me preguntaron: «¿cuánto cuesta una enfermera a domicilio?»","Lo que hago cuando visito a un adulto mayor en Talca.","Un día en mi trabajo como enfermera a domicilio.","Si tu papá se olvida de tomar sus remedios, para aquí.","Pastilleros desordenados: el error más común que veo en las casas.","Tu mamá dice que está bien. ¿Pero lo está?","Trabajas todo el día y te preocupa tu papá solo en la casa.","Hay hijas que viven con culpa por estar lejos. No tiene que ser así.","Esto es lo que recibe una hija después de cada visita mía.","Si estás en Talca o Maule y cuidas a alguien, quédate.","¿Necesitas curaciones en casa con indicación de tu médico?","Así se ve la tranquilidad: un reporte por WhatsApp.","Después de una cirugía, la casa también es parte de la recuperación.","No necesitas dejar de trabajar para que tu mamá esté bien cuidada.","Lo que más me piden las familias de Talca.","Si tu abuelo vive con ustedes, esto les va a servir.","¿Buscas enfermera en Talca? Te cuento cómo trabajo.","Una pregunta que me hacen siempre: «¿vas los fines de semana?»"],
+C:["Visito a tu familiar en su casa, reviso sus signos vitales, sus remedios y cómo está de ánimo.","Después de cada visita te mando un reporte por WhatsApp con foto, para que estés tranquila aunque estés lejos.","Le armo el pastillero de la semana y me aseguro de que entienda cómo tomarse cada remedio.","Hago curaciones y procedimientos en casa, siempre con la indicación de su médico.","Te acompaño los primeros días después de la cirugía, para que te recuperes tranquila en tu casa.","Si cuidas a alguien todos los días, yo te relevo unas horas para que tengas tiempo para ti.","Tengo una gift card de 4 u 8 horas de cuidado: un regalo para quien siempre cuida a todos.","Tengo 8 años de experiencia y mi registro en la Superintendencia de Salud está a la vista.","Atiendo en Talca y alrededores, con visitas puntuales o un plan semanal, según lo que necesite tu familia.","Te enseño a ti o a quien cuida cómo hacerlo bien en casa, para que nadie se sienta solo.","Coordino con el médico tratante cuando hace falta, para que todo el equipo esté al tanto.","Mi trabajo es que tu familia esté bien cuidada y que tú vuelvas a dormir tranquila."],
+X:["Escríbeme por WhatsApp y te cuento cómo podemos partir.","Toca el botón y escríbeme, te respondo yo misma.","Escríbeme hoy y agendamos una primera visita.","Si quieres regalar tiempo esta Navidad, escríbeme.","Guarda este video y compártelo con tu hermana."]};
+/* ---------- RODAJE 2 · 4 sets ASIRI ---------- */
+const SETS={1:{n:"Fondo blanco",c:"#14275F",d:"El mismo de ayer. De pie, plano medio, mirada directa. Energía alta.",ward:"Uniforme estampado azul"},
+2:{n:"Junto a la escalera",c:"#C9785D",d:"De pie al lado de la escalera, cámara un poco en diagonal para que se vea la escalera.",ward:"Uniforme liso azul marino"},
+3:{n:"Sentada en el sillón",c:"#2E9C8F",d:"Plano medio cerrado, cámara a la altura de los ojos. Tono íntimo, más lento, como conversando.",ward:"Uniforme estampado claro o chaleco encima"},
+4:{n:"Exterior · muralla blanca y árbol",c:"#3F7D3A",d:"Muralla de fondo, hojas verdes al costado del cuadro. Sol de lado, nunca de frente. Revisar viento en el micrófono.",ward:"Uniforme + mochila o caja de insumos"}};
+const D2=[
+/* SET 1 · Fondo blanco = mismo set y uniforme del rodaje 1: encadena con C1-C12 y X1-X5 */
+["G41",1,"¿Te recetaron inyecciones y no quieres ir todos los días al consultorio?","Levantar la receta a cámara. INYECTABLES.","→ C13 o C4 · X1"],
+["G42",1,"Esa herida no se cura sola: así hago una curación en casa.","Mostrar guantes y gasa. CURACIONES.","→ C14 o C4 · X3"],
+["G43",1,"Tres señales de que tu papá necesita más apoyo en casa.","Contar 1-2-3 con los dedos. ADULTO MAYOR.","→ P5 · C1 · X3 (sirve para largo)"],
+["G44",1,"Si al alta te dijeron «reposo en casa», esto te sirve.","Comillas con tono de cita. POSTOPERATORIO.","→ C5 · X3"],
+["G45",1,"Tú cuidas a todos… ¿y a ti, quién te cuida?","REGRABACIÓN apertura L5. Pausa en los puntos suspensivos.","→ L5 actual · C6"],
+["G46",1,"Tu papá vuelve de la cirugía… ¿y la casa está preparada?","Pregunta directa. POSTOPERATORIO.","→ C5 · C15 · X1"],
+["G47",1,"Tu hijo con fiebre y tú sin poder salir. Para eso estoy.","Tono calmo, no alarma. NIÑOS.","→ C13 · X2"],
+["G48",1,"Inyectables, curaciones, bebés y adultos mayores: todo en tu casa.","Contar con los dedos. TODOS LOS SERVICIOS.","→ C9 · X3"],
+["G49",1,"¿Estás en Concepción? Esto es para ti.","Señalar a cámara. CONCE.","→ C19 · X7"],
+["G50",1,"Estoy armando agenda en Concepción. ¿Me ayudas?","Cómplice. CONCE · validación.","→ X7"],
+["P1",1,"Te explico cómo funciona.","Puente neutro, mirada a cámara.","Une cualquier gancho con C1-C12"],
+["P2",1,"Y aquí viene lo importante.","Inclinarse leve hacia cámara.","Antes de un cuerpo o de un largo"],
+["P3",1,"Pero no tienes que hacerlo sola.","Cálida, pausa al final.","Después de ganchos de dolor (G11, G17, G45)"],
+["P4",1,"Y si vives lejos, esto te va a gustar.","Sonrisa.","Antes de C2 o C20"],
+["P5",1,"Te cuento lo que hago en cada visita.","Natural.","Antes de C1 o C3"],
+["C13",1,"Voy a tu casa con la indicación de tu médico y te pongo el inyectable sin que tengas que salir.","Tranquila.","Cuerpo nuevo · pega con X1-X3"],
+["C14",1,"Limpio, curo y registro cómo avanza la herida, y le aviso a tu médico si algo cambia.","Mostrar gasa.","Cuerpo nuevo · pega con X1-X3"],
+["C19",1,"Si estás en Concepción y necesitas inyectables o curaciones, escríbeme: estoy viendo días para ir.","Pausado.","CONCE"],
+["X6",1,"Escríbeme por WhatsApp y coordinamos la visita.","Sonrisa sostenida 1 segundo al final.","Cierre comodín"],
+["X7",1,"¿Estás en Concepción? Escríbeme y te aviso primero cuando abra agenda.","Señalar abajo. CONCE.","Cierre CONCE"],
+/* SET 2 · Escalera */
+["G51",2,"En la casa de tu mamá, la escalera puede ser el lugar más riesgoso.","Mirar la escalera y volver a cámara.","→ C15 · X8"],
+["G52",2,"Tu mamá vive en Conce y tú en Santiago. Hablemos.","Mirar escalera y volver. CONCE.","→ C20 · X7"],
+["G53",2,"Las vacunas de tu hijo, sin la sala de espera llena.","Tono alegre. NIÑOS.","→ C13 · X6"],
+["G54",2,"Tres cosas que reviso en la casa para evitar una caída.","Contar con dedos.","→ P6 · C15 · X8"],
+["P6",2,"Mira, te muestro.","Gesto hacia la escalera.","Antes de C15 o de imágenes de apoyo"],
+["C15",2,"Reviso la casa contigo: escaleras, alfombras, baño y luz de noche, para bajar el riesgo de caídas.","Señalar la escalera.","Cuerpo nuevo"],
+["C20",2,"Visito, reviso cómo está y te mando un reporte por WhatsApp, para que estés tranquila aunque vivas lejos.","Pausado.","Equivale a C2 en otro set"],
+["X8",2,"Guarda este video y revisa hoy la casa de tu mamá.","Mano en la baranda.","Cierre de guardado"],
+/* SET 3 · Sillón = REELS LARGOS (60-90 s) */
+["G55",3,"Mamá primeriza: no estás sola los primeros días.","Voz suave, mano al pecho. BEBÉS.","→ C16 · X9"],
+["G56",3,"¿Te duele dar pecho? No es «normal», tiene solución.","Cercana. LACTANCIA.","→ C16 · X9"],
+["G57",3,"A ti, que cuidas a tu mamá y nadie te pregunta cómo estás.","Lento, voz baja. CUIDADORA.","→ P7 · L4 · X10"],
+["G58",3,"Te cuento por qué me hice enfermera a domicilio.","Inclinarse a cámara.","→ L1 → L2 → X9 (largo de 70 s)"],
+["P7",3,"Te lo digo con cariño:","Pausa antes de seguir.","Une ganchos con L2 o L4"],
+["C16",3,"Peso a tu bebé, reviso el ombligo y te acompaño con la lactancia, en tu casa y a tu ritmo.","Muy pausado.","Cuerpo nuevo"],
+["C17",3,"Converso con tu papá, lo escucho y respeto sus tiempos. Cuidar también es eso.","Pausado.","Cuerpo nuevo"],
+["L1",3,"Trabajé ocho años en salud y vi lo mismo una y otra vez: familias que querían cuidar bien, pero no sabían cómo ni tenían tiempo. Por eso decidí ir a las casas, conversar sin apuro y explicar con calma.","Bloque largo, como conversando.","Largo «Por qué hago esto»"],
+["L2",3,"En las casas veo pastilleros desordenados, escaleras sin baranda y cuidadoras agotadas. Y casi nunca es falta de cariño: es falta de ayuda. Para eso estoy.","Bloque largo.","Largo «Lo que veo en las casas»"],
+["L3",3,"Una primera visita es así: llego, converso con tu familiar, reviso signos vitales, remedios y la casa, y al final te mando un resumen por WhatsApp con lo que vi y lo que sugiero.","Bloque largo, contar con dedos.","Largo «Cómo es una visita» · pega con C2"],
+["L4",3,"Si estás lejos o trabajas todo el día, no tienes que elegir entre tu pega y tu mamá. Yo la visito, te cuento cómo está y tú decides con información, no con culpa.","Bloque largo, lento.","Largo «Hijas lejos» · pega con A1 y A27"],
+["L5",3,"Me preguntan si necesitan orden médica. Para curaciones e inyectables, sí: siempre con la indicación de tu médico. Para acompañar, revisar remedios y orientar a la familia, me puedes escribir directo.","Bloque largo, tono de respuesta.","Largo «Preguntas frecuentes»"],
+["X9",3,"Si esto te hizo sentido, escríbeme y lo conversamos.","Sonrisa suave.","Cierre de largos"],
+["X10",3,"Comparte este video con quien está cuidando sola.","Mirada cómplice.","Cierre de alcance"],
+/* SET 4 · Exterior */
+["G59",4,"Voy camino a una visita en Talca. Te cuento qué llevo.","Caminando hacia la cámara.","→ L6 · X11 (largo caminando)"],
+["G60",4,"Diciembre se pone intenso. ¿Quién acompaña a tu mamá?","Cálido. ADULTO MAYOR.","→ C9 · X4"],
+["G61",4,"De Talca a Concepción. Vamos.","Caminando, energía. CONCE.","→ X7"],
+["G62",4,"¿San Pedro, Chiguayante, Talcahuano o Conce centro? Te leo.","Contar comunas con dedos. CONCE.","Va sola, como encuesta"],
+["P8",4,"Ya llegué. Vamos.","Entrar al cuadro desde el árbol.","Antes de cualquier cuerpo"],
+["C18",4,"Llego con mi maletín, mis registros y tiempo para conversar, sin apuro. Enfermera registrada, en Talca.","Mostrar el maletín.","Cuerpo nuevo"],
+["L6",4,"En mi maletín llevo lo básico para controlar signos vitales, mis registros y lo que tu médico indicó. Pero lo más importante que llevo es tiempo: para escuchar y explicar sin apuro.","Bloque largo caminando lento.","Largo «Mi maletín»"],
+["X11",4,"Estoy en Talca. Escríbeme por WhatsApp y coordinamos.","Señalar hacia abajo al final.","Cierre comodín exterior"]];
+D2.sort((a,b)=>a[1]-b[1]);
+const BL={G:"Gancho",C:"Cuerpo",X:"Cierre",P:"Puente",L:"Largo"};
+const RD={r1:{items:[],pre:"",title:"Rodaje 1"},r2:{items:[],pre:"r2b_",title:"Rodaje 2"}};
+for(const b of"GCX")D1[b].forEach((t,i)=>RD.r1.items.push({id:b+(i+1),b,t,set:1}));
+D2.forEach(([id,s,t,d,e])=>RD.r2.items.push({id,b:id[0],t,set:s,d,e}));
+const ROL={G:"gancho de 3-5 segundos que detiene el scroll",C:"cuerpo de 8-12 segundos que explica el servicio",X:"cierre de 3 segundos que invita a escribir por WhatsApp",P:"puente de 1-2 segundos que une un gancho con un cuerpo",L:"bloque largo de 15-25 segundos para un reel de 60-90 segundos"};
+let cr="r2";try{cr=localStorage.getItem("rodaje")==="r1"?"r1":"r2"}catch(e){}
+const S={r1:{},r2:{}},TK={r1:{},r2:{}},RR={r1:{i:0,toma:1},r2:{i:0,toma:1}};let db=null,sample=null;
+const $=x=>document.getElementById(x);
+const items=()=>RD[cr].items, st=id=>S[cr][id]||{}, txt=it=>st(it.id).texto||it.t, ro=()=>cr==="r1";
+function setSt(m){$("st").textContent=m}
+function count(){let ok=0,no=0;items().forEach(i=>{const e=st(i.id).estado;if(e==="ok")ok++;else if(e==="no")no++});
+$("nOk").textContent=ok+" ✓";$("nNo").textContent=no+" ✗";$("nPend").textContent=ro()?items().length+" frases grabadas":(items().length-no)+" van a cámara"}
+async function save(id,patch){S[cr][id]={...st(id),...patch};paint(id);count();if(!db){setSt("Sin conexión: tus cambios no se guardan");return}
+try{await db.doc(RD[cr].pre+"decisiones/"+id).set({...S[cr][id],at:Date.now()});setSt("Guardado ✓")}catch(e){setSt("No se pudo guardar ("+(e.code||"error")+")")}}
+function acts(id,el){el.innerHTML="";if(ro())return;const e=st(id).estado;
+const mk=(l,c,f,p)=>{const b=document.createElement("button");b.textContent=l;b.className=c;if(p!==undefined)b.setAttribute("aria-pressed",p);b.onclick=f;el.appendChild(b)};
+mk("✗ Sacar","no",()=>save(id,{estado:e==="no"?null:"no"}),e==="no");mk("✎ Editar","",()=>edit(id));mk("🎬 OBS","",()=>{const v=prompt("OBS de director para "+id+" (se lee en voz alta antes de cada toma):",st(id).obs||items().find(i=>i.id===id).d||"");if(v!==null)save(id,{obs:v.trim()||null})});if(sample)mk("✨ Mejorar con IA","ia",()=>improve(id))}
+function paint(id){const it=items().find(i=>i.id===id),r=$("it-"+id);if(!r)return;
+r.className="it "+(st(id).estado||"")+(st(id).texto?" ed":"");r.querySelector(".tx").textContent=txt(it);const od=r.querySelector(".obs");if(od)od.textContent=obs(it)?"🎬 OBS: "+obs(it):"";acts(id,r.querySelector(".ac"))}
+function row(it,L){const r=document.createElement("div");r.id="it-"+it.id;r.innerHTML=`<div class="code">${it.id}</div><div class="tx"></div><div class="dir obs"></div>${it.e?`<div class="dir">🔗 ${it.e}</div>`:""}<div class="ac"></div>`;L.appendChild(r);paint(it.id)}
+function render(){document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-current",b.dataset.r===cr));
+const H=$("hdr"),B=$("body");B.innerHTML="";
+if(ro()){H.innerHTML=`<h1>Rodaje 1,<br><i>material final creado.</i></h1><div class="arch">✅ Grabado el 7-nov. Con este material ya están hechos <b>38 anuncios</b> (A1–A38) y <b>5 videos largos</b> (L1–L5), con portada y copy, en el calendario del 9-nov al 15-dic. Queda guardado como registro: solo lectura.</div>`;$("bt").textContent="Rodaje 1";
+for(const b of"GCX"){const h=document.createElement("h2");h.textContent=({G:"① Ganchos · 40",C:"② Cuerpos · 12",X:"③ Cierres · 5"})[b];B.appendChild(h);const L=document.createElement("div");L.className="list";B.appendChild(L);items().filter(i=>i.b===b).forEach(it=>row(it,L))}}
+else{H.innerHTML=`<h1>Rodaje 2: 50 tomas,<br><i>encadenadas al rodaje 1.</i></h1><p class="s">Todo va a cámara salvo lo que marques ✗. <b>Set 1 = mismo fondo y uniforme del rodaje 1</b>: esos ganchos y puentes se pegan con los 12 cuerpos y 5 cierres ya grabados, así un gancho nuevo rinde varios anuncios. El sillón (set 3) es para <b>reels largos</b> de 60-90 s con bloques L. Una toma buena por frase; si sale mala, se repite sola.</p><div class="arch"><b>🎥 Modo sola, todo por audio.</b> El celular queda fijo justo bajo el lente como teleprompter: no lo tocas. Al tocar ▶ Partir: (1) el director lee en voz alta frase, toma y OBS; (2) tres pitidos; (3) flash y corre el cronómetro; (4) al terminar dices <b>«buena»</b> → suena buena y pasa a la siguiente, o <b>«mala»</b> → se marca ✗, suena mala y parte la toma 2 con un consejo. Si no respondes, vuelve a preguntar. «Pausa» detiene y «lista» sigue. Cambio de set: se pausa solo.</div>
+<div class="sets">${Object.entries(SETS).map(([k,s])=>`<div class="set" style="--c:${s.c}"><b>Set ${k} · ${s.n}</b><span>${s.d}</span><br><span>👕 ${s.ward}</span></div>`).join("")}</div>
+<p class="note">Total: 22 ganchos + 8 puentes + 8 cuerpos + 6 bloques largos + 6 cierres = <b>50 tomas</b>. En modo sola: 44 × 20 s + 6 × 40 s ≈ 19 min de cámara, ~45 min con cambios de set y repeticiones. Combinando con el rodaje 1 salen más de 60 anuncios y 6 reels largos.</p>`;$("bt").textContent="Rodaje 2";
+for(const k of[1,2,3,4]){const s=SETS[k],h=document.createElement("h2");h.innerHTML=`Set ${k} · ${s.n}<span class="tag" style="--c:${s.c}">${items().filter(i=>i.set===k).length} frases</span>`;B.appendChild(h);
+const L=document.createElement("div");L.className="list";B.appendChild(L);items().filter(i=>i.set===k).forEach(it=>row(it,L))}}
+count();draw()}
+function edit(id){const it=items().find(i=>i.id===id),r=$("it-"+id),tx=r.querySelector(".tx");
+tx.innerHTML="";const a=document.createElement("textarea");a.rows=2;a.value=txt(it);tx.appendChild(a);a.focus();
+const ac=r.querySelector(".ac");ac.innerHTML="";const g=document.createElement("button");g.textContent="Guardar";g.className="big";g.onclick=()=>save(id,{texto:a.value.trim()||null});ac.appendChild(g);
+const c=document.createElement("button");c.textContent="Cancelar";c.onclick=()=>paint(id);ac.appendChild(c)}
+async function improve(id){const it=items().find(i=>i.id===id),r=$("it-"+id);let box=r.querySelector(".sug");if(box)box.remove();
+box=document.createElement("div");box.className="sug";box.innerHTML='<span class="note">Pensando 3 versiones…</span>';r.appendChild(box);
+const prompt=`Eres copywriter de anuncios de Meta para "Valeria Enfermera", enfermera titulada a domicilio en Talca, Chile (8 años de experiencia, registro en Superintendencia de Salud). Público: hijas de 30-60 años que cuidan o viven lejos de sus padres, pacientes recién operados, cuidadoras agotadas.
+Reescribe esta frase, que es un ${ROL[it.b]}, en 3 versiones mejores. Se graba en este set: ${SETS[it.set].n}. Reglas: primera persona de Valeria cuando hable de ella, español chileno natural y cálido (no neutro), frases cortas para decir en voz alta, máximo ${it.b==="C"?28:16} palabras, sin promesas clínicas ni resultados garantizados, sin mencionar pacientes reales, sin escasez falsa, procedimientos solo "con indicación de tu médico", nunca la palabra "profesional".
+Frase actual: "${txt(it)}"
+Responde SOLO un JSON: {"opciones":["...","...","..."]}`;
+try{const out=await sample.json(prompt,{modelTier:"default"});const ops=(out&&out.opciones)||[];box.innerHTML='<span class="note">Toca una para usarla:</span>';
+ops.slice(0,3).forEach(o=>{const b=document.createElement("button");b.textContent=o;b.onclick=()=>{save(id,{texto:o,ia:true});box.remove()};box.appendChild(b)});
+const x=document.createElement("button");x.textContent="Ninguna, dejar como estaba";x.onclick=()=>box.remove();box.appendChild(x)}
+catch(e){box.innerHTML='<span class="note">'+(e.code==="rate_limited"?"La IA está ocupada, prueba en un minuto.":e.code==="not_granted"?"La IA no está disponible en esta vista.":"No se pudo generar ahora.")+'</span>'}}
+/* Director: claqueta + teleprompter sincronizados por db */
+function queue(){return items().filter(i=>st(i.id).estado!=="no")}
+function cur(){const q=queue(),R=RR[cr];R.i=Math.max(0,Math.min(R.i,q.length-1));return{q,it:q[R.i],R}}
+function draw(){const{q,it,R}=cur();if(!it)return;const nx=q[R.i+1];
+$("sSet").textContent=it.set;$("sId").textContent=it.id;$("sTk").textContent=R.toma;$("sTx").textContent=txt(it);$("sRd").textContent=RD[cr].title.toUpperCase();$("sDate").textContent=new Date().toLocaleDateString("es-CL");
+const cs=ro()?"":" · SET "+it.set+" "+SETS[it.set].n.toUpperCase();
+$("tpCode").textContent=it.id+" · TOMA "+R.toma+" · "+(R.i+1)+"/"+q.length+cs;$("tpTxt").textContent=txt(it);
+$("tpNext").textContent=nx?(nx.set!==it.set&&!ro()?"⚠ CAMBIO DE SET → "+SETS[nx.set].n+" · ":"Sigue → ")+nx.id+": "+txt(nx):"Última frase 🎉";
+const L=Object.entries(TK[cr]).sort((a,b)=>a[1].at-b[1].at);$("log").textContent=L.length?L.length+" tomas: "+L.map(([k,v])=>v.id+"-T"+v.toma+(v.buena?"★":"")+(v.mala?"✗":"")).join(" · "):"Sin tomas todavía."}
+async function push(){draw();lsSave();if(db)try{await db.doc(RD[cr].pre+"rodaje/actual").set({i:RR[cr].i,toma:RR[cr].toma,at:Date.now()})}catch(e){}}
+function lsSave(){try{localStorage.setItem("dirTK",JSON.stringify(TK));localStorage.setItem("dirRR",JSON.stringify(RR))}catch(e){}}
+try{const t=JSON.parse(localStorage.getItem("dirTK")||"null");if(t){TK.r1=t.r1||{};TK.r2=t.r2||{}}const q=JSON.parse(localStorage.getItem("dirRR")||"null");if(q){RR.r1=q.r1||RR.r1;RR.r2=q.r2||RR.r2}}catch(e){}
+async function logTake(extra){setTimeout(lsSave,50);const{it,R}=cur();if(!it)return;const k=it.id+"_T"+R.toma;TK[cr][k]={...(TK[cr][k]||{}),id:it.id,set:it.set,toma:R.toma,texto:txt(it),at:Date.now(),...extra};draw();if(db)try{await db.doc(RD[cr].pre+"tomas/"+k).set(TK[cr][k])}catch(e){}}
+function mv(d){RR[cr].i+=d;RR[cr].toma=1;push()}
+let actx=null;function beep(fs){try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();fs.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=f;g.gain.value=.55;o.connect(g).connect(actx.destination);const t=actx.currentTime+i*.16;o.start(t);o.stop(t+.14)})}catch(e){}}
+function say(t){try{const u=new SpeechSynthesisUtterance(t);u.lang="es-CL";u.rate=1.05;const vs=speechSynthesis.getVoices();u.voice=vs.find(v=>/^es/i.test(v.lang))||null;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+function clap(){$("flash").style.opacity=1;setTimeout(()=>$("flash").style.opacity=0,120);beep([1000]);const{it,R}=cur();say(BL[it.b]+" "+it.id.slice(1)+", toma "+R.toma);logTake({})}
+$("cPrev").onclick=$("tPrev").onclick=()=>mv(-1);$("cNext").onclick=$("tNext").onclick=()=>mv(1);
+$("cTk").onclick=()=>{RR[cr].toma++;push()};$("cClap").onclick=clap;
+$("cGood").onclick=()=>{beep([1500,2000]);say("Buena");const s=$("sTk");s.textContent=RR[cr].toma+"★";s.style.color="#F2C14E";setTimeout(()=>{s.style.color="";draw()},1500);logTake({buena:true})};
+$("cBad").onclick=async()=>{try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.type="sawtooth";o.frequency.setValueAtTime(220,actx.currentTime);o.frequency.linearRampToValueAtTime(110,actx.currentTime+.6);g.gain.value=.5;o.connect(g).connect(actx.destination);o.start();o.stop(actx.currentTime+.6)}catch(e){}
+say("Mala");const s=$("sTk");s.textContent=RR[cr].toma+"✗";s.style.color="#FF5A4A";await logTake({mala:true});setTimeout(()=>{s.style.color="";RR[cr].toma++;push()},900)};
+let fs=9;try{fs=+localStorage.getItem("tps")||9}catch(e){}const setFs=()=>{$("tp").style.setProperty("--tps",fs+"vw");try{localStorage.setItem("tps",fs)}catch(e){}};setFs();
+$("tPlus").onclick=()=>{fs=Math.min(16,fs+1);setFs()};$("tMinus").onclick=()=>{fs=Math.max(4,fs-1);setFs()};$("tMir").onclick=()=>$("tp").classList.toggle("mir");
+function mode(m){if(m!=="solo")soStop();for(const v of["ap","cla","tp","solo"])$(v).hidden=v!==m;document.querySelector(".modes").hidden=m!=="ap";document.querySelectorAll(".modes button").forEach(b=>b.setAttribute("aria-current",b.dataset.m===m));
+if(m==="solo")soOpen();if(m!=="ap"){draw();try{document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}}else{try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}}
+document.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>mode(b.dataset.m));
+document.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{cr=b.dataset.r;try{localStorage.setItem("rodaje",cr)}catch(e){}render()});
+document.addEventListener("keydown",e=>{if($("ap").hidden){if(e.key==="ArrowRight")mv(1);if(e.key==="ArrowLeft")mv(-1)}});
+/* ---------- MODO SOLA: escena cada N s, cronómetro, gestos y voz ---------- */
+const SO={ph:"idle",end:0,len:1,left:0,paused:false,raf:0,cool:0,T:20,wl:null,gr:null,cs:null,sr:null,mic:false,t0:0,lb:0,setOk:false};
+const obs=it=>st(it.id).obs||it.d||"";
+const TIPS={G:["Más energía en la primera palabra.","Mira el lente, no la pantalla.","Parte con una sonrisa."],C:["Más lento, respira entre frases.","Baja los hombros y conversa.","Marca la pausa antes del final."],L:["Tómate tu tiempo, es una conversación.","Si te equivocas, sigue: se corta después.","Mira al lente en la última frase."],P:["Corto y natural.","Igual que hablando con una amiga."],X:["Sostén la sonrisa un segundo al final.","Señala hacia abajo al terminar."]};
+const tip=it=>{const a=TIPS[it.b]||TIPS.G;return a[(RR[cr].toma)%a.length]};
+function sayThen(t,cb){let done=false;const go=()=>{if(!done){done=true;cb&&cb()}};try{const u=new SpeechSynthesisUtterance(t);u.lang="es-CL";u.rate=1.05;const vs=speechSynthesis.getVoices();u.voice=vs.find(v=>/^es/i.test(v.lang))||null;u.onend=go;u.onerror=go;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}setTimeout(go,Math.min(12000,1500+t.length*75))}
+const dur=it=>(it.b==="L"?2:1)*SO.T;
+const PL={prep:"PREPÁRATE",rec:"● GRABANDO",ver:"¿👍 O 👎?",pau:"⏸ PAUSA",idle:"LISTA",wait:"…"};
+function soDraw(){const{q,it,R}=cur();if(!it){$("soTx").textContent="Terminaste 🎉";return}const nx=q[R.i+1];
+$("soId").textContent=it.id+" · "+BL[it.b].toUpperCase()+" · TOMA "+R.toma+(ro()?"":" · SET "+it.set+" "+SETS[it.set].n.toUpperCase());
+const done=new Set(Object.values(TK[cr]).filter(v=>v.buena).map(v=>v.id)).size;$("soCnt").textContent=(R.i+1)+"/"+q.length+" · "+done+" ★ · "+dur(it)+" s";
+$("soTx").textContent=txt(it);$("soObs").textContent=obs(it)?"🎬 OBS director: "+obs(it):"";$("soNext").textContent=nx?(nx.set!==it.set&&!ro()?"⚠ Después: CAMBIO DE SET → "+SETS[nx.set].n:"Sigue → "+nx.id+": "+txt(nx)):"Última 🎉"}
+function soPhase(p,s){SO.ph=p;SO.len=s*1000;SO.end=performance.now()+SO.len;const e=$("soPh");e.textContent=PL[p];e.className=p;
+if(p==="rec"){$("flash").style.opacity=1;setTimeout(()=>$("flash").style.opacity=0,120);beep([1000]);SO.t0=performance.now()}
+if(p==="ver")beep([660,880]);soDraw()}
+function soTick(){SO.raf=requestAnimationFrame(soTick);if(SO.paused||!["prep","rec","ver"].includes(SO.ph))return;const now=performance.now(),rem=Math.max(0,SO.end-now);
+$("soT").textContent=Math.ceil(rem/1000);$("soFill").style.width=(100-rem/SO.len*100)+"%";$("soFill").style.background=SO.ph==="rec"?"#D3271E":SO.ph==="ver"?"#2E6FD8":"#B8860B";
+if(SO.ph==="prep"){const s=Math.ceil(rem/1000);if(s!==SO.lb&&s<=3&&s>0){SO.lb=s;beep([440])}}
+if(rem>0)return;
+if(SO.ph==="prep")soPhase("rec",dur(cur().it));
+else if(SO.ph==="rec")soPhase("ver",6);
+else if(SO.ph==="ver"){SO.ask=(SO.ask||0)+1;sayThen("¿Buena o mala?");soPhase("ver",6)}}
+function soScene(){const{q,it,R}=cur();if(!it){soPhase("idle",1);return}
+if(R.i===q.length-1&&TK[cr][it.id+"_T"+R.toma]&&SO.ph==="ver"){soPhase("idle",1);$("soT").textContent="🎉";say("Terminamos. Buen trabajo.");return}
+const prev=q[R.i-1];if(prev&&prev.set!==it.set&&!ro()&&R.toma===1&&!SO.setOk){SO.setOk=true;soPhase("pau",1);$("soT").textContent="SET";say("Cambio de set: "+SETS[it.set].n+". Pulgar arriba cuando estés lista.");return}
+SO.setOk=false;SO.lb=0;SO.ask=0;SO.ph="wait";$("soPh").textContent="🔊 ESCUCHA";$("soPh").className="pau";soDraw();
+const extra=R.toma>1?" "+tip(it):"";sayThen(BL[it.b]+" "+it.id.replace(/^\D+/,"")+", toma "+R.toma+". "+obs(it)+extra,()=>{if(SO.ph==="wait"&&!SO.paused)soPhase("prep",4)})}
+function soVerdict(good){const now=performance.now();if(now<SO.cool)return;SO.cool=now+2500;
+if(SO.ph==="pau"||SO.ph==="idle"){soGo();return}
+if(SO.ph==="prep"||SO.ph==="wait")return;
+if(SO.ph==="rec"&&now-SO.t0<1500)return;
+if(good){beep([1500,2000]);say("Buena");logTake({buena:true});mv(1)}else{say("Mala");logTake({mala:true});RR[cr].toma++;push()}
+SO.ph="wait";$("soPh").textContent=good?"★ BUENA":"✗ MALA";$("soPh").className=good?"ver":"rec";setTimeout(soScene,1300)}
+function soGo(){if(!SO.mic&&!SO.noMic){SO.noMic=true;$("soMic").click()}if(SO.ph==="idle"||SO.ph==="pau"){SO.paused=false;SO.setOk=SO.ph==="pau";soScene();$("soGo").textContent="⏸ Pausa";return}
+SO.paused=!SO.paused;$("soGo").textContent=SO.paused?"▶ Seguir":"⏸ Pausa";
+if(SO.paused){SO.left=SO.end-performance.now();$("soPh").textContent="⏸ PAUSA"}else{SO.end=performance.now()+SO.left;$("soPh").textContent=PL[SO.ph]}}
+async function soOpen(){SO.paused=false;soPhase("idle",1);$("soT").textContent=SO.T;$("soGo").textContent="▶ Partir";cancelAnimationFrame(SO.raf);soTick();try{SO.wl=await navigator.wakeLock.request("screen")}catch(e){}}
+function soStop(){cancelAnimationFrame(SO.raf);SO.ph="idle";try{SO.wl&&SO.wl.release()}catch(e){}}
+$("soGo").onclick=soGo;$("soGood").onclick=()=>soVerdict(true);$("soBad").onclick=()=>soVerdict(false);
+$("soSkip").onclick=()=>{mv(1);SO.cool=0;if(["prep","rec","ver"].includes(SO.ph))soScene();else soDraw()};
+$("soDur").onchange=e=>{SO.T=+e.target.value;if(SO.ph==="idle")$("soT").textContent=SO.T;soDraw()};$("soMir").onclick=()=>$("solo").classList.toggle("mir");
+document.addEventListener("keydown",e=>{if($("solo").hidden)return;const k=e.key;
+if(k==="Enter"||k===" "||k==="ArrowUp"||k==="AudioVolumeUp"||k==="b"){e.preventDefault();soVerdict(true)}
+else if(k==="ArrowDown"||k==="Backspace"||k==="AudioVolumeDown"||k==="m"){e.preventDefault();soVerdict(false)}else if(k==="p")soGo()});
+/* gestos: pulgar arriba = buena, pulgar abajo = mala, palma abierta = pausa */
+$("soCamB").onclick=async()=>{const g=$("soG");if(SO.cs){SO.cs.getTracks().forEach(t=>t.stop());SO.cs=null;$("soCam").hidden=true;g.textContent="";$("soCamB").textContent="📷 Gestos";return}
+g.textContent="Abriendo cámara…";try{SO.cs=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:320,height:240},audio:false})}catch(e){g.textContent="Cámara bloqueada en esta vista: usa voz, botones o control Bluetooth";return}
+const v=$("soCam");v.srcObject=SO.cs;v.hidden=false;try{await v.play()}catch(e){}$("soCamB").textContent="📷 Apagar";
+if(!SO.gr){g.textContent="Cargando lector de gestos…";try{const m=await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs");const f=await m.FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm");
+SO.gr=await m.GestureRecognizer.createFromOptions(f,{baseOptions:{modelAssetPath:"https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task"},runningMode:"VIDEO",numHands:1})}catch(e){g.textContent="El lector de gestos no cargó en esta vista: usa voz o botones";return}}
+g.textContent="👍 buena · 👎 mala · ✋ pausa";let last="",n=0,lt=0;
+const loop=()=>{if(!SO.cs)return;requestAnimationFrame(loop);const t=performance.now();if(t-lt<120||v.readyState<2)return;lt=t;
+let c="";try{const r=SO.gr.recognizeForVideo(v,t);const x=r.gestures&&r.gestures[0]&&r.gestures[0][0];if(x&&x.score>.65)c=x.categoryName}catch(e){}
+n=c&&c===last?n+1:0;last=c;if(n===4){if(c==="Thumb_Up")soVerdict(true);else if(c==="Thumb_Down")soVerdict(false);else if(c==="Open_Palm"&&performance.now()>SO.cool){SO.cool=performance.now()+2500;soGo()}
+const lb={Thumb_Up:"👍 leído",Thumb_Down:"👎 leído",Open_Palm:"✋ leído"}[c];if(lb)g.textContent=lb}};loop()};
+/* voz: "buena" / "mala" u "otra" / "pausa" o "lista" */
+$("soMic").onclick=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;const g=$("soG");
+if(SO.mic){SO.mic=false;try{SO.sr.stop()}catch(e){}$("soMic").textContent="🎙 Voz";return}
+if(!SR){g.textContent="Este navegador no reconoce voz: usa Chrome";return}
+const r=new SR();r.lang="es-CL";r.continuous=true;r.interimResults=true;SO.sr=r;SO.mic=true;$("soMic").textContent="🎙 Apagar";g.textContent="Di «buena», «mala» o «pausa»";
+r.onresult=ev=>{if(speechSynthesis.speaking)return;const res=ev.results[ev.results.length-1],w=res[0].transcript.toLowerCase().trim().split(/\s+/);if(w.length>3)return;const l=w[w.length-1];
+if(/^buen[ao]s?$/.test(l))soVerdict(true);else if(/^mal[ao]s?$|^otra$/.test(l))soVerdict(false);else if(/^(pausa|sigue|listo|lista)$/.test(l)&&performance.now()>SO.cool){SO.cool=performance.now()+2500;soGo()}};
+r.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed"){SO.mic=false;g.textContent="Micrófono bloqueado en esta vista: usa gestos o botones";$("soMic").textContent="🎙 Voz"}};
+r.onend=()=>{if(SO.mic)try{r.start()}catch(e){}};try{r.start()}catch(e){}};
+render();
+(async()=>{const C=window.claude;if(!C||!C.use){setSt("Vista sin conexión");return}
+sample=await C.use("sample");render();
+db=await C.use("db");if(!db){setSt("Inicia sesión para guardar");return}
+const t=setTimeout(()=>setSt("Tardando en cargar… tus cambios igual se guardan"),10000);
+for(const r of["r1","r2"]){const p=RD[r].pre;
+try{db.doc(p+"rodaje/actual").onSnapshot(d=>{const v=d&&d.data&&d.data();if(v&&typeof v.i==="number"){RR[r]={i:v.i,toma:v.toma||1};if(r===cr)draw()}},()=>{});
+db.collection(p+"tomas").onSnapshot(sn=>{(sn.docs||[]).forEach(d=>{TK[r][d.id]=d.data()});if(r===cr)draw()},()=>{});
+db.collection(p+"decisiones").onSnapshot(sn=>{clearTimeout(t);(sn.docs||[]).forEach(d=>{S[r][d.id]=d.data()});if(r===cr)render();setSt("Al día ✓")},e=>{clearTimeout(t);setSt("No se pudo leer lo guardado")})}catch(e){clearTimeout(t);setSt("No se pudo conectar")}}})();
+</script>
+</body></html>
