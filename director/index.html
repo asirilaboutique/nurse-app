@@ -300,9 +300,7 @@ SO.paused=!SO.paused;$("soGo").textContent=SO.paused?"▶ Seguir":"⏸ Pausa";
 if(SO.paused){SO.left=SO.end-performance.now();$("soPh").textContent="⏸ PAUSA"}else{SO.end=performance.now()+SO.left;$("soPh").textContent=PL[SO.ph]}}
 async function soOpen(){SO.paused=false;soPhase("idle",1);$("soT").textContent=SO.T;$("soGo").textContent="▶ Partir";cancelAnimationFrame(SO.raf);soTick();try{SO.wl=await navigator.wakeLock.request("screen")}catch(e){}}
 function soStop(){cancelAnimationFrame(SO.raf);SO.ph="idle";try{SO.wl&&SO.wl.release()}catch(e){}}
-$("soLog").onclick=async()=>{const L=Object.values(TK[cr]).sort((a,b)=>a.at-b.at).map(v=>new Date(v.at).toLocaleTimeString("es-CL")+"	"+v.id+"	T"+v.toma+"	"+(v.buena?"BUENA":v.mala?"MALA":"-")).join("
-");const b=$("soG");try{await navigator.clipboard.writeText(L);b.textContent="Registro copiado: pégalo en WhatsApp a la agencia"}catch(e){b.textContent=L.split("
-").length+" tomas (no se pudo copiar)"}};$("soGo").onclick=soGo;$("soGood").onclick=()=>soVerdict(true);$("soBad").onclick=()=>soVerdict(false);
+$("soLog").onclick=async()=>{const L=Object.values(TK[cr]).sort((a,b)=>a.at-b.at).map(v=>new Date(v.at).toLocaleTimeString("es-CL")+"\t"+v.id+"\tT"+v.toma+"\t"+(v.buena?"BUENA":v.mala?"MALA":"-")).join("\n");const b=$("soG");try{await navigator.clipboard.writeText(L);b.textContent="Registro copiado: pégalo en WhatsApp a la agencia"}catch(e){b.textContent=L.split("\n").length+" tomas (no se pudo copiar)"}};$("soGo").onclick=soGo;$("soGood").onclick=()=>soVerdict(true);$("soBad").onclick=()=>soVerdict(false);
 $("soSkip").onclick=()=>{mv(1);SO.cool=0;if(["prep","rec","ver"].includes(SO.ph))soScene();else soDraw()};
 $("soDur").onchange=e=>{SO.T=+e.target.value;if(SO.ph==="idle")$("soT").textContent=SO.T;soDraw()};$("soMir").onclick=()=>$("solo").classList.toggle("mir");
 document.addEventListener("keydown",e=>{if($("solo").hidden)return;const k=e.key;
