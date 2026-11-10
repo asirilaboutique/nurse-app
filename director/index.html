@@ -308,7 +308,7 @@ if(k==="Enter"||k===" "||k==="ArrowUp"||k==="AudioVolumeUp"||k==="b"){e.preventD
 else if(k==="ArrowDown"||k==="Backspace"||k==="AudioVolumeDown"||k==="m"){e.preventDefault();soVerdict(false)}else if(k==="p")soGo()});
 /* gestos: pulgar arriba = buena, pulgar abajo = mala, palma abierta = pausa */
 $("soCamB").onclick=async()=>{const g=$("soG");if(SO.cs){SO.cs.getTracks().forEach(t=>t.stop());SO.cs=null;$("soCam").hidden=true;g.textContent="";$("soCamB").textContent="📷 Gestos";return}
-g.textContent="Abriendo cámara…";try{SO.cs=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:320,height:240},audio:false})}catch(e){g.textContent="Cámara bloqueada en esta vista: usa voz, botones o control Bluetooth";return}
+g.textContent="Abriendo cámara…";try{SO.cs=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:320,height:240},audio:false})}catch(e){g.textContent="Cámara bloqueada aquí: abre asirilaboutique.github.io/nurse-app/director en Chrome";return}
 const v=$("soCam");v.srcObject=SO.cs;v.hidden=false;try{await v.play()}catch(e){}$("soCamB").textContent="📷 Apagar";
 if(!SO.gr){g.textContent="Cargando lector de gestos…";try{const m=await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs");const f=await m.FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm");
 SO.gr=await m.GestureRecognizer.createFromOptions(f,{baseOptions:{modelAssetPath:"https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task"},runningMode:"VIDEO",numHands:1})}catch(e){g.textContent="El lector de gestos no cargó en esta vista: usa voz o botones";return}}
@@ -324,7 +324,7 @@ if(!SR){g.textContent="Este navegador no reconoce voz: usa Chrome";return}
 const r=new SR();r.lang="es-CL";r.continuous=true;r.interimResults=true;SO.sr=r;SO.mic=true;$("soMic").textContent="🎙 Apagar";g.textContent="Di «buena», «mala» o «pausa»";
 r.onresult=ev=>{if(speechSynthesis.speaking)return;const res=ev.results[ev.results.length-1],w=res[0].transcript.toLowerCase().trim().split(/\s+/);if(w.length>3)return;const l=w[w.length-1];
 if(/^buen[ao]s?$/.test(l))soVerdict(true);else if(/^mal[ao]s?$|^otra$/.test(l))soVerdict(false);else if(/^(pausa|sigue|listo|lista)$/.test(l)&&performance.now()>SO.cool){SO.cool=performance.now()+2500;soGo()}};
-r.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed"){SO.mic=false;g.textContent="Micrófono bloqueado en esta vista: usa gestos o botones";$("soMic").textContent="🎙 Voz"}};
+r.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed"){SO.mic=false;g.textContent="Micrófono bloqueado aquí: abre asirilaboutique.github.io/nurse-app/director en Chrome";$("soMic").textContent="🎙 Voz"}};
 r.onend=()=>{if(SO.mic)try{r.start()}catch(e){}};try{r.start()}catch(e){}};
 render();
 (async()=>{const C=window.claude;if(!C||!C.use){setSt("Vista sin conexión");return}
