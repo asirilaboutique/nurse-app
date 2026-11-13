@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>Naturoterapeuta Carolina</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: app de una columna, pasos grandes de a uno; barra inferior fija con las 5 secciones (pulgar) */
+:root{
+ --bg:#F5F1E8; --surface:#FBF9F3; --fg:#2E3424; --muted:#6B6D5C; --line:#DDD6C4;
+ --olive:#5E6B3A; --olive-soft:#E6E8D5; --stone:#A79C86; --warn:#9A4B2E; --warn-soft:#F4E3D9; --ok:#4E6B34;
+ --display:"Gilda Display",Georgia,serif; --body:"Figtree",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1D1F18;--surface:#25281F;--fg:#ECE8DC;--muted:#AFAE9C;--line:#3B3E31;--olive:#B7C38A;--olive-soft:#33382A;--stone:#8F8672;--warn:#E3A184;--warn-soft:#3C2A22;--ok:#A9C58A;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1D1F18;--surface:#25281F;--fg:#ECE8DC;--muted:#AFAE9C;--line:#3B3E31;--olive:#B7C38A;--olive-soft:#33382A;--stone:#8F8672;--warn:#E3A184;--warn-soft:#3C2A22;--ok:#A9C58A;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:17px/1.55 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 110px}
+.wrap{max-width:720px;margin:0 auto}
+header{padding-block:22px 6px;display:flex;gap:14px;align-items:center}
+.mono{width:48px;height:48px;border:1.5px solid var(--olive);border-radius:50%;display:grid;place-items:center;font:20px var(--display);color:var(--olive);flex:none}
+h1{font:400 clamp(26px,6vw,34px)/1.05 var(--display);margin:0}
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:700}
+h2{font:400 clamp(26px,6vw,32px)/1.12 var(--display);margin:6px 0 8px;text-wrap:balance}
+h3{font:700 13px var(--body);margin:26px 0 8px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+p{margin:0 0 12px;max-width:62ch}
+.muted{color:var(--muted)}
+section{padding-block:12px}
+/* barra inferior */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+.tabbar div{display:flex;width:100%;max-width:720px}
+.tabbar button{flex:1;background:none;border:0;font:600 12px var(--body);color:var(--muted);padding:6px 2px;border-radius:12px;cursor:pointer;display:grid;gap:2px;justify-items:center}
+.tabbar svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6}
+.tabbar button[aria-current="true"]{color:var(--olive);background:var(--olive-soft)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--olive);outline-offset:2px}
+/* botones */
+.btn{font:700 17px var(--body);border-radius:16px;padding:16px 22px;border:1.5px solid var(--olive);background:var(--olive);color:var(--bg);cursor:pointer;width:100%;text-align:center;text-decoration:none;display:block}
+.btn.ghost{background:none;color:var(--olive)}
+.btn.small{width:auto;display:inline-block;padding:10px 16px;font-size:15px;border-radius:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1;min-width:140px}
+/* inicio */
+.steps{display:grid;gap:10px;margin:14px 0}
+.step{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px}
+.step .n{width:44px;height:44px;border-radius:50%;background:var(--olive-soft);color:var(--olive);display:grid;place-items:center;font:700 18px var(--body)}
+.step.done .n{background:var(--olive);color:var(--bg)}
+.step b{display:block}
+.step span{font-size:15px;color:var(--muted)}
+/* wizard */
+.wz{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px}
+.wz .q{font:400 clamp(22px,5vw,27px)/1.2 var(--display);margin:6px 0 6px}
+.wz .h{font-size:15px;color:var(--muted);margin-bottom:12px}
+.wz .why{font-size:14px;background:var(--olive-soft);border-radius:12px;padding:10px 12px;margin-top:12px}
+.choices{display:grid;gap:8px}
+.choices label{display:flex;gap:10px;align-items:center;border:1.5px solid var(--line);border-radius:14px;padding:13px 14px;background:var(--bg);cursor:pointer;font-weight:500}
+.choices label:has(input:checked){border-color:var(--olive);background:var(--olive-soft)}
+.choices input{width:20px;height:20px;accent-color:var(--olive);flex:none}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.scale label{text-align:center;border:1.5px solid var(--line);border-radius:14px;padding:12px 0;background:var(--bg);cursor:pointer;font-size:22px}
+.scale label small{display:block;font-size:11px;color:var(--muted)}
+.scale input{position:absolute;opacity:0}
+.scale label:has(input:checked){background:var(--olive);color:var(--bg);border-color:var(--olive)}
+.scale label:has(input:checked) small{color:var(--bg)}
+input[type=text],textarea,select{font:inherit;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:13px 14px;width:100%}
+textarea{min-height:110px;resize:vertical}
+.wzbar{display:flex;gap:10px;margin-top:16px}
+.wzbar .btn{flex:1}
+.prog{height:6px;background:var(--line);border-radius:99px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--olive);width:0;transition:width .3s}
+.count{font-size:13px;color:var(--muted);margin:8px 0 4px;display:flex;justify-content:space-between}
+/* plan */
+.angle{display:grid;grid-template-columns:110px 1fr;gap:4px 14px;padding-block:12px;border-bottom:1px solid var(--line)}
+.angle b{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.angle .v{min-width:0}
+.chip{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border-radius:99px;padding:3px 10px;background:var(--olive-soft);color:var(--olive)}
+.chip.w{background:var(--warn-soft);color:var(--warn)}
+.critic{border:1.5px dashed var(--warn);border-radius:16px;padding:14px;margin-top:16px}
+.critic b{color:var(--warn)}
+/* tomas */
+.filt{display:flex;gap:8px;overflow-x:auto;margin:10px 0}
+.filt label{flex:none;border:1.5px solid var(--line);border-radius:99px;padding:8px 14px;font-weight:600;font-size:14px;cursor:pointer;background:var(--surface)}
+.filt input{position:absolute;opacity:0}
+.filt label:has(input:checked){background:var(--olive);color:var(--bg);border-color:var(--olive)}
+.shot{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:10px;display:grid;gap:8px}
+.shot.done{border-color:var(--ok)}
+.shot .top{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.shot .id{font:700 12px var(--body);color:var(--stone);letter-spacing:.1em}
+.shot h4{margin:0;font:700 18px var(--body)}
+.shot ol{margin:0;padding-left:20px;font-size:15px}
+.say{font:400 21px/1.35 var(--display);border-left:3px solid var(--olive);padding-left:12px;margin:2px 0}
+.ck{display:flex;gap:10px;align-items:center;font-weight:700;border:1.5px solid var(--line);border-radius:12px;padding:12px;cursor:pointer}
+.ck input{width:22px;height:22px;accent-color:var(--olive)}
+.big-prog{height:10px;background:var(--line);border-radius:99px;overflow:hidden;margin:6px 0}
+.big-prog i{display:block;height:100%;background:var(--olive);width:0}
+/* calendario */
+.week{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.week h4{margin:0 0 4px;font:400 22px var(--display)}
+.day{display:grid;grid-template-columns:52px 1fr;gap:10px;padding-block:9px;border-top:1px solid var(--line);font-size:15px}
+.day .d{font-weight:700;color:var(--muted);font-size:13px;text-transform:uppercase}
+.fmt{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-radius:6px;padding:2px 6px;margin-right:6px}
+.fmt.R{background:var(--olive);color:var(--bg)}.fmt.C{background:var(--olive-soft);color:var(--olive)}.fmt.H{background:var(--warn-soft);color:var(--warn)}
+/* textos */
+.copy{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px;white-space:pre-line}
+.copy .cap{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:4px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.found mark{background:var(--warn-soft);color:var(--warn);font-weight:700;border-radius:4px;padding:0 3px}
+.alert{background:var(--warn-soft);border-radius:14px;padding:12px 14px;font-size:15px}
+.alert b{color:var(--warn)}
+/* dudas */
+details{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px 14px;margin-bottom:8px}
+summary{cursor:pointer;font-weight:700;padding:12px 0;list-style:none;display:flex;justify-content:space-between;gap:10px}
+summary::after{content:"+";color:var(--olive);font-size:20px;line-height:1}
+details[open] summary::after{content:"–"}
+details p{font-size:15px}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;font-size:15px;z-index:30;max-width:90vw;text-align:center}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header><div class="mono">CP</div><div><div class="eyebrow">Naturópata · Carolina Pereira</div><h1>Naturoterapeuta</h1></div></header>
+
+<!-- INICIO -->
+<section id="inicio">
+<h2>Hola, Carolina 🌿</h2>
+<p>Esta es tu app de trabajo con la agencia. Tú respondes, grabas y apruebas. Nosotras diseñamos, escribimos, editamos y programamos.</p>
+<div class="steps" id="steps"></div>
+<button class="btn" id="goNext">Empezar</button>
+<p class="muted" style="margin-top:12px;font-size:14px">Todo se guarda solo en este celular mientras avanzas. Puedes cerrar y volver cuando quieras.</p>
+</section>
+
+<!-- DIAGNOSTICO -->
+<section id="diag" hidden>
+<div class="count"><span id="wzN"></span><span id="wzSec"></span></div>
+<div class="prog"><i id="wzP"></i></div>
+<div class="wz" style="margin-top:12px" id="wz"></div>
+<div class="wzbar"><button class="btn ghost" id="wzBack">Atrás</button><button class="btn" id="wzNext">Siguiente</button></div>
+</section>
+
+<!-- PLAN -->
+<section id="plan" hidden>
+<h2>Tu plan</h2>
+<p class="muted">La agencia lee tus respuestas y decide por dónde partir. Cambia solo si cambias una respuesta.</p>
+<div id="angles"></div>
+<div id="critic"></div>
+<h3>Tus 4 semanas de lanzamiento</h3>
+<p class="muted" style="font-size:15px">Reels, carruseles e historias para Instagram y Facebook. La agencia los produce; tú solo apruebas el lunes.</p>
+<div id="cal"></div>
+</section>
+
+<!-- GRABAR -->
+<section id="grabar" hidden>
+<h2>Grabar con el Director</h2>
+<p class="muted">Tu kit de inicio. Las tarjetas que dicen <b>Ahora</b> van primero. Cuando tengas una, márcala y mándala por WhatsApp a la agencia.</p>
+<div class="big-prog"><i id="pg"></i></div><div class="muted" id="pgt" style="font-size:14px"></div>
+<div class="filt" id="filt">
+ <label><input type="radio" name="fl" value="all" checked>Todo</label><label><input type="radio" name="fl" value="foto">📷 Fotos</label><label><input type="radio" name="fl" value="audio">🎙 Audios</label><label><input type="radio" name="fl" value="video">🎬 Videos</label></div>
+<div id="shots"></div>
+</section>
+
+<!-- TEXTOS -->
+<section id="textos" hidden>
+<h2>Textos</h2>
+<p class="muted">Listos para copiar. Antes de publicar algo escrito por ti, pásalo por el revisor de abajo.</p>
+<div id="copies"></div>
+<h3>Revisor de textos</h3>
+<textarea id="chk" placeholder="Pega aquí un texto antes de publicarlo"></textarea>
+<div class="found" id="chkOut" style="margin-top:10px"></div>
+</section>
+
+<!-- DUDAS -->
+<section id="dudas" hidden>
+<h2>Dudas</h2>
+<div id="faq"></div>
+<h3>Enviar a la agencia</h3>
+<p class="muted" style="font-size:15px">Copia tus respuestas y tu avance, y pégalos en el WhatsApp de la agencia.</p>
+<button class="btn" id="send">Copiar mis respuestas</button>
+<button class="btn ghost" id="reset" style="margin-top:10px">Borrar todo y empezar de nuevo</button>
+<div id="resetC" hidden class="alert" style="margin-top:10px">¿Segura? Se borran tus respuestas y tus tomas marcadas en este celular. <div class="row" style="margin-top:8px"><button class="btn small" id="resetY">Sí, borrar</button><button class="btn small ghost" id="resetN">No</button></div></div>
+</section>
+</div>
+
+<nav class="tabbar" aria-label="Secciones"><div id="tabs">
+ <button data-t="inicio" aria-current="true"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9H4z"/></svg>Inicio</button>
+ <button data-t="diag"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>Preguntas</button>
+ <button data-t="plan"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Mi plan</button>
+ <button data-t="grabar"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="11" rx="2"/><path d="M16 11l5-3v9l-5-3"/></svg>Grabar</button>
+ <button data-t="textos"><svg viewBox="0 0 24 24"><path d="M5 5h14M5 10h14M5 15h9"/></svg>Textos</button>
+ <button data-t="dudas"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17.5v.1"/></svg>Dudas</button>
+</div></nav>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const KEY="naturo_cp_v2";let S={ans:{},done:{},i:0};
+try{S=Object.assign(S,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){}
+let db=null;
+const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(db){try{db.doc("diagnostico/carolina").set({ans:S.ans,done:S.done,at:new Date().toISOString()})}catch(e){}}};
+(async()=>{try{if(window.claude&&claude.use){db=await claude.use("db");if(db){const d=await db.doc("diagnostico/carolina").get();const x=d&&d.exists!==false&&d.data?d.data():null;if(x&&x.ans&&!Object.keys(S.ans).length){S.ans=x.ans;S.done=x.done||{};renderAll()}}}}catch(e){db=null}})();
+function toast(t){const e=document.createElement("div");e.className="toast";e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),2600)}
+const esc=t=>String(t??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+
+/* ---------- preguntas (una por pantalla) ---------- */
+const Q=[
+{s:"Tú",k:"porque",t:"area",q:"¿Por qué elegiste la naturopatía?",h:"Cuéntalo como se lo dirías a una amiga. Dos o tres frases bastan.",w:"Con esto escribimos tu presentación con tus palabras, no con frases de manual."},
+{s:"Tú",k:"servicios",t:"multi",q:"¿Qué servicios quieres mostrar primero?",o:["Consulta integral","Hidroterapia y geoterapia","Esencias florales (Bach)","Reflexología podal y facial","Sesiones combinadas"],w:"Partimos con 2 o 3. Mostrar todo de una vez confunde."},
+{s:"Tú",k:"cert",t:"text",q:"¿Qué certificación tienes?",h:"Institución y año. Si tienes número de registro, ponlo también.",w:"Si no hay número verificado con la Seremi, el título va sin número. Nunca inventamos uno."},
+{s:"Tú",k:"publico",t:"multi",q:"¿A quién te gustaría atender más?",o:["Mujeres que trabajan y andan cansadas","Mamás","Adultos mayores","Cuidadoras","Personas con estrés","Empresas y grupos"],w:"Hablarle a alguien concreto hace que esa persona sienta que el video es para ella."},
+{s:"Tú",k:"comunas",t:"multi",q:"¿En qué comunas quieres partir?",o:["Concepción","Chiguayante","San Pedro de la Paz","Talcahuano","Hualpén","Penco","Tomé","Florida"],w:"Nombramos cada comuna en las piezas. Así te encuentran las personas de tu zona."},
+{s:"Cámara",k:"camara",t:"scale",q:"¿Qué tan cómoda te sientes saliendo en video?",l:["Nada","","Más o menos","","Feliz"],w:"No hay respuesta mala. Si te da vergüenza, partimos sin tu cara y igual funciona."},
+{s:"Cámara",k:"voz",t:"scale",q:"¿Y grabando solo tu voz?",l:["Nada","","Más o menos","","Feliz"],w:"Tu voz genera confianza aunque no se vea tu cara."},
+{s:"Cámara",k:"equipo",t:"multi",q:"¿Qué tienes para grabar?",o:["Celular","Trípode o algo para apoyarlo","Aro de luz","Micrófono de solapa","Una ventana con buena luz"],w:"Con un celular y una ventana alcanza. El resto es extra."},
+{s:"Tiempo",k:"tiempo",t:"one",q:"¿Cuánto tiempo a la semana le puedes dar a esto?",o:["30 minutos","1 hora","2 horas","Más de 2 horas"],w:"Armamos el plan para que quepa en ese tiempo, no al revés."},
+{s:"Tiempo",k:"horario",t:"text",q:"¿Qué momento de la semana es más tranquilo?",h:"Ej.: martes en la mañana, cuando tu hija está en el colegio.",w:"Ahí te mandamos la lista de tomas de la semana."},
+{s:"Imagen",k:"color",t:"text",q:"¿Cómo es tu tono de piel, tus ojos y tu pelo?",h:"Ej.: piel trigueña, ojos café, pelo castaño oscuro.",w:"Sirve para elegir la ropa que mejor se ve en cámara."},
+{s:"Imagen",k:"sets",t:"area",q:"¿Qué lugares tienes para fotos?",h:"Living, jardín, mesa de madera, un árbol en Roa, tu espacio de atención.",w:"Elegimos 2 sets fijos. Repetirlos hace que te reconozcan."},
+{s:"Imagen",k:"herr",t:"area",q:"¿Qué cosas tuyas se ven bonitas en cámara?",h:"Frascos de esencias, arcilla, aceites, toallas, plantas, tazas.",w:"Tus objetos reales son el material de los primeros videos."},
+{s:"Material",k:"destino",t:"multi",q:"¿Dónde vas a usar el material?",o:["Instagram","Facebook","Estados de WhatsApp","Flyer impreso","Carta para empresas","Ferias de salud"]},
+{s:"Material",k:"objetivo",t:"one",q:"¿Qué quieres lograr primero?",o:["Que me conozcan","Mis primeras 5 clientas","Llenar la agenda","Talleres y empresas"],w:"Cambia cómo termina cada pieza: invitar a seguirte o a escribirte."},
+{s:"Material",k:"tono",t:"multi",q:"¿Cómo quieres sonar en tus textos?",o:["Cercana","Tranquila","Educativa","Alegre","Espiritual"]},
+{s:"Material",k:"frases",t:"area",q:"¿Qué frases repites con tus pacientes?",h:"Ej.: \"vamos de a poquito\", \"tu cuerpo te habla\".",w:"Esas frases se vuelven tu sello en los videos."},
+{s:"Material",k:"nunca",t:"area",q:"¿Qué no quieres mostrar nunca?",h:"Tu hija, tu casa, tu dirección, tu cara al principio…",w:"Lo respetamos en todo el material, sin excepciones."},
+{s:"Cuentas",k:"ig",t:"one",q:"¿Qué usuario de Instagram te gusta más?",o:["@naturopatacarolinapereira","@carolina.naturopata","@carolinapereira.naturo","Otro, lo conversamos"],w:"Verificamos que esté libre antes de crearlo."},
+{s:"Cuentas",k:"wsp",t:"text",q:"¿Qué WhatsApp usamos para las reservas?",h:"Puede ser tu número personal o uno nuevo solo para atención.",w:"Va en todas las piezas, para que reservar sea un toque."}
+];
+function wzRender(){const n=Q.length;S.i=Math.max(0,Math.min(S.i||0,n));
+if(S.i>=n){$("#wz").innerHTML=`<div class="q">¡Listo, Carolina! 🌿</div><p>Ya tenemos lo necesario para armar tu plan. Mira la sección <b>Mi plan</b> y después mándanos tus respuestas desde <b>Dudas → Copiar mis respuestas</b>.</p>`;$("#wzN").textContent="Terminado";$("#wzSec").textContent="";$("#wzP").style.width="100%";$("#wzNext").textContent="Ver mi plan";return}
+const q=Q[S.i],v=S.ans[q.k];$("#wzN").textContent=`Pregunta ${S.i+1} de ${n}`;$("#wzSec").textContent=q.s;$("#wzP").style.width=(S.i/n*100)+"%";$("#wzNext").textContent=S.i==n-1?"Terminar":"Siguiente";$("#wzBack").style.visibility=S.i?"visible":"hidden";
+let f="";if(q.t=="area")f=`<textarea id="in">${esc(v)}</textarea>`;else if(q.t=="text")f=`<input type="text" id="in" value="${esc(v)}">`;
+else if(q.t=="scale")f=`<div class="scale">${[1,2,3,4,5].map(x=>`<label><input type="radio" name="sc" value="${x}" ${v==x?"checked":""}>${x}<small>${q.l[x-1]}</small></label>`).join("")}</div>`;
+else{const tp=q.t=="multi"?"checkbox":"radio",vs=[].concat(v||[]);f=`<div class="choices">${q.o.map(o=>`<label><input type="${tp}" name="ch" value="${esc(o)}" ${vs.includes(o)?"checked":""}>${esc(o)}</label>`).join("")}</div>`}
+$("#wz").innerHTML=`<div class="q">${q.q}</div>${q.h?`<div class="h">${q.h}</div>`:""}${f}${q.w?`<div class="why"><b>Para qué sirve:</b> ${q.w}</div>`:""}`;}
+function wzSave(){const q=Q[S.i];if(!q)return;let v;if(q.t=="area"||q.t=="text")v=$("#in").value.trim();else if(q.t=="scale"){const c=$("input[name=sc]:checked");v=c?+c.value:""}else if(q.t=="multi")v=$$("input[name=ch]:checked").map(i=>i.value);else{const c=$("input[name=ch]:checked");v=c?c.value:""}S.ans[q.k]=v;persist()}
+$("#wzNext").onclick=()=>{if(S.i>=Q.length){show("plan");return}wzSave();S.i++;persist();wzRender();renderAll(false);window.scrollTo(0,0)};
+$("#wzBack").onclick=()=>{if(S.i<Q.length)wzSave();S.i--;persist();wzRender()};
+
+/* ---------- plan ---------- */
+const answered=()=>Q.filter(q=>{const v=S.ans[q.k];return v!==undefined&&v!==""&&!(Array.isArray(v)&&!v.length)}).length;
+function ruta(){const c=+S.ans.camara||0,v=+S.ans.voz||0;return c>=4?"rostro":(c>=2&&v>=3)?"mixta":"sin"}
+function plan(){const a=S.ans,r=ruta(),t=a.tiempo||"",obj=a.objetivo||"";
+const R={rostro:["Con tu cara desde el día 1","Tu cara y tu voz generan confianza rápido. Partimos con videos cortos a cámara."],mixta:["Mixta","Semanas 1 y 2: manos, objetos y tu voz. Semana 3: tu foto. Semana 4: tu primer video a cámara."],sin:["Sin mostrar la cara","El primer mes va con tus manos, tus herramientas, carruseles y tu voz. Si la voz también te incomoda, usamos texto en pantalla y música suave."]}[r];
+const ritmo=/30/.test(t)?"2 piezas por semana y 3 historias":/^1 hora/.test(t)?"3 piezas por semana e historias casi todos los días":t?"4 a 5 piezas por semana e historias diarias":"Por definir";
+const emb=/clientas|agenda/i.test(obj)?"Cada pieza termina invitando a escribirte por WhatsApp.":/empresas/i.test(obj)?"Carta de presentación, carruseles educativos y una charla piloto.":"Videos de hábitos y preguntas frecuentes para que te conozcan en tu zona.";
+const com=[].concat(a.comunas||[]),pub=[].concat(a.publico||[]);
+return [["Cámara",`<span class="chip">${R[0]}</span><br>${R[1]}`],["Ritmo",ritmo],["Objetivo",(obj||"Por definir")+". "+emb],["Para quién",pub.join(", ")||"Por definir"],["Dónde",com.length?com.join(", "):"Concepción y comunas cercanas"],["Tono",[].concat(a.tono||[]).join(", ")||"Cercana y tranquila"],["Ropa",a.color?`Según tu colorimetría (${esc(a.color)}): 3 combinaciones en oliva, crema y piedra, sin estampados.`:"Neutros cálidos (crema, beige, oliva), sin estampados."],["Cuidado legal",a.cert?`<span class="chip">Revisar</span> Verificamos tu certificación con la Seremi antes de ponerla en las piezas.`:`<span class="chip w">Pendiente</span> El título va sin número de registro hasta verificarlo.`],["Privacidad",a.nunca?esc(a.nunca):"No se muestran tu hija, tu casa ni tu dirección."]]}
+function critic(){const a=S.ans,out=[];if(!a.wsp)out.push("Sin WhatsApp de reservas no se puede publicar: cada pieza necesita a dónde escribir.");if(!a.ig)out.push("Falta elegir el usuario de Instagram.");if(ruta()=="sin"&&(+a.voz||0)<=2)out.push("Sin cara y sin voz, la cuenta corre el riesgo de parecer de banco de imágenes. Propuesta: aunque sea un audio de 10 segundos a la semana con tu voz.");if(![].concat(a.servicios||[]).length)out.push("Elige al menos un servicio para mostrar primero.");if([].concat(a.servicios||[]).length>3)out.push("Más de 3 servicios en el lanzamiento diluye el mensaje. Partimos con 2 o 3.");
+return out.length?`<div class="critic"><b>Kill Critic de la agencia:</b><ul style="margin:6px 0 0;padding-left:20px">${out.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:answered()?`<div class="critic" style="border-color:var(--ok)"><b style="color:var(--ok)">Kill Critic:</b> el diagnóstico pasa. Seguimos con la producción.</div>`:""}
+/* calendario 4 semanas */
+function cal(){const r=ruta(),a=S.ans,com=[].concat(a.comunas||[])[0]||"Concepción";
+const face=w=>r=="rostro"||(r=="mixta"&&w>=4);
+const W=[
+{t:"Semana 1 · Hola, soy Carolina",d:[["Lun","R",face(1)?"Presentación a cámara: \"Atiendo a domicilio en "+com+". Lo primero que hago es escuchar.\"":"Manos preparando una infusión + tu voz: \"Hola, soy Carolina, naturópata…\""],["Mar","H","3 historias: quién soy, mi zona, encuesta \"¿Qué te gustaría aprender?\""],["Mié","C","Carrusel: ¿Qué es la naturopatía? (y qué no es)"],["Vie","R","B-roll de tus herramientas con texto: \"Así llego a tu casa\""],["Sáb","H","Caja de preguntas + resultado de la encuesta"]]},
+{t:"Semana 2 · Cómo trabajo",d:[["Lun","C","Carrusel: Cómo es una primera visita, paso a paso"],["Mar","H","Detrás de cámara: armando tu bolso"],["Jue","R",face(2)?"A cámara: una pregunta frecuente":"Voz en off: \"¿La naturopatía reemplaza a tu médico? No. Te explico.\""],["Vie","C","Carrusel: agua y descanso, 5 hábitos simples"],["Dom","H","Respuestas a la caja de preguntas"]]},
+{t:"Semana 3 · Tu bienestar",d:[["Lun","R",r=="sin"?"Manos + esencias florales con texto en pantalla":"Tu primera foto de perfil + voz: \"Esta soy yo\""],["Mié","C","Carrusel: pausas en el día (para mamás que trabajan)"],["Jue","H","Encuesta: ¿qué te cuesta más, dormir o desconectarte?"],["Vie","R","Gancho: \"¿Duermes mal y ya no sabes qué cambiar?\" + 3 hábitos"],["Sáb","H","Zona de atención: comuna por comuna"]]},
+{t:"Semana 4 · Agenda abierta",d:[["Lun","R",face(4)?"A cámara: \"Abro agenda en "+com+". Escríbeme y conversamos.\"":"Voz + B-roll caminando a domicilio: \"Abro agenda…\""],["Mar","C","Carrusel: preguntas frecuentes (¿qué sesión necesito?)"],["Mié","H","Cuenta regresiva para reservar + botón de WhatsApp"],["Vie","R","Resumen del mes: lo que aprendimos juntas"],["Sáb","H","Gracias + destacado \"Reservas\""]]}];
+return W.map(w=>`<div class="week"><h4>${w.t}</h4>${w.d.map(d=>`<div class="day"><span class="d">${d[0]}</span><span><span class="fmt ${d[1]}">${{R:"Reel",C:"Carrusel",H:"Historias"}[d[1]]}</span>${esc(d[2])}</span></div>`).join("")}</div>`).join("")+`<p class="muted" style="font-size:14px">Cada pieza de servicios lleva: "Complementario. No reemplaza diagnóstico ni tratamiento médico."</p>`}
+
+/* ---------- tomas del Director ---------- */
+const SH=[
+["F1","foto","Foto de perfil",["Párate frente a una ventana, con la luz de frente.","Fondo liso y claro. Ropa oliva o crema, sin estampado.","Celular a la altura de tus ojos, a un brazo de distancia.","Saca 10: 5 con boca cerrada y 5 riéndote."],"","rostro"],
+["F2","foto","Tus manos con tus herramientas",["Mesa de madera o paño de lino.","Toma un frasco, la arcilla o una taza.","Uñas cortas y limpias, sin anillos grandes.","Saca 10 desde distintos ángulos."],"","sin"],
+["F3","foto","Tu set de trabajo desde arriba",["Arma la mesa como para una sesión: toalla, frascos, plantas, libreta.","Celular paralelo a la mesa, sin que se vea tu sombra."],"","sin"],
+["F4","foto","Llegando a domicilio",["Tu bolso en una puerta o reja.","Que no se vean números de casa ni patentes."],"","sin"],
+["F5","foto","Detalle de reflexología",["Manos sobre un pie con toalla.","Solo con una persona que firme autorización; si no, usa tu propio pie.","Nunca la cara de la persona."],"","sin"],
+["F6","foto","Tú en la naturaleza",["Caminando en tu jardín o entre árboles, de espalda o de lado.","Luz de mañana o de tarde, nunca a mediodía."],"","mixta"],
+["A1","audio","Presentación",["Busca una pieza con cortinas o ropa: hay menos eco.","Celular a un palmo de tu boca.","Lee despacio y con una sonrisa. Graba 3 veces seguidas."],"Hola, soy Carolina, naturópata. Atiendo a domicilio en Concepción y comunas cercanas. Lo primero que hago con cada persona es escuchar.","sin"],
+["A2","audio","¿Qué es la naturopatía?",["Dilo como se lo explicarías a tu vecina.","Si te equivocas, sigue: la agencia corta."],"La naturopatía acompaña tus hábitos: descanso, agua, alimentación y pausas. Es complementaria: no reemplaza a tu médico.","sin"],
+["A3","audio","Tu primera visita",["Voz tranquila, sin apuro."],"En la primera visita conversamos con calma: cómo duermes, cómo comes y qué te gustaría cambiar.","sin"],
+["A4","audio","Abro agenda",["Con energía, como si invitaras a una amiga."],"Estoy abriendo agenda en Concepción y comunas cercanas. Escríbeme por WhatsApp y conversamos.","sin"],
+["V1","video","Infusión (B-roll)",["Celular apoyado y vertical. No lo muevas.","3 planos de 5 segundos: de cerca, de lado y desde arriba.","Agua cayendo, vapor, taza en la mesa."],"","sin"],
+["V2","video","Esencias florales (B-roll)",["Abre un frasco y deja caer una gota.","Si tu celular tiene cámara lenta, úsala."],"","sin"],
+["V3","video","Camino a domicilio (B-roll)",["Tus pies caminando o tu bolso al hombro, de espalda.","Sin patentes ni números de casa."],"","sin"],
+["V4","video","Gancho a cámara",["Mira al lente, no a la pantalla.","Di la frase y quédate quieta 1 segundo.","Graba 5 veces."],"¿Duermes mal y ya no sabes qué cambiar?","rostro"],
+["V5","video","Cierre a cámara",["Al final, señala hacia abajo con la mano: ahí va el botón."],"Escríbeme por WhatsApp y conversamos. Atiendo a domicilio en Concepción.","rostro"],
+["V6","video","Tu primer video",["Si vas sin cara: V1 + el audio A1.","Si vas con cara: el texto de A1 mirando a cámara.","15 a 20 segundos."],"","mixta"]];
+function shots(){const r=ruta(),f=($("input[name=fl]:checked")||{}).value||"all";
+const pri=s=>s[5]=="sin"?0:s[5]=="mixta"?(r=="sin"?2:1):(r=="rostro"?1:3);
+const L=SH.filter(s=>f=="all"||s[1]==f).sort((a,b)=>pri(a)-pri(b));
+$("#shots").innerHTML=L.map(s=>`<div class="shot ${S.done[s[0]]?"done":""}"><div class="top"><span class="id">${s[0]}</span>${pri(s)>=2?'<span class="chip w">Más adelante</span>':'<span class="chip">Ahora</span>'}</div><h4>${s[2]}</h4>${s[4]?`<div class="say">"${s[4]}"</div>`:""}<ol>${s[3].map(x=>`<li>${x}</li>`).join("")}</ol><label class="ck"><input type="checkbox" data-id="${s[0]}" ${S.done[s[0]]?"checked":""}>La tengo y la mandé</label></div>`).join("");
+$$("#shots input[data-id]").forEach(i=>i.onchange=()=>{S.done[i.dataset.id]=i.checked;persist();shots();renderSteps();if(i.checked)toast("¡Bien! Mándala por WhatsApp a la agencia")});
+const n=SH.filter(s=>S.done[s[0]]).length;$("#pg").style.width=(n/SH.length*100)+"%";$("#pgt").textContent=n+" de "+SH.length+" tomas listas";}
+$$("input[name=fl]").forEach(i=>i.onchange=shots);
+
+/* ---------- textos ---------- */
+function copies(){const a=S.ans,ig=a.ig&&a.ig.startsWith("@")?a.ig:"@naturopatacarolinapereira",com=[].concat(a.comunas||[]);const zona=com.length?com.join(", "):"Concepción, Chiguayante, San Pedro de la Paz, Talcahuano, Hualpén, Penco y Tomé";
+return [["Biografía de Instagram","Naturópata · Hábitos y bienestar a domicilio 🌿\n"+(com[0]||"Concepción")+" y comunas cercanas\nComplementario a tu médico · Reserva por WhatsApp ↓"],
+["Primer post","Hola, soy Carolina 🌿\nSoy naturópata y atiendo a domicilio en "+zona+".\nLo primero que hago con cada persona es escuchar: cómo duermes, cómo comes, cómo estás.\nMi trabajo es complementario: no reemplaza diagnóstico ni tratamiento médico.\nSi quieres conversar, escríbeme por WhatsApp."],
+["Consulta inicial","Conversación inicial y observación de hábitos, a domicilio y sin apuro.\nComplementario. No reemplaza diagnóstico ni tratamiento médico.\nReserva tu hora por WhatsApp."],
+["Esencias florales","Acompañamiento con esencias florales como complemento de bienestar.\nNo reemplaza atención de salud mental.\n¿Quieres saber cómo trabajo? Escríbeme por WhatsApp."],
+["Historia · caja de preguntas","¿Qué te gustaría aprender sobre hábitos y bienestar? Pregúntame 👇"],
+["Mensaje para responder a quien te escribe","¡Hola! Gracias por escribirme 🌿 Soy Carolina. ¿Me cuentas en qué comuna estás y qué te gustaría trabajar? Así te propongo un día para la visita."]]}
+function renderCopies(){$("#copies").innerHTML=copies().map((c,i)=>`<div class="copy"><div class="cap"><span>${c[0]}</span><button class="btn small ghost" data-c="${i}">Copiar</button></div>${esc(c[1])}</div>`).join("");
+$$("#copies [data-c]").forEach(b=>b.onclick=async()=>{const t=copies()[+b.dataset.c][1];try{await navigator.clipboard.writeText(t);toast("Copiado")}catch(e){toast("Mantén apretado el texto para copiarlo")}})}
+const BAD=["sanación","sanar","sana","sanarte","milagro","milagroso","elimina","eliminar","cura","curar","curarte","revierte","revertir","garantizado","garantizada","garantía","100%","tratamiento","diagnóstico","desintoxica","detox","adelgazar"];
+$("#chk").oninput=()=>{const t=$("#chk").value;if(!t.trim()){$("#chkOut").innerHTML="";return}
+const re=new RegExp("(^|[^\\p{L}])("+BAD.join("|")+")(?=[^\\p{L}]|$)","giu");const safe=/no reemplaza diagn[oó]stico ni tratamiento/i;let n=0;
+const out=esc(t).replace(re,(m,p,w)=>{if(/^(tratamiento|diagnóstico)$/i.test(w)&&safe.test(t))return m;n++;return p+"<mark>"+w+"</mark>"});
+$("#chkOut").innerHTML=(n?`<div class="alert"><b>${n} palabra(s) para cambiar.</b> Usa: acompañamiento, bienestar, hábitos, complementario.</div>`:`<span class="chip">Sin palabras prohibidas</span>`)+(/no reemplaza/i.test(t)?"":` <span class="chip w">Falta el aviso "no reemplaza…"</span>`)+`<div class="copy" style="margin-top:8px">${out}</div>`};
+
+/* ---------- dudas (modo empatía) ---------- */
+const FAQ=[
+["¿Qué es esta app?","Es tu espacio de trabajo con la agencia. Aquí respondes unas preguntas, ves tu plan, grabas con la guía del Director y copias tus textos."],
+["¿Tengo que saber de marketing?","No. Tú respondes, grabas y apruebas. La agencia diseña, escribe, edita, programa y mide."],
+["¿Tengo que mostrar mi cara?","No al principio. Si te da vergüenza, el primer mes va con tus manos, tus herramientas y tu voz. Tú decides cuándo aparecer."],
+["¿Cuánto tiempo me va a tomar?","Menos de una hora a la semana: 10 minutos para aprobar, unos 25 para grabar y el resto para responder mensajes."],
+["¿Dónde quedan mis respuestas?","En este celular. Para que la agencia las reciba, ve a Dudas y toca \"Copiar mis respuestas\", y pégalas en el WhatsApp de la agencia. Nadie más las ve."],
+["¿Cómo mando mis fotos y videos?","Por WhatsApp a la agencia, en calidad original: en WhatsApp, adjunta como Documento, no como Foto, para que no pierdan calidad."],
+["¿Y si me equivoco grabando?","Sigue hablando. La agencia corta los errores. Graba cada toma 3 veces y elegimos la mejor."],
+["¿Por qué no puedo decir que \"curo\"?","En Chile la naturopatía es una profesión auxiliar de la salud y no reemplaza la medicina. Prometer curas puede traerte problemas legales. Hablamos de acompañamiento, bienestar y hábitos."],
+["¿Por qué no publicamos precios todavía?","Primero los validamos con 5 a 10 clientas reales. Publicar un precio mal puesto cuesta más que esperar unas semanas."],
+["¿Puedo usar fotos de internet?","Solo las del banco libre que te pasa la agencia, como fondo o decoración. Nunca como si fueran tus sesiones o tus pacientes."],
+["¿Necesito Meta Business Suite desde el día 1?","No. Primero creamos la cuenta de Instagram, la vinculamos a Facebook y después te enseñamos a programar, paso a paso."],
+["¿Qué pasa si alguien me pregunta algo médico por mensaje?","Respóndele con cariño y deriva: \"Eso lo tiene que ver tu médico. Yo te puedo acompañar con hábitos y bienestar\"."]];
+$("#faq").innerHTML=FAQ.map(f=>`<details><summary>${f[0]}</summary><p>${f[1]}</p></details>`).join("");
+$("#send").onclick=async()=>{const lines=Q.map(q=>{const v=S.ans[q.k];return v&&(!Array.isArray(v)||v.length)?`• ${q.q}\n  ${[].concat(v).join(", ")}`:null}).filter(Boolean);
+const t="Naturoterapeuta · respuestas de Carolina\n\n"+lines.join("\n")+"\n\nTomas listas: "+(SH.filter(s=>S.done[s[0]]).map(s=>s[0]).join(", ")||"ninguna");
+try{await navigator.clipboard.writeText(t);toast("Copiado. Ahora pégalo en WhatsApp")}catch(e){$("#chk").value=t;show("textos");toast("Quedó en el revisor: mantén apretado para copiar")}};
+$("#reset").onclick=()=>$("#resetC").hidden=false;$("#resetN").onclick=()=>$("#resetC").hidden=true;
+$("#resetY").onclick=()=>{S={ans:{},done:{},i:0};persist();$("#resetC").hidden=true;renderAll();wzRender();toast("Borrado")};
+
+/* ---------- inicio y navegación ---------- */
+function renderSteps(){const a=answered(),n=SH.filter(s=>S.done[s[0]]).length;const st=[["Responde 20 preguntas","Unos 15 minutos. Una pregunta por pantalla.",a>=Q.length,"diag"],["Mira tu plan","Por dónde partimos y tus 4 semanas.",a>=Q.length&&n>0,"plan"],["Graba tu kit de inicio","Fotos, audios y videos, con la guía del Director.",n>=8,"grabar"],["Manda todo a la agencia","Tus respuestas y tus tomas por WhatsApp.",false,"dudas"]];
+$("#steps").innerHTML=st.map((s,i)=>`<div class="step ${s[2]?"done":""}"><div class="n">${s[2]?"✓":i+1}</div><div><b>${s[0]}</b><span>${s[1]}</span></div></div>`).join("");
+const nx=st.find(s=>!s[2])||st[3];$("#goNext").textContent=a?(a>=Q.length?"Seguir: "+nx[0].toLowerCase():"Seguir respondiendo ("+a+" de "+Q.length+")"):"Empezar";$("#goNext").onclick=()=>show(a>=Q.length?nx[3]:"diag")}
+function renderAll(){$("#angles").innerHTML=answered()?plan().map(([k,v])=>`<div class="angle"><b>${k}</b><div class="v">${v}</div></div>`).join(""):`<div class="alert">Todavía no hay respuestas. <button class="btn small" onclick="show('diag')">Responder las preguntas</button></div>`;$("#critic").innerHTML=critic();$("#cal").innerHTML=cal();shots();renderCopies();renderSteps()}
+function show(t){$$("section").forEach(s=>s.hidden=s.id!==t);$$("#tabs button").forEach(b=>b.setAttribute("aria-current",b.dataset.t===t));if(t=="diag")wzRender();window.scrollTo(0,0)}
+$$("#tabs button").forEach(b=>b.onclick=()=>show(b.dataset.t));
+window.show=show;renderAll();wzRender();
+</script>
+
+</body></html>
