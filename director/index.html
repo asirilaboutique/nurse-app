@@ -87,9 +87,24 @@ button.ia{border-color:var(--acc);color:var(--acc)}
 #tp.mir #tpBody{transform:scaleX(-1)}
 .log{font-size:14px;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.esTips{margin:12px 0;padding:10px 14px;border:1px solid #ccc3;border-radius:12px}.esTips summary{cursor:pointer;font-weight:700}.esTips ol{margin:8px 0 0 18px;line-height:1.5}
+.esFil{display:flex;gap:10px;align-items:center;margin:10px 0}.esFil select{font:inherit;padding:8px 12px;border-radius:99px}
+.esCard{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #8883}
+.esCard b{font-size:14px;letter-spacing:.06em}.esCard p{margin:2px 0;font-size:16px}.esCard small{color:var(--muted);display:block}.esCard button{white-space:nowrap}
+.esCard .ok{color:#2E7D5B;font-weight:700}
+#esRec{position:fixed;inset:0;z-index:30;background:#000;color:#fff;display:flex;flex-direction:column}
+#esTop{display:flex;justify-content:space-between;gap:8px;padding:10px 14px;font:700 clamp(15px,2.2vh,20px) var(--body);letter-spacing:.08em;color:#F2C14E;flex-wrap:wrap}
+#esMain{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:1vh 5vw;gap:1.6vh;min-height:0;overflow:auto}
+#esUse{color:#9FD9CF;font:600 clamp(14px,2vh,18px) var(--body)}
+#esTxt{font:700 clamp(26px,6.5vw,64px)/1.2 var(--body);text-wrap:balance}
+#esTone{color:#F2C14E;font:600 clamp(16px,2.6vh,24px) var(--body)}
+#esMeter{width:min(560px,90vw);height:14px;border-radius:99px;background:#222;overflow:hidden}#esLvl{height:100%;width:0;background:#2E9C8F;transition:width .06s}
+#esClock{font:700 clamp(20px,3.4vh,30px) var(--body);font-variant-numeric:tabular-nums}#esClock small{color:#aaa;font-weight:500}
+#esPh{font:700 clamp(15px,2.4vh,22px) var(--body);letter-spacing:.2em;padding:6px 16px;border-radius:99px;background:#333}#esPh.rec{background:#D3271E}#esPh.ok{background:#2E7D5B}
+#esTakes{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:6px 10px}#esTakes button{font-size:14px;padding:6px 10px}
 </style>
 
-<nav class="modes" aria-label="Modo"><button data-m="ap" aria-current="true">✓ Guion</button><button data-m="cla">🎬 Claqueta</button><button data-m="tp">📜 Teleprompter</button><button data-m="solo">🎥 Modo sola</button></nav>
+<nav class="modes" aria-label="Modo"><button data-m="ap" aria-current="true">✓ Guion</button><button data-m="cla">🎬 Claqueta</button><button data-m="tp">📜 Teleprompter</button><button data-m="solo">🎥 Modo sola</button><button data-m="est">🎙 Sala de estudio</button></nav>
 <div id="ap">
 <div class="w">
 <div class="k">Valeria Enfermera · director audiovisual</div>
@@ -120,6 +135,27 @@ button.ia{border-color:var(--acc);color:var(--acc)}
 <div class="ctl"><button id="soGo" class="gold big2">▶ Partir</button><button id="soBad" class="big2" style="background:#B4483A;border-color:#B4483A">👎 Mala</button><button id="soGood" class="big2" style="background:#2E7D5B;border-color:#2E7D5B">👍 Buena</button><button id="soSkip" aria-label="Saltar frase">⏭</button>
 <select id="soDur" aria-label="Segundos por escena"><option value="10">⏱ 10 s</option><option value="15">⏱ 15 s</option><option value="20" selected>⏱ 20 s</option><option value="25">⏱ 25 s</option><option value="30">⏱ 30 s</option><option value="40">⏱ 40 s</option><option value="50">⏱ 50 s</option><option value="60">⏱ 60 s</option></select>
 <button id="soCamB">📷 Gestos</button><button id="soMic">🎙 Voz</button><button id="soLog">📋 Registro</button><button id="soMir" aria-label="Espejo">⇋</button><button data-m="ap" aria-label="Salir">✕</button></div>
+</div>
+<div id="est" hidden>
+<div class="w">
+<div class="k">Valeria Enfermera · 🎙 Sala de estudio · voz en off <button data-m="ap" style="float:right">✕ Volver</button></div>
+<p class="s" id="esWarn" hidden></p>
+<details class="esTips"><summary>Antes de grabar (1 minuto)</summary><ol>
+<li><b>Lugar:</b> dentro del clóset o junto a la cama con ropa y cojines: la tela se come el eco.</li>
+<li><b>Celular</b> a un palmo de la boca, de lado (45°), en modo avión. Usa audífonos con micrófono si tienes.</li>
+<li><b>Voz:</b> agua antes, sonríe al hablar (se escucha), di la frase una vez en voz baja y después grábala.</li>
+<li><b>Una frase por toma.</b> Si te equivocas, sigue: ✗ Otra y repites. Nada se borra solo.</li>
+</ol></details>
+<div class="esFil"><select id="esCat" aria-label="Categoría"></select><span class="chip" id="esCnt"></span></div>
+<div id="esList"></div>
+</div>
+</div>
+<div id="esRec" hidden>
+<div id="esTop"><span id="esId"></span><span id="esTk"></span></div>
+<div id="esMain"><div id="esUse"></div><div id="esTxt"></div><div id="esTone"></div>
+<div id="esMeter"><div id="esLvl"></div></div><div id="esClock">0,0 s <small id="esGoal"></small></div><div id="esPh">LISTA</div></div>
+<div id="esTakes"></div>
+<div class="ctl"><button id="esPrev">◀</button><button id="esGo" class="gold big2">● Grabar</button><button id="esBad" class="big2" style="background:#B4483A;border-color:#B4483A">✗ Otra</button><button id="esGood" class="big2" style="background:#2E7D5B;border-color:#2E7D5B">★ Buena</button><button id="esNext">▶</button><button id="esDl">⬇ Buenas</button><button id="esBack" aria-label="Volver a la lista">✕</button></div>
 </div>
 <div id="flash"></div>
 
@@ -314,7 +350,7 @@ $("cBad").onclick=async()=>{try{actx=actx||new(window.AudioContext||window.webki
 say("Mala");const s=$("sTk");s.textContent=RR[cr].toma+"✗";s.style.color="#FF5A4A";await logTake({mala:true});setTimeout(()=>{s.style.color="";RR[cr].toma++;push()},900)};
 let fs=9;try{fs=+localStorage.getItem("tps")||9}catch(e){}const setFs=()=>{$("tp").style.setProperty("--tps",fs+"vw");try{localStorage.setItem("tps",fs)}catch(e){}};setFs();
 $("tPlus").onclick=()=>{fs=Math.min(16,fs+1);setFs()};$("tMinus").onclick=()=>{fs=Math.max(4,fs-1);setFs()};$("tMir").onclick=()=>$("tp").classList.toggle("mir");
-function mode(m){if(m!=="solo")soStop();for(const v of["ap","cla","tp","solo"])$(v).hidden=v!==m;document.querySelector(".modes").hidden=m!=="ap";document.querySelectorAll(".modes button").forEach(b=>b.setAttribute("aria-current",b.dataset.m===m));
+function mode(m){if(m!=="solo")soStop();if(m!=="est"&&typeof esStop==="function")esStop();for(const v of["ap","cla","tp","solo","est"])$(v).hidden=v!==m;document.querySelector(".modes").hidden=m!=="ap";document.querySelectorAll(".modes button").forEach(b=>b.setAttribute("aria-current",b.dataset.m===m));
 if(m==="solo")soOpen();if(m!=="ap"){draw();try{document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}}else{try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}}
 document.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>mode(b.dataset.m));
 document.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{cr=b.dataset.r;try{localStorage.setItem("rodaje3",cr)}catch(e){}render()});
@@ -397,5 +433,65 @@ for(const r of["r1","r2","r3"]){const p=RD[r].pre;
 try{db.doc(p+"rodaje/actual").onSnapshot(d=>{const v=d&&d.data&&d.data();if(v&&typeof v.i==="number"){RR[r]={i:v.i,toma:v.toma||1};if(r===cr)draw()}},()=>{});
 db.collection(p+"tomas").onSnapshot(sn=>{(sn.docs||[]).forEach(d=>{TK[r][d.id]=d.data()});if(r===cr)draw()},()=>{});
 db.collection(p+"decisiones").onSnapshot(sn=>{clearTimeout(t);(sn.docs||[]).forEach(d=>{S[r][d.id]=d.data()});if(r===cr)render();setSt("Al día ✓")},e=>{clearTimeout(t);setSt("No se pudo leer lo guardado")})}catch(e){clearTimeout(t);setSt("No se pudo conectar")}}})();
+/* ---------- 🎙 SALA DE ESTUDIO: voz en off (V4) ---------- */
+const VO=[
+["V1","Manos","Antes de cada visita reviso la indicación de tu médico, preparo mi bolso y anoto todo. Así llego a tu casa sin apuro.","Tranquila, ritmo lento, sonrisa suave.","B-roll de manos armando el bolso",9],
+["V2","Manos","Toco el timbre, me presento, me lavo las manos y converso antes de hacer cualquier cosa. Así llego a tu casa.","Cálida, como contándole a una amiga.","Reel «Así llego a tu casa» (manos, puerta, lavado)",9],
+["V3","Las 3 a.m.","Son las tres de la mañana. Tu mamá no puede dormir y tú tampoco. Si te pasa seguido, no lo cargues sola: escríbeme y vemos cómo acompañarte.","Voz baja, de noche, cercana. Nada de dramatismo.","Serie «Las 3 a.m.» ep. 1 · fotos de noche sin rostros",12],
+["V4","Las 3 a.m.","Esta noche duermes tú. Yo me quedo acompañando a tu familiar, atenta a lo que necesite, y en la mañana te cuento cómo estuvo.","Calma total, como arrullo. Pausa después de «duermes tú».","Reel «Esta noche duermes tú» · L9",10],
+["V5","Mito vs. Verdad","¿Mito o verdad? Te lo explico en treinta segundos.","Curiosa, con energía arriba.","Lámina 1 del carrusel Mito vs. Verdad (versión reel)",3],
+["V6","Legal","Información general: no reemplaza la evaluación de tu pediatra o médico.","Neutra, clara, sin apuro.","Cierre obligatorio de piezas con consejo clínico",4],
+["V7","Regalo","¿Y si este año regalas horas de descanso? Una gift card para que quien cuida pueda dormir, salir o simplemente respirar.","Entusiasta, sonriendo.","Gift card «Regala horas de descanso» (23 al 30-nov)",8],
+["V8","Conce","Estoy armando agenda en Concepción. Si te interesa, escríbeme y te aviso primero.","Directa, con energía.","Historias y reels de Concepción",5],
+["V9","Firma","Valeria, enfermera a domicilio en Talca.","Firme y cálida. Es tu firma sonora.","Final de cualquier reel o historia",3],
+["V10","Firma","Escríbeme por WhatsApp. Te respondo yo.","Sonrisa grande en «yo».","Cierre comodín de reels con fotos",3],
+["V11","Puente","Y ahora, lo importante.","Bajar el tono, pausa antes.","Une gancho con cuerpo en cualquier reel",2],
+["V12","Historias","Buenos días. Hoy parto temprano a una visita en Talca. Te cuento cómo me va.","Mañanera, con energía.","Historia de la mañana (foto del bolso o del auto)",5],
+["V13","Historias","Déjame tu pregunta en la cajita y la respondo en historias.","Juguetona.","Sticker de preguntas",4],
+["V14","Historias","Terminó el día. Gracias por confiar. Mañana seguimos.","Cansada pero contenta, lenta.","Última historia del día",4],
+["V15","Largo","Trabajé ocho años en salud. Vi familias con ganas de cuidar, pero sin tiempo ni a quién preguntar. Por eso decidí ir a las casas: para que nadie cuide sola.","Íntima, pausas entre frases.","Narración sobre fotos tuyas · «Por qué soy enfermera»",14],
+["V16","Largo","Después de cada visita te mando un resumen por WhatsApp: cómo la encontré, qué revisé y qué conversamos. Para que estés tranquila aunque estés lejos.","Tranquilizadora, ritmo parejo.","Sobre captura del informe (datos tapados) · hijas lejos",11],
+["V17","Mito vs. Verdad","Mito: si el bebé tiene fiebre, hay que abrigarlo más. Verdad: abrigarlo de más puede subirle la temperatura. Si la fiebre no baja o lo ves decaído, consulta urgencia.","Clara, didáctica. Pausa entre mito y verdad.","Carrusel/reel Mito vs. Verdad · bebés · lleva V6 al final",13],
+["V18","Manos","Así se ve una curación bien hecha: manos limpias, material estéril y un registro de cómo avanza la herida.","Explicativa, segura.","B-roll de gasas y guantes (sin pacientes)",8]
+].map(([id,cat,t,tone,use,sec])=>({id,cat,t,tone,use,sec}));
+const ES={i:0,rec:null,stream:null,chunks:[],t0:0,raf:0,an:null,ac:null,db:null,takes:[],wl:null};
+const esMime=["audio/webm;codecs=opus","audio/mp4","audio/webm"].find(m=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m))||"";
+const esExt=esMime.includes("mp4")?"m4a":"webm";
+function esDB(){return new Promise(r=>{if(ES.db)return r(ES.db);try{const q=indexedDB.open("salaEstudio",1);q.onupgradeneeded=()=>q.result.createObjectStore("t",{keyPath:"k"});q.onsuccess=()=>{ES.db=q.result;r(ES.db)};q.onerror=()=>r(null)}catch(e){r(null)}})}
+async function esAll(){const db=await esDB();if(!db)return ES.takes;return new Promise(r=>{const q=db.transaction("t").objectStore("t").getAll();q.onsuccess=()=>{ES.takes=q.result||[];r(ES.takes)};q.onerror=()=>r(ES.takes)})}
+async function esPut(t){const i=ES.takes.findIndex(x=>x.k===t.k);if(i>=0)ES.takes[i]=t;else ES.takes.push(t);const db=await esDB();if(db)try{db.transaction("t","readwrite").objectStore("t").put(t)}catch(e){}}
+const esOf=id=>ES.takes.filter(t=>t.id===id).sort((a,b)=>a.n-b.n);
+function esList(){const c=$("esCat").value;const L=VO.filter(v=>!c||v.cat===c);const good=new Set(ES.takes.filter(t=>t.ok).map(t=>t.id));
+$("esCnt").textContent=good.size+"/"+VO.length+" con toma buena";
+$("esList").innerHTML="";L.forEach(v=>{const d=document.createElement("div");d.className="esCard";const n=esOf(v.id).length;
+d.innerHTML=`<b>${v.id}</b><div><p></p><small></small></div><button class="gold">🎙 Grabar</button>`;d.querySelector("p").textContent=v.t;d.querySelector("small").textContent=v.use+" · ~"+v.sec+" s · "+(good.has(v.id)?"★ buena":n?n+" toma(s)":"sin grabar");
+if(good.has(v.id))d.querySelector("b").classList.add("ok");d.querySelector("button").onclick=()=>esOpen(VO.indexOf(v));$("esList").appendChild(d)})}
+function esDraw(){const v=VO[ES.i];const ts=esOf(v.id);$("esId").textContent=v.id+" · "+v.cat.toUpperCase();$("esTk").textContent="TOMA "+(ts.length+1)+" · "+(ES.i+1)+"/"+VO.length;
+$("esUse").textContent="Para: "+v.use;$("esTxt").textContent=v.t;$("esTone").textContent="🎭 "+v.tone;$("esGoal").textContent="/ meta ~"+v.sec+" s";
+$("esTakes").innerHTML="";ts.forEach(t=>{const b=document.createElement("button");b.textContent=(t.ok?"★ ":t.bad?"✗ ":"")+"T"+t.n+" ▶ "+t.dur.toFixed(1)+"s";b.onclick=()=>{new Audio(URL.createObjectURL(t.blob)).play()};$("esTakes").appendChild(b)})}
+async function esMic(){if(ES.stream)return true;try{ES.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,channelCount:1,sampleRate:48000}});
+ES.ac=new (window.AudioContext||window.webkitAudioContext)();const s=ES.ac.createMediaStreamSource(ES.stream);ES.an=ES.ac.createAnalyser();ES.an.fftSize=1024;s.connect(ES.an);esMeter();return true}
+catch(e){$("esPh").textContent="Micrófono bloqueado";$("esUse").textContent="Abre la sala en asirilaboutique.github.io/nurse-app/director desde Chrome y acepta el micrófono.";return false}}
+function esMeter(){const a=new Float32Array(ES.an.fftSize);const f=()=>{ES.raf=requestAnimationFrame(f);ES.an.getFloatTimeDomainData(a);let p=0;for(const x of a)p=Math.max(p,Math.abs(x));
+$("esLvl").style.width=Math.min(100,p*130)+"%";$("esLvl").style.background=p>.9?"#D3271E":p>.5?"#F2C14E":"#2E9C8F";if(ES.rec&&ES.rec.state==="recording")$("esClock").firstChild.nodeValue=((performance.now()-ES.t0)/1000).toFixed(1).replace(".",",")+" s "};f()}
+async function esGo(){if(ES.rec&&ES.rec.state==="recording"){ES.rec.stop();return}if(!await esMic())return;if(ES.ac.state==="suspended")ES.ac.resume();
+$("esGo").disabled=true;for(const n of[3,2,1]){$("esPh").textContent=n;$("esPh").className="";beep([440]);await new Promise(r=>setTimeout(r,700))}
+ES.chunks=[];ES.rec=new MediaRecorder(ES.stream,esMime?{mimeType:esMime,audioBitsPerSecond:192000}:{});ES.rec.ondataavailable=e=>e.data.size&&ES.chunks.push(e.data);
+ES.rec.onstop=async()=>{const v=VO[ES.i];const n=esOf(v.id).length+1;const blob=new Blob(ES.chunks,{type:ES.rec.mimeType||esMime});const t={k:v.id+"_T"+n+"_"+Date.now(),id:v.id,n,blob,dur:(performance.now()-ES.t0)/1000,ok:false,bad:false,at:new Date().toISOString()};
+await esPut(t);$("esGo").textContent="● Grabar";$("esPh").textContent="¿★ O ✗?";$("esPh").className="";esDraw()};
+ES.rec.start();ES.t0=performance.now();beep([1000]);$("esPh").textContent="● GRABANDO";$("esPh").className="rec";$("esGo").textContent="■ Parar";$("esGo").disabled=false}
+async function esMark(ok){const v=VO[ES.i];if(ES.rec&&ES.rec.state==="recording"){ES.rec.stop();await new Promise(r=>setTimeout(r,300))}const ts=esOf(v.id);const t=ts[ts.length-1];if(!t)return;
+t.ok=ok;t.bad=!ok;await esPut(t);if(ok){beep([1500,2000]);$("esPh").textContent="★ BUENA";$("esPh").className="ok";setTimeout(()=>{if(ES.i<VO.length-1){ES.i++;esDraw();$("esPh").textContent="LISTA"}},900)}else{beep([300]);$("esPh").textContent="✗ OTRA · graba de nuevo";$("esPh").className=""}esDraw()}
+function esSave(t){const a=document.createElement("a");a.href=URL.createObjectURL(t.blob);a.download="VO_"+t.id+"_T"+t.n+"."+esExt;document.body.appendChild(a);a.click();a.remove()}
+async function esOpen(i){ES.i=i;$("est").hidden=true;$("esRec").hidden=false;$("esPh").textContent="LISTA";$("esPh").className="";$("esClock").firstChild.nodeValue="0,0 s ";esDraw();try{ES.wl=await navigator.wakeLock.request("screen")}catch(e){}}
+function esClose(){if(ES.rec&&ES.rec.state==="recording")ES.rec.stop();$("esRec").hidden=true;$("est").hidden=false;try{ES.wl&&ES.wl.release()}catch(e){}esList()}
+function esStop(){cancelAnimationFrame(ES.raf);if(ES.stream){ES.stream.getTracks().forEach(t=>t.stop());ES.stream=null}try{ES.ac&&ES.ac.close()}catch(e){}ES.ac=null;$("esRec").hidden=true}
+$("esCat").innerHTML='<option value="">Todas las voces</option>'+[...new Set(VO.map(v=>v.cat))].map(c=>`<option>${c}</option>`).join("");$("esCat").onchange=esList;
+$("esGo").onclick=esGo;$("esGood").onclick=()=>esMark(true);$("esBad").onclick=()=>esMark(false);$("esBack").onclick=esClose;
+$("esPrev").onclick=()=>{if(ES.i>0){ES.i--;esDraw()}};$("esNext").onclick=()=>{if(ES.i<VO.length-1){ES.i++;esDraw()}};
+$("esDl").onclick=()=>{const g=ES.takes.filter(t=>t.ok);if(!g.length){$("esPh").textContent="Aún no hay buenas";return}g.forEach((t,j)=>setTimeout(()=>esSave(t),j*400))};
+document.addEventListener("keydown",e=>{if($("esRec").hidden)return;const k=e.key;if(k===" "||k==="Enter"){e.preventDefault();esGo()}else if(k==="ArrowUp"||k==="b")esMark(true);else if(k==="ArrowDown"||k==="m")esMark(false)});
+if(!window.MediaRecorder||!navigator.mediaDevices){$("esWarn").hidden=false;$("esWarn").textContent="Este navegador no graba audio. Usa Chrome en asirilaboutique.github.io/nurse-app/director"}
+esAll().then(esList);
 </script>
 </body></html>
