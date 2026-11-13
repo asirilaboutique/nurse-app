@@ -93,7 +93,7 @@ button.ia{border-color:var(--acc);color:var(--acc)}
 <div id="ap">
 <div class="w">
 <div class="k">Valeria Enfermera · director audiovisual</div>
-<div class="tabs" role="tablist"><button data-r="r2" aria-current="true">Rodaje 2 · 10-nov</button><button data-r="r1">Rodaje 1 · 7-nov (archivado)</button></div>
+<div class="tabs" role="tablist"><button data-r="r3" aria-current="true">Rodaje 3 · Educación</button><button data-r="r2">Rodaje 2 · 13-nov (grabado)</button><button data-r="r1">Rodaje 1 · 7-nov (archivado)</button></div>
 <div id="hdr"></div>
 <div class="bar" aria-live="polite"><b id="bt">Progreso</b><span class="chip ok" id="nOk">0 ✓</span><span class="chip no" id="nNo">0 ✗</span><span class="chip" id="nPend"></span><span class="note" id="st">Conectando…</span></div>
 <div id="body"></div>
@@ -188,14 +188,69 @@ const D2=[
 ["C18",4,"Llego con mi maletín, mis registros y tiempo para conversar, sin apuro. Enfermera registrada, en Talca.","Mostrar el maletín.","Cuerpo nuevo"],
 ["L6",4,"En mi maletín llevo lo básico para controlar signos vitales, mis registros y lo que tu médico indicó. Pero lo más importante que llevo es tiempo: para escuchar y explicar sin apuro.","Bloque largo caminando lento.","Largo «Mi maletín»"],
 ["X11",4,"Estoy en Talca. Escríbeme por WhatsApp y coordinamos.","Señalar hacia abajo al final.","Cierre comodín exterior"]];
-D2.sort((a,b)=>a[1]-b[1]);
-const BL={G:"Gancho",C:"Cuerpo",X:"Cierre",P:"Puente",L:"Largo"};
-const RD={r1:{items:[],pre:"",title:"Rodaje 1"},r2:{items:[],pre:"r2b_",title:"Rodaje 2"}};
+/* ---------- RODAJE 3 · EDUCACIÓN (Amparo, 13-nov) ---------- */
+SETS[5]={n:"Mesa · manos y detalles",c:"#7A5C99",d:"SIN ROSTRO. Celular cenital (desde arriba) o plano detalle a 30 cm. Luz de ventana de lado. Rellena los cortes de los rodajes 1, 2 y 3.",ward:"Mangas del uniforme estampado azul (calza con rodaje 1)"};
+const D3=[
+["G63",1,"¿Sabías que la presión se toma después de 5 minutos sentado y en silencio?","Levantar el tensiómetro. SABÍAS QUE.","→ C21 · B1 · X12"],
+["C21",1,"Espalda apoyada, pies en el suelo, brazo a la altura del corazón y sin conversar. Así la medición sí sirve.","Contar con los dedos.","Tip · inserto B1"],
+["G64",1,"¿Sabías que la fiebre no se baja con paños con alcohol?","Negar con la cabeza, tono calmo. NIÑOS.","→ C22 · X15"],
+["C22",1,"El alcohol se absorbe por la piel y puede hacer daño, sobre todo en niños. Ropa liviana, líquido y lo que indicó tu pediatra.","Pausado, sin alarma.","Tip · aviso X15 obligatorio"],
+["G65",1,"Tres errores al tomar la temperatura.","Mostrar el termómetro, contar 1-2-3.","→ C23 · B5 · B11 · X12"],
+["C23",1,"Medir recién bañado, sacar el termómetro antes de tiempo y no anotar. Anota siempre la temperatura y la hora.","Contar con dedos.","Tip"],
+["G66",1,"Mito o verdad: una herida hay que dejarla al aire para que sane.","Cara de duda, luego sonrisa. MITO VS VERDAD.","→ C24 · B4 · X15"],
+["C24",1,"Mito. La mayoría de las heridas sana mejor limpia y cubierta, siguiendo la indicación de tu médico.","Seguro, cálido.","Tip · aviso X15"],
+["G67",1,"Mito o verdad: si ya me siento mejor, puedo dejar el antibiótico.","MITO VS VERDAD.","→ C25 · B2 · X15"],
+["C25",1,"Mito. Se toma completo, en el horario y los días que indicó tu médico, aunque te sientas bien.","Firme.","Tip · aviso X15"],
+["G68",1,"¿Sabías que con la edad se siente menos sed?","Levantar un vaso de agua. ADULTO MAYOR.","→ C26 · B10 · X13"],
+["C26",1,"Por eso muchos adultos mayores toman poca agua. Un vaso siempre a la vista y horarios fijos ayudan mucho.","Natural.","Tip"],
+["G69",1,"Lo que siempre reviso en el pastillero de un adulto mayor.","Mostrar un pastillero.","→ C27 · B2 · X3"],
+["C27",1,"Que no haya remedios repetidos, que los horarios calcen con la receta y que nada esté vencido.","Contar con dedos.","Tip · pega con C3"],
+["P9",1,"Te explico por qué.","Inclinarse leve.","Entre gancho «sabías que» y tip"],
+["P10",1,"Y lo más importante:","Pausa, dedo índice.","Antes del último dato o del aviso"],
+["X12",1,"Guarda este video, te va a servir.","Señalar abajo a la derecha (guardar).","Cierre educativo"],
+["X13",1,"Compártelo con quien cuida a tus papás.","Cómplice.","Cierre de alcance"],
+["X14",1,"¿Quieres más datos así? Sígueme.","Sonrisa.","Cierre de seguidores"],
+["X15",1,"Es información general: ante cualquier duda, consulta a tu médico.","Tranquila, mirada a cámara.","Aviso dicho (va en piezas clínicas)"],
+["G70",2,"Muchas caídas de adultos mayores pasan dentro de la casa.","Mirar la escalera y volver.","→ C28 · B12 · X12"],
+["C28",2,"Luz de noche camino al baño, alfombras fuera y zapatos cerrados: tres cambios simples para prevenir caídas.","Señalar la escalera.","Tip · pega con C15"],
+["G71",2,"Si tu papá se cae, no lo levantes apurada. Mira esto.","Mano en la baranda.","→ C29 · X15"],
+["C29",2,"Primero pregúntale si le duele algo y si se puede mover. Si se golpeó la cabeza, no se mueve o está confundido, llama al 131.","Calmo, claro.","Tip · señal de alarma · aviso X15"],
+["G72",2,"Mito o verdad: el bastón es solo para gente muy mayor.","MITO VS VERDAD, con bastón.","→ C30 · B12 · X13"],
+["C30",2,"Mito. Bien regulado, a la altura de la muñeca, ayuda a cualquiera que camina inseguro.","Mostrar la altura del bastón.","Tip"],
+["B12",2,"(Sin voz) Regular la altura de un bastón y apoyarlo en la escalera.","Detalle, set escalera.","Inserto C28, C30"],
+["B14",3,"(Sin voz) De perfil mirando por la ventana con la lámpara encendida, de noche.","Perfil, luz baja, 6 s.","Apertura serie Las 3 a.m."],
+["G73",3,"Son las 3 de la mañana y tu bebé tiene fiebre. Respira. Esto te sirve.","Voz baja, lámpara. LAS 3 A.M. ep.1.","→ L7 · X15 (reel 20-30 s)"],
+["L7",3,"Mide la temperatura y anota la hora. Fíjate si come, si moja pañales y cómo está despierto. Si tiene menos de tres meses, consulta de inmediato. Si le cuesta respirar, está muy decaído o tiene manchas en la piel, anda a urgencia. Y sigue lo que te indicó tu pediatra.","Bloque largo, pausado, sin miedo.","Las 3 a.m. ep.1 · aviso X15"],
+["G74",3,"Son las 3 de la mañana y tu mamá está confundida. No es la de siempre.","Voz baja. LAS 3 A.M. ep.2.","→ L8 · X15"],
+["L8",3,"Un cambio brusco en un adulto mayor no es «la edad»: puede ser una infección, falta de líquido o un remedio. Anota desde cuándo y si ha tomado agua. Si está muy somnolienta, con fiebre o le cuesta hablar, anda a urgencia o llama al 131.","Bloque largo, calmo.","Las 3 a.m. ep.2 · aviso X15"],
+["G75",3,"Esta noche duermes tú.","Pausa larga después. CUIDADORA.","→ L9 · X9"],
+["L9",3,"Cuidar de noche agota. Por eso puedo quedarme acompañando a tu familiar mientras tú descansas. Dormir no es un lujo: es lo que te permite seguir cuidando.","Bloque largo, cálido. ⚠ Confirmar que ofreces turnos de noche antes de publicar.","Largo «Esta noche duermes tú»"],
+["G76",3,"¿Sabías que el cordón del bebé se cae solo, por lo general en las primeras dos semanas?","Mano al pecho. BEBÉS (sin mostrar bebé).","→ C31 · X15"],
+["C31",3,"Mantenlo limpio y seco, con el pañal doblado por debajo. Si se pone rojo, huele mal o supura, consulta.","Muy pausado.","Tip · aviso X15"],
+["G77",4,"Así llego a tu casa.","Caminando hacia la puerta, sin hablar más.","→ B8 · B7 · P8 · C18 (encadena con REELS 1)"],
+["G78",4,"¿Sabías que el calor afecta más a los adultos mayores? En Talca, diciembre aprieta.","Bajo el árbol, a la sombra.","→ C32 · X13"],
+["C32",4,"Agua a la vista, ropa liviana, nada de salir entre las 12 y las 5, y la casa ventilada.","Contar con dedos.","Tip estacional"],
+["B8",4,"(Sin voz) Tocar el timbre, esperar y saludar con la mano cuando abren.","Dos ángulos: de espalda y de frente.","Inserto para G77, A23, REELS 1"],
+["B13",4,"(Sin voz) Caminar por la vereda con la mochila, de perfil, entrando y saliendo de cuadro.","Ángulo de perfil, 8 s.","Transición para cualquier reel"],
+["B1",5,"(Sin voz) Poner el tensiómetro en un brazo y leer el número.","Plano detalle. Brazo de un adulto con su permiso, sin rostro.","Inserto C1, C21, A33, A7"],
+["B2",5,"(Sin voz) Armar un pastillero de la semana, día por día.","Cenital, manos lentas.","Inserto C3, C27, A26, A37, L4"],
+["B3",5,"(Sin voz) Lavarse las manos y ponerse guantes.","Plano detalle, 6 s.","Inserto curaciones C4, C14, A8"],
+["B4",5,"(Sin voz) Ordenar gasas, suero y material de curación sobre un paño limpio. Sin heridas reales.","Cenital.","Inserto C4, C14, C24, A3, A29"],
+["B5",5,"(Sin voz) Termómetro marcando temperatura.","Detalle a 20 cm, foco en el número.","Inserto C23, G64, L7"],
+["B6",5,"(Sin voz) Escribir un reporte en WhatsApp. Pantalla SIN nombres ni datos reales.","Por sobre el hombro.","Inserto C2, C20, A12, A36, A28"],
+["B7",5,"(Sin voz) Cerrar el maletín y colgarse la mochila.","Plano medio de manos.","Inserto C18, L6, G77"],
+["B9",5,"(Sin voz) Mano de Valeria sobre la mano de un adulto mayor. Solo con autorización escrita de quien aparece, sin rostro.","Muy lento, luz cálida.","Inserto emocional A14, L5, C17"],
+["B10",5,"(Sin voz) Llenar un vaso de agua y dejarlo sobre la mesa.","Cenital.","Inserto C26, C32"],
+["B11",5,"(Sin voz) Anotar hora y temperatura en una libreta.","Detalle de la mano escribiendo.","Inserto C23, L7"]];
+const RD3_SETS=[5,1,2,4,3];
+D2.sort((a,b)=>a[1]-b[1]);D3.sort((a,b)=>RD3_SETS.indexOf(a[1])-RD3_SETS.indexOf(b[1]));
+const BL={G:"Gancho",C:"Cuerpo",X:"Cierre",P:"Puente",L:"Largo",B:"Toma de apoyo"};
+const RD={r1:{items:[],pre:"",title:"Rodaje 1"},r2:{items:[],pre:"r2b_",title:"Rodaje 2"},r3:{items:[],pre:"r3_",title:"Rodaje 3"}};
 for(const b of"GCX")D1[b].forEach((t,i)=>RD.r1.items.push({id:b+(i+1),b,t,set:1}));
-D2.forEach(([id,s,t,d,e])=>RD.r2.items.push({id,b:id[0],t,set:s,d,e}));
-const ROL={G:"gancho de 3-5 segundos que detiene el scroll",C:"cuerpo de 8-12 segundos que explica el servicio",X:"cierre de 3 segundos que invita a escribir por WhatsApp",P:"puente de 1-2 segundos que une un gancho con un cuerpo",L:"bloque largo de 15-25 segundos para un reel de 60-90 segundos"};
-let cr="r2";try{cr=localStorage.getItem("rodaje")==="r1"?"r1":"r2"}catch(e){}
-const S={r1:{},r2:{}},TK={r1:{},r2:{}},RR={r1:{i:0,toma:1},r2:{i:0,toma:1}};let db=null,sample=null;
+D2.forEach(([id,s,t,d,e])=>RD.r2.items.push({id,b:id[0],t,set:s,d,e}));D3.forEach(([id,s,t,d,e])=>RD.r3.items.push({id,b:id[0],t,set:s,d,e}));
+const ROL={G:"gancho de 3-5 segundos que detiene el scroll",C:"cuerpo de 8-12 segundos que explica el servicio",X:"cierre de 3 segundos que invita a escribir por WhatsApp",P:"puente de 1-2 segundos que une un gancho con un cuerpo",L:"bloque largo de 15-25 segundos para un reel de 60-90 segundos",B:"toma de apoyo sin voz de 5-8 segundos"};
+let cr="r3";try{const v=localStorage.getItem("rodaje3");if(v==="r1"||v==="r2"||v==="r3")cr=v}catch(e){}
+const S={r1:{},r2:{},r3:{}},TK={r1:{},r2:{},r3:{}},RR={r1:{i:0,toma:1},r2:{i:0,toma:1},r3:{i:0,toma:1}};let db=null,sample=null;
 const $=x=>document.getElementById(x);
 const items=()=>RD[cr].items, st=id=>S[cr][id]||{}, txt=it=>st(it.id).texto||it.t, ro=()=>cr==="r1";
 function setSt(m){$("st").textContent=m}
@@ -213,6 +268,8 @@ function render(){document.querySelectorAll(".tabs button").forEach(b=>b.setAttr
 const H=$("hdr"),B=$("body");B.innerHTML="";
 if(ro()){H.innerHTML=`<h1>Rodaje 1,<br><i>material final creado.</i></h1><div class="arch">✅ Grabado el 7-nov. Con este material ya están hechos <b>38 anuncios</b> (A1–A38) y <b>5 videos largos</b> (L1–L5), con portada y copy, en el calendario del 9-nov al 15-dic. Queda guardado como registro: solo lectura.</div>`;$("bt").textContent="Rodaje 1";
 for(const b of"GCX"){const h=document.createElement("h2");h.textContent=({G:"① Ganchos · 40",C:"② Cuerpos · 12",X:"③ Cierres · 5"})[b];B.appendChild(h);const L=document.createElement("div");L.className="list";B.appendChild(L);items().filter(i=>i.b===b).forEach(it=>row(it,L))}}
+else if(cr==="r3"){H.innerHTML=`<h1>Rodaje 3: educación,<br><i>datos que se guardan.</i></h1><p class="s"><b>Amparo:</b> «¿Sabías que…?», tips, mitos y la serie <b>Las 3 a.m.</b> Cada gancho trae su tip y se pega con los cierres de los rodajes 1 y 2. El <b>set 5 (mesa)</b> es nuevo: tomas de manos y detalles <b>sin rostro y sin voz</b> que faltaban para cortar los reels ya hechos (presión, pastillero, gasas, reporte de WhatsApp, timbre). Orden sugerido: mesa con luz de mañana → fondo blanco → escalera → exterior → sillón con lámpara para Las 3 a.m.</p><div class="arch">🩺 <b>Límites V4:</b> cada tip clínico se publica con el aviso <b>X15</b>. Sin rostros de bebés ni pacientes; B1 y B9 solo con autorización escrita de quien aparece. L9 «Esta noche duermes tú»: confirmar que ofreces turnos de noche antes de publicar.</div><div class="sets">${RD3_SETS.map(k=>`<div class="set" style="--c:${SETS[k].c}"><b>Set ${k} · ${SETS[k].n}</b><span>${SETS[k].d}</span><br><span>👕 ${SETS[k].ward}</span></div>`).join("")}</div><p class="note">Total: 16 ganchos + 12 tips + 3 largos + 2 puentes + 4 cierres + 14 tomas de apoyo = <b>51 tomas</b>. Rinde unos 16 reels educativos nuevos y le da cortes de apoyo a los 37 reels ya programados.</p>`;$("bt").textContent="Rodaje 3";
+for(const k of RD3_SETS){const s=SETS[k],h=document.createElement("h2");h.innerHTML=`Set ${k} · ${s.n}<span class="tag" style="--c:${s.c}">${items().filter(i=>i.set===k).length} tomas</span>`;B.appendChild(h);const L=document.createElement("div");L.className="list";B.appendChild(L);items().filter(i=>i.set===k).forEach(it=>row(it,L))}}
 else{H.innerHTML=`<h1>Rodaje 2: 50 tomas,<br><i>encadenadas al rodaje 1.</i></h1><p class="s">Todo va a cámara salvo lo que marques ✗. <b>Set 1 = mismo fondo y uniforme del rodaje 1</b>: esos ganchos y puentes se pegan con los 12 cuerpos y 5 cierres ya grabados, así un gancho nuevo rinde varios anuncios. El sillón (set 3) es para <b>reels largos</b> de 60-90 s con bloques L. Una toma buena por frase; si sale mala, se repite sola.</p><div class="arch"><b>🎥 Modo sola, todo por audio.</b> El celular queda fijo justo bajo el lente como teleprompter: no lo tocas. Al tocar ▶ Partir: (1) el director lee en voz alta frase, toma y OBS; (2) tres pitidos; (3) flash y corre el cronómetro; (4) al terminar dices <b>«buena»</b> → suena buena y pasa a la siguiente, o <b>«mala»</b> → se marca ✗, suena mala y parte la toma 2 con un consejo. Si no respondes, vuelve a preguntar. «Pausa» detiene y «lista» sigue. Cambio de set: se pausa solo.</div>
 <div class="sets">${Object.entries(SETS).map(([k,s])=>`<div class="set" style="--c:${s.c}"><b>Set ${k} · ${s.n}</b><span>${s.d}</span><br><span>👕 ${s.ward}</span></div>`).join("")}</div>
 <p class="note">Total: 22 ganchos + 8 puentes + 8 cuerpos + 6 bloques largos + 6 cierres = <b>50 tomas</b>. En modo sola: 44 × 20 s + 6 × 40 s ≈ 19 min de cámara, ~45 min con cambios de set y repeticiones. Combinando con el rodaje 1 salen más de 60 anuncios y 6 reels largos.</p>`;$("bt").textContent="Rodaje 2";
@@ -244,7 +301,7 @@ $("tpNext").textContent=nx?(nx.set!==it.set&&!ro()?"⚠ CAMBIO DE SET → "+SETS
 const L=Object.entries(TK[cr]).sort((a,b)=>a[1].at-b[1].at);$("log").textContent=L.length?L.length+" tomas: "+L.map(([k,v])=>v.id+"-T"+v.toma+(v.buena?"★":"")+(v.mala?"✗":"")).join(" · "):"Sin tomas todavía."}
 async function push(){draw();lsSave();if(db)try{await db.doc(RD[cr].pre+"rodaje/actual").set({i:RR[cr].i,toma:RR[cr].toma,at:Date.now()})}catch(e){}}
 function lsSave(){try{localStorage.setItem("dirTK",JSON.stringify(TK));localStorage.setItem("dirRR",JSON.stringify(RR))}catch(e){}}
-try{const t=JSON.parse(localStorage.getItem("dirTK")||"null");if(t){TK.r1=t.r1||{};TK.r2=t.r2||{}}const q=JSON.parse(localStorage.getItem("dirRR")||"null");if(q){RR.r1=q.r1||RR.r1;RR.r2=q.r2||RR.r2}}catch(e){}
+try{const t=JSON.parse(localStorage.getItem("dirTK")||"null");if(t){TK.r1=t.r1||{};TK.r2=t.r2||{};TK.r3=t.r3||{}}const q=JSON.parse(localStorage.getItem("dirRR")||"null");if(q){RR.r1=q.r1||RR.r1;RR.r2=q.r2||RR.r2;RR.r3=q.r3||RR.r3}}catch(e){}
 async function logTake(extra){setTimeout(lsSave,50);const{it,R}=cur();if(!it)return;const k=it.id+"_T"+R.toma;TK[cr][k]={...(TK[cr][k]||{}),id:it.id,set:it.set,toma:R.toma,texto:txt(it),at:Date.now(),...extra};draw();if(db)try{await db.doc(RD[cr].pre+"tomas/"+k).set(TK[cr][k])}catch(e){}}
 function mv(d){RR[cr].i+=d;RR[cr].toma=1;push()}
 let actx=null;function beep(fs){try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();fs.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=f;g.gain.value=.55;o.connect(g).connect(actx.destination);const t=actx.currentTime+i*.16;o.start(t);o.stop(t+.14)})}catch(e){}}
@@ -260,7 +317,7 @@ $("tPlus").onclick=()=>{fs=Math.min(16,fs+1);setFs()};$("tMinus").onclick=()=>{f
 function mode(m){if(m!=="solo")soStop();for(const v of["ap","cla","tp","solo"])$(v).hidden=v!==m;document.querySelector(".modes").hidden=m!=="ap";document.querySelectorAll(".modes button").forEach(b=>b.setAttribute("aria-current",b.dataset.m===m));
 if(m==="solo")soOpen();if(m!=="ap"){draw();try{document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}}else{try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}}
 document.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>mode(b.dataset.m));
-document.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{cr=b.dataset.r;try{localStorage.setItem("rodaje",cr)}catch(e){}render()});
+document.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{cr=b.dataset.r;try{localStorage.setItem("rodaje3",cr)}catch(e){}render()});
 document.addEventListener("keydown",e=>{if($("ap").hidden){if(e.key==="ArrowRight")mv(1);if(e.key==="ArrowLeft")mv(-1)}});
 /* ---------- MODO SOLA: escena cada N s, cronómetro, gestos y voz ---------- */
 const SO={ph:"idle",end:0,len:1,left:0,paused:false,raf:0,cool:0,T:20,wl:null,gr:null,cs:null,sr:null,mic:false,t0:0,lb:0,setOk:false};
@@ -331,7 +388,7 @@ render();
 sample=await C.use("sample");render();
 db=await C.use("db");if(!db){setSt("Inicia sesión para guardar");return}
 const t=setTimeout(()=>setSt("Tardando en cargar… tus cambios igual se guardan"),10000);
-for(const r of["r1","r2"]){const p=RD[r].pre;
+for(const r of["r1","r2","r3"]){const p=RD[r].pre;
 try{db.doc(p+"rodaje/actual").onSnapshot(d=>{const v=d&&d.data&&d.data();if(v&&typeof v.i==="number"){RR[r]={i:v.i,toma:v.toma||1};if(r===cr)draw()}},()=>{});
 db.collection(p+"tomas").onSnapshot(sn=>{(sn.docs||[]).forEach(d=>{TK[r][d.id]=d.data()});if(r===cr)draw()},()=>{});
 db.collection(p+"decisiones").onSnapshot(sn=>{clearTimeout(t);(sn.docs||[]).forEach(d=>{S[r][d.id]=d.data()});if(r===cr)render();setSt("Al día ✓")},e=>{clearTimeout(t);setSt("No se pudo leer lo guardado")})}catch(e){clearTimeout(t);setSt("No se pudo conectar")}}})();
