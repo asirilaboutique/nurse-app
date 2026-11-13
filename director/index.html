@@ -365,7 +365,7 @@ if(k==="Enter"||k===" "||k==="ArrowUp"||k==="AudioVolumeUp"||k==="b"){e.preventD
 else if(k==="ArrowDown"||k==="Backspace"||k==="AudioVolumeDown"||k==="m"){e.preventDefault();soVerdict(false)}else if(k==="p")soGo()});
 /* gestos: pulgar arriba = buena, pulgar abajo = mala, palma abierta = pausa */
 $("soCamB").onclick=async()=>{const g=$("soG");if(SO.cs){SO.cs.getTracks().forEach(t=>t.stop());SO.cs=null;$("soCam").hidden=true;g.textContent="";$("soCamB").textContent="📷 Gestos";return}
-g.textContent="Abriendo cámara…";try{SO.cs=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:320,height:240},audio:false})}catch(e){g.textContent="Cámara bloqueada aquí: abre asirilaboutique.github.io/nurse-app/director en Chrome";return}
+g.textContent="Abriendo cámara…";try{SO.cs=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:320,height:240},audio:false})}catch(e){g.textContent="Gestos con cámara no funcionan dentro de claude.ai: usa 🎙 Voz, un control Bluetooth (Enter = buena, ↓ = mala) o la copia asirilaboutique.github.io/nurse-app/director";return}
 const v=$("soCam");v.srcObject=SO.cs;v.hidden=false;try{await v.play()}catch(e){}$("soCamB").textContent="📷 Apagar";
 if(!SO.gr){g.textContent="Cargando lector de gestos…";try{const m=await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs");const f=await m.FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm");
 SO.gr=await m.GestureRecognizer.createFromOptions(f,{baseOptions:{modelAssetPath:"https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task"},runningMode:"VIDEO",numHands:1})}catch(e){g.textContent="El lector de gestos no cargó en esta vista: usa voz o botones";return}}
@@ -375,12 +375,17 @@ let c="";try{const r=SO.gr.recognizeForVideo(v,t);const x=r.gestures&&r.gestures
 n=c&&c===last?n+1:0;last=c;if(n===4){if(c==="Thumb_Up")soVerdict(true);else if(c==="Thumb_Down")soVerdict(false);else if(c==="Open_Palm"&&performance.now()>SO.cool){SO.cool=performance.now()+2500;soGo()}
 const lb={Thumb_Up:"👍 leído",Thumb_Down:"👎 leído",Open_Palm:"✋ leído"}[c];if(lb)g.textContent=lb}};loop()};
 /* voz: "buena" / "mala" u "otra" / "pausa" o "lista" */
-$("soMic").onclick=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;const g=$("soG");
+function soHeard(txt){if(speechSynthesis.speaking)return;const w=(txt||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zñ ]/g," ").trim().split(/\s+/).filter(Boolean);if(!w.length||w.length>2)return;const l=w[w.length-1];if(SO.ph==="rec"&&!/^pausa$/.test(l))return;
+if(/^buen[ao]s?$/.test(l))soVerdict(true);else if(/^mal[ao]s?$|^otra$/.test(l))soVerdict(false);else if(/^(pausa|sigue|listo|lista)$/.test(l)&&performance.now()>SO.cool){SO.cool=performance.now()+2500;soGo()}}
+let DI=null;(async()=>{try{const C=window.claude;if(C&&C.use){DI=await C.use("dictation");if(DI){DI.onPartial(e=>soHeard(e.text));DI.onFinal(e=>soHeard(e.text));DI.onState(e=>{const g=$("soG");if(e.state==="listening"){SO.mic=true;$("soMic").textContent="🎙 Apagar";g.textContent="🎙 Escuchando: di «buena», «mala» o «pausa»"}else if(e.state==="idle"){const r=e.reason;if(SO.mic&&r==="hidden"){g.textContent="Se cortó el micrófono: toca 🎙 Voz otra vez"}else if(r==="not_granted"){g.textContent="Micrófono no permitido: actívalo en Permisos del artefacto, o usa botones/teclado"}else if(r==="unavailable"){g.textContent="Dictado no disponible aquí: usa Chrome en el computador o la copia de GitHub"}SO.mic=false;$("soMic").textContent="🎙 Voz"}})}}}catch(e){}})();
+$("soMic").onclick=()=>{const g=$("soG");
+if(DI){if(SO.mic||DI.active()){SO.mic=false;DI.stop().catch(()=>{});$("soMic").textContent="🎙 Voz";return}
+g.textContent="Pidiendo micrófono…";DI.start({language:"es"}).catch(e=>{g.textContent=e.code==="not_granted"?"Micrófono no permitido: actívalo en Permisos del artefacto":e.code==="unavailable"?"Dictado no disponible en esta vista: usa Chrome o la copia de GitHub":"No se pudo abrir el micrófono ("+e.code+"): toca 🎙 Voz de nuevo"});return}
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 if(SO.mic){SO.mic=false;try{SO.sr.stop()}catch(e){}$("soMic").textContent="🎙 Voz";return}
 if(!SR){g.textContent="Este navegador no reconoce voz: usa Chrome";return}
 const r=new SR();r.lang="es-CL";r.continuous=true;r.interimResults=true;SO.sr=r;SO.mic=true;$("soMic").textContent="🎙 Apagar";g.textContent="Di «buena», «mala» o «pausa»";
-r.onresult=ev=>{if(speechSynthesis.speaking)return;const res=ev.results[ev.results.length-1],w=res[0].transcript.toLowerCase().trim().split(/\s+/);if(w.length>3)return;const l=w[w.length-1];
-if(/^buen[ao]s?$/.test(l))soVerdict(true);else if(/^mal[ao]s?$|^otra$/.test(l))soVerdict(false);else if(/^(pausa|sigue|listo|lista)$/.test(l)&&performance.now()>SO.cool){SO.cool=performance.now()+2500;soGo()}};
+r.onresult=ev=>{const res=ev.results[ev.results.length-1];soHeard(res[0].transcript)};
 r.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed"){SO.mic=false;g.textContent="Micrófono bloqueado aquí: abre asirilaboutique.github.io/nurse-app/director en Chrome";$("soMic").textContent="🎙 Voz"}};
 r.onend=()=>{if(SO.mic)try{r.start()}catch(e){}};try{r.start()}catch(e){}};
 render();
