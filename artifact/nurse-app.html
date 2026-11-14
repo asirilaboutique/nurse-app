@@ -261,7 +261,7 @@ function route(){
  const act=({hoy:'hoy',agenda:'agenda',pacientes:'pac',ficha:'pac',cobros:'cobros',cotizar:'cot',cotizacion:'cot'})[name]||'';
  nav(act);
  try{app.innerHTML=fn(parts.slice(1))}catch(e){console.error(e);app.innerHTML=`<div class="alert a-bad">Algo falló al abrir esta pantalla. Tus datos están a salvo. <a href="#/hoy" style="text-decoration:underline">Volver al inicio</a></div>`}
- try{hydrateMedia()}catch(e){}
+ try{hydrateMedia()}catch(e){}try{hydrateCards()}catch(e){}
  document.title=(({hoy:'Hoy',agenda:'Agenda',pacientes:'Pacientes',ficha:'Ficha',cobros:'Cobros',cotizar:'Cotizar',embudo:'Clientes',panel:'Panel',visita:'Visita en curso',informe:'Informe',disponibilidad:'Disponibilidad',ajustes:'Ajustes',voz:'Agendar'})[name]||'Nurse App')+' · Nurse App';
  window.scrollTo(0,0);
 }
@@ -303,6 +303,7 @@ routes.hoy=()=>{
  ${S.patients.length===0&&S.appts.length===0?`<div class="card"><b>Bienvenida a tu Nurse App</b><p class="sm mut" style="margin:6px 0 12px">Parte agregando tu primera paciente, o carga datos de ejemplo para recorrer la app sin riesgo. Todo se guarda solo en este teléfono.</p><div class="row"><a class="btn grow" href="#/pacientes" data-new="1">Agregar paciente</a><button class="btn sec grow" data-act="demo">Cargar ejemplo</button></div></div>`:''}
  ${S.demo?`<div class="alert demo row sp" role="status"><span><b>Estás viendo datos de ejemplo.</b><br>Nada de esto es real.</span><button class="btn sec sm" data-act="cleardemo">Empezar con los míos</button></div>`:''}
  ${(!S.demo&&S.patients.length&&(!S.lastBackup||(Date.now()-S.lastBackup)>7*864e5))?`<div class="alert a-warn row sp"><span><b>Haz un respaldo.</b><br>${S.lastBackup?'Hace más de una semana.':'Aún no has guardado ninguno.'}</span><button class="btn sm" data-act="export">Respaldar</button></div>`:''}
+ ${onboardHtml()}
  <div class="eyebrow" style="margin-top:4px">Tu día</div>
  ${list.length?list.map(aptCard).join(''):empty('Hoy no tienes atenciones agendadas.','<a class="btn" href="#/voz">Agendar algo</a>')}
  ${outboxHtml()}
@@ -680,6 +681,86 @@ async function shareMedia(a,onlyFam){
  toast('Descargando '+files.length+' archivo'+(files.length>1?'s':'')+'. Súbelos a la carpeta de Drive.');return files.length;
 }
 
+/* ============ TARJETAS PREMIUM (PNG 1080x1350 para compartir) ============ */
+const NV='#14275F',TQ='#2E9C8F',CLO='#E3EEF9',ARE='#F4EBDD',COR='#F2A48C',TER='#C9785D',AQU='#9FD9CF';
+async function fontsReady(){try{await Promise.all(['600 60px "Cormorant Garamond"','italic 400 30px "Cormorant Garamond"','400 30px "DM Sans"','700 30px "DM Sans"'].map(f=>document.fonts.load(f)))}catch(e){}}
+function rr(x,X,Y,W,H,R){x.beginPath();x.moveTo(X+R,Y);x.arcTo(X+W,Y,X+W,Y+H,R);x.arcTo(X+W,Y+H,X,Y+H,R);x.arcTo(X,Y+H,X,Y,R);x.arcTo(X,Y,X+W,Y,R);x.closePath()}
+function wrapT(x,t,maxW){const out=[];String(t||'').split('\n').forEach(par=>{let ln='';par.split(/\s+/).filter(Boolean).forEach(w=>{const tt=ln?ln+' '+w:w;if(x.measureText(tt).width>maxW&&ln){out.push(ln);ln=w}else ln=tt});out.push(ln)});return out}
+function T(x,t,X,Y,font,col,al,sp){x.font=font;x.fillStyle=col;x.textAlign=al||'left';if(sp!==undefined)x.letterSpacing=sp+'px';x.fillText(t,X,Y);if(sp!==undefined)x.letterSpacing='0px'}
+function isoLogo(x,cx,cy,r,col){x.save();x.lineCap='round';x.lineJoin='round';x.lineWidth=Math.max(3,r*.07);x.strokeStyle=col;x.beginPath();x.arc(cx,cy,r,0,7);x.stroke();x.beginPath();x.moveTo(cx-r*.4,cy-r*.3);x.lineTo(cx,cy+r*.42);x.lineTo(cx+r*.4,cy-r*.3);x.stroke();
+ x.strokeStyle=TQ;x.beginPath();x.moveTo(cx-r*.98,cy+r*.02);x.lineTo(cx-r*.62,cy+r*.02);x.lineTo(cx-r*.52,cy-r*.2);x.lineTo(cx-r*.4,cy+r*.24);x.lineTo(cx-r*.3,cy+r*.02);x.stroke();x.restore()}
+function newCv(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return [c,c.getContext('2d')]}
+const toBlob=c=>new Promise(r=>c.toBlob(r,'image/png'));
+function clip(x,lines,n){if(lines.length<=n)return lines;const o=lines.slice(0,n);let l=o[n-1];while(l.length>3&&x.measureText(l+'…').width>x.__mw)l=l.slice(0,-1);o[n-1]=l.replace(/[ ,.;]+$/,'')+'…';return o}
+async function reportCard(a){
+ await fontsReady();const p=P(a.patientId),rp=a.report||{},r=a.record||{},v=r.vit||{};const first=p.name.split(/[ ,]/)[0];
+ const [c,x]=newCv(1080,1350);
+ x.fillStyle='#F7F3EC';x.fillRect(0,0,1080,1350);
+ const g=x.createLinearGradient(0,0,1080,300);g.addColorStop(0,'#14275F');g.addColorStop(1,'#1F3A8F');x.fillStyle=g;x.fillRect(0,0,1080,270);
+ x.strokeStyle='rgba(159,217,207,.10)';x.lineWidth=1;for(let i=0;i<=1080;i+=36){x.beginPath();x.moveTo(i,0);x.lineTo(i,270);x.stroke()}for(let j=0;j<=270;j+=36){x.beginPath();x.moveTo(0,j);x.lineTo(1080,j);x.stroke()}
+ isoLogo(x,120,135,52,'#fff');T(x,'Valeria',200,128,'600 62px "Cormorant Garamond", serif','#fff');T(x,'ENFERMERA A DOMICILIO',202,170,'700 20px "DM Sans", sans-serif',AQU,'left',5);
+ T(x,'INFORME DEL CUIDADO',1010,112,'700 20px "DM Sans", sans-serif',AQU,'right',4);T(x,fdate(a.date,true),1010,152,'400 28px "DM Sans", sans-serif','#E3EEF9','right');
+ let y=370;T(x,'Cómo estuvo '+first+' hoy',70,y,'600 84px "Cormorant Garamond", serif',NV);
+ y+=52;T(x,(a.type||'Visita')+' · '+a.start+' h',72,y,'500 30px "DM Sans", sans-serif','#4C5A7A');
+ y+=44;const vit=[['PRESIÓN',v.pa,'mmHg'],['PULSO',v.fc,'lpm'],['TEMP.',v.temp,'°C'],['SAT. O₂',v.sat,'%']].filter(t=>t[1]);
+ if(vit.length){const w=(940-(vit.length-1)*16)/vit.length;vit.forEach((t,i)=>{const X=70+i*(w+16);rr(x,X,y,w,150,26);x.fillStyle='#fff';x.fill();x.strokeStyle='#E5DACA';x.lineWidth=2;x.stroke();T(x,t[0],X+w/2,y+44,'700 19px "DM Sans", sans-serif',TQ,'center',3);T(x,String(t[1]),X+w/2,y+104,(String(t[1]).length>5?'700 46px':'700 54px')+' "DM Sans", sans-serif',NV,'center');T(x,t[2],X+w/2,y+136,'400 19px "DM Sans", sans-serif','#7A869F','center')});y+=150+30}
+ const ch=(r.vig||[]).filter(s=>s!=='Otro');
+ if(ch.length){let cx=70;x.font='600 26px "DM Sans", sans-serif';ch.forEach(s=>{const w=x.measureText(s).width+64;if(cx+w>1010){cx=70;y+=64}rr(x,cx,y,w,50,25);x.fillStyle='#DDF1EC';x.fill();T(x,'✓',cx+22,y+34,'700 26px "DM Sans", sans-serif',TQ);T(x,s,cx+46,y+34,'600 26px "DM Sans", sans-serif',NV);cx+=w+12});y+=50+32}
+ let thumbs=[];try{for(const m of (a.media||[]).filter(m=>m.fam&&m.t==='i').slice(0,3)){const b=await MDB.get(m.id);if(b)thumbs.push(await createImageBitmap(b))}}catch(e){}
+ const obsT=rp.obs||'';x.font='400 29px "DM Sans", sans-serif';x.__mw=860;const obsL=obsT?clip(x,wrapT(x,obsT,860),3):[];const obsH=obsL.length?70+obsL.length*42:0;
+ const thH=thumbs.length?250:0;const bodyBottom=1190-obsH-thH;
+ rr(x,70,y,940,Math.max(200,bodyBottom-y),30);x.fillStyle='#fff';x.fill();x.strokeStyle='#E5DACA';x.lineWidth=2;x.stroke();
+ x.font='400 32px "DM Sans", sans-serif';x.__mw=860;const maxL=Math.max(3,Math.floor((bodyBottom-y-44)/48));const bl=clip(x,wrapT(x,rp.family,860),maxL);
+ bl.forEach((l,i)=>T(x,l,110,y+66+i*48,'400 32px "DM Sans", sans-serif','#26324F'));
+ y=Math.max(y+200,bodyBottom)+22;
+ if(thumbs.length){const w=(940-(thumbs.length-1)*14)/thumbs.length;thumbs.forEach((b,i)=>{const X=70+i*(w+14);x.save();rr(x,X,y,w,230,24);x.clip();const k=Math.max(w/b.width,230/b.height);x.drawImage(b,X+(w-b.width*k)/2,y+(230-b.height*k)/2,b.width*k,b.height*k);x.restore()});y+=250}
+ if(obsL.length){rr(x,70,y,940,obsH-18,26);x.fillStyle='#FCE9E1';x.fill();x.fillStyle=TER;rr(x,70,y,10,obsH-18,5);x.fill();T(x,'QUÉ OBSERVAR EN CASA',108,y+44,'700 20px "DM Sans", sans-serif',TER,'left',3);obsL.forEach((l,i)=>T(x,l,108,y+86+i*42,'400 29px "DM Sans", sans-serif','#5A3A2E'))}
+ x.fillStyle=NV;x.fillRect(0,1210,1080,140);isoLogo(x,96,1280,34,'#fff');
+ T(x,(S.profile.name||'Valeria')+' · Enfermera · Reg. N° '+(S.profile.reg||''),150,1272,'600 26px "DM Sans", sans-serif','#fff');T(x,S.profile.tagline||'Cuidados que acompañan. En cada etapa de la vida.',150,1312,'italic 400 27px "Cormorant Garamond", serif',AQU);
+ T(x,'Emergencia: 131',1010,1292,'700 22px "DM Sans", sans-serif',COR,'right');
+ return toBlob(c)}
+async function quoteCard(q){
+ await fontsReady();const p=P(q.patientId);const first=(p?.name||'').split(/[ ,]/)[0];const tot=qTotal(q);const exp=addDays(q.date||today(),q.valid||7);
+ const [c,x]=newCv(1080,1350);
+ const g=x.createLinearGradient(0,0,0,1350);g.addColorStop(0,'#1F3A8F');g.addColorStop(.55,'#14275F');g.addColorStop(1,'#0C1A44');x.fillStyle=g;x.fillRect(0,0,1080,1350);
+ x.strokeStyle='rgba(159,217,207,.07)';x.lineWidth=1;for(let i=0;i<=1080;i+=36){x.beginPath();x.moveTo(i,0);x.lineTo(i,1350);x.stroke()}for(let j=0;j<=1350;j+=36){x.beginPath();x.moveTo(0,j);x.lineTo(1080,j);x.stroke()}
+ /* electro de fondo */
+ x.save();x.strokeStyle='rgba(159,217,207,.28)';x.lineWidth=5;x.lineJoin='round';x.shadowColor=AQU;x.shadowBlur=24;x.beginPath();const ey=640;x.moveTo(-10,ey);x.lineTo(300,ey);x.lineTo(335,ey-30);x.lineTo(365,ey+30);x.lineTo(400,ey);x.lineTo(470,ey);x.lineTo(500,ey-170);x.lineTo(540,ey+110);x.lineTo(575,ey-30);x.lineTo(610,ey);x.lineTo(700,ey);x.lineTo(740,ey-40);x.lineTo(790,ey);x.lineTo(1090,ey);x.stroke();x.restore();
+ isoLogo(x,120,128,52,'#fff');T(x,'Valeria',200,122,'600 62px "Cormorant Garamond", serif','#fff');T(x,'ENFERMERA A DOMICILIO',202,164,'700 20px "DM Sans", sans-serif',AQU,'left',5);
+ T(x,'N° '+q.n,1010,118,'700 22px "DM Sans", sans-serif',AQU,'right',3);
+ T(x,'PROPUESTA DE CUIDADO',70,300,'700 24px "DM Sans", sans-serif',AQU,'left',6);
+ T(x,'Para '+first,70,400,'600 110px "Cormorant Garamond", serif','#fff');
+ x.font='400 36px "DM Sans", sans-serif';x.__mw=940;clip(x,[''],1);wrapT(x,q.servicio||q.modo,940).slice(0,2).forEach((l,i)=>T(x,l,72,458+i*48,'400 36px "DM Sans", sans-serif','#CFE0F2'));
+ const ty=720;T(x,'TOTAL',72,ty,'700 24px "DM Sans", sans-serif',AQU,'left',6);
+ {let fs=170;const tt=clp(tot);x.font='700 '+fs+'px "DM Sans", sans-serif';while(x.measureText(tt).width>940&&fs>80){fs-=6;x.font='700 '+fs+'px "DM Sans", sans-serif'}T(x,tt,68,ty+160,'700 '+fs+'px "DM Sans", sans-serif','#fff')}
+ T(x,q.qty+' × '+clp(q.unit)+(q.disc?' · descuento '+q.disc+'%':'')+' · '+q.modo.toLowerCase(),72,ty+226,'400 30px "DM Sans", sans-serif','#CFE0F2');
+ let yy=ty+270;const sl=(q.slots||[]).slice(0,8);
+ if(sl.length){x.font='600 24px "DM Sans", sans-serif';let cx=70;sl.forEach(s=>{const t=fdate(s.date)+' · '+s.start;const w=x.measureText(t).width+40;if(cx+w>1010){return}rr(x,cx,yy,w,46,23);x.fillStyle='rgba(159,217,207,.16)';x.fill();x.strokeStyle='rgba(159,217,207,.5)';x.lineWidth=2;x.stroke();T(x,t,cx+20,yy+31,'600 24px "DM Sans", sans-serif','#DFF4EF');cx+=w+10})}
+ const vals=['Informe a la familia tras cada visita','Con indicación médica vigente','Cancelación con 12 horas de aviso'];
+ vals.forEach((t,i)=>{const X=70+i*322;rr(x,X,1090-0,300,92,22);x.fillStyle='rgba(255,255,255,.07)';x.fill();x.fillStyle=TQ;x.beginPath();x.arc(X+30,1136,10,0,7);x.fill();x.font='600 22px "DM Sans", sans-serif';wrapT(x,t,214).slice(0,2).forEach((l,k)=>T(x,l,X+54,1128+k*28,'600 22px "DM Sans", sans-serif','#E8F0FA'))});
+ rr(x,70,1208,940,84,42);x.fillStyle=TER;x.fill();T(x,'Para reservar, responde ACEPTO',540,1262,'700 34px "DM Sans", sans-serif','#fff','center');
+ T(x,'Vigente hasta el '+fdate(exp,true).toLowerCase()+' · Reg. N° '+(S.profile.reg||''),540,1326,'400 22px "DM Sans", sans-serif','#9FB4D6','center');
+ return toBlob(c)}
+async function shareCard(blob,name,text){
+ const f=new File([blob],name,{type:'image/png'});
+ try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],text:text||'',title:name});return true}}catch(e){if(e&&e.name==='AbortError')return false}
+ const u=URL.createObjectURL(blob);const l=document.createElement('a');l.href=u;l.download=name;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),3000);toast('Tarjeta descargada');return true}
+let CARDS={};
+async function hydrateCards(){
+ const m=location.hash.match(/#\/(informe|cotizacion)\/(\w+)/);if(!m)return;const img=$('#cardimg');if(!img)return;
+ const k=m[1],id=m[2];let b;try{b=k==='informe'?await reportCard(A(id)):await quoteCard(Q(id))}catch(e){console.error(e);return}
+ CARDS[k+id]=b;const i2=$('#cardimg');if(i2){const u=URL.createObjectURL(b);i2.onload=()=>URL.revokeObjectURL(u);i2.src=u}}
+const cardBox=(k,id)=>`<section class="card col noprint" id="cardbox"><div class="row sp"><b>Tarjeta para compartir</b><span class="pill p-ok">PNG 1080×1350</span></div><img id="cardimg" alt="Vista previa de la tarjeta" style="width:100%;border-radius:16px;aspect-ratio:4/5;background:linear-gradient(160deg,#1F3A8F,#14275F);box-shadow:0 14px 34px rgba(20,39,95,.28)"><div class="row"><button class="btn cta grow" data-act="cardshare" data-k="${k}" data-id="${id}">Compartir tarjeta</button><button class="btn sec" data-act="carddl" data-k="${k}" data-id="${id}">Descargar</button></div><div class="xs mut">Se comparte como imagen (WhatsApp, Instagram o correo). El mensaje de texto sigue disponible abajo.</div></section>`;
+
+/* ============ RECORRIDO DE PRIMERA VEZ ============ */
+function onboardSteps(){
+ const pr=S.profile;const hecha=S.appts.some(a=>a.status==='hecha'&&a.record);const sent=S.appts.some(a=>a.report&&(a.report.sent||a.report.approved));
+ return [['Completa tus datos y cómo te pagan',!!(pr.wa&&pr.bank&&pr.reg),'#/ajustes'],['Agrega tu primera paciente',S.patients.length>0,'#/pacientes'],['Haz tu primera visita',hecha,'#/agenda'],['Aprueba y envía tu primer informe',sent,'#/hoy'],['Guarda tu primer respaldo',!!S.lastBackup,'#/ajustes']]}
+function onboardHtml(){
+ if(S.demo||!S.patients.length)return '';const st=onboardSteps();const done=st.filter(s=>s[1]).length;if(done===st.length)return '';
+ const nx=st.find(s=>!s[1]);
+ return `<section class="card col" aria-label="Primeros pasos" style="background:linear-gradient(135deg,#fff,#E3EEF9)"><div class="row sp"><b>Tus primeros pasos</b><span class="pill p-warn">${done} de ${st.length}</span></div><div class="row" style="gap:5px">${st.map(s=>`<i style="flex:1;height:8px;border-radius:4px;background:${s[1]?'var(--turq)':'#D6E0EE'}"></i>`).join('')}</div>${st.map(s=>`<a class="row sm" href="${s[2]}" style="min-height:40px;gap:10px;${s[1]?'opacity:.55':''}"><span aria-hidden="true" style="width:22px;height:22px;border-radius:11px;flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;${s[1]?'background:var(--turq);color:#fff':'border:2px solid #B7C6DC'}">${s[1]?'✓':''}</span><span style="${s[1]?'text-decoration:line-through':''}">${s[0]}</span></a>`).join('')}<a class="btn grow" href="${nx[2]}">Siguiente: ${nx[0].toLowerCase()}</a></section>`}
+
 /* ============ INFORME ============ */
 routes.informe=([id])=>{
  const a=A(id);if(!a||!a.report)return `${back('Hoy','#/hoy')}${empty('No hay informe para esta atención.')}`;
@@ -691,6 +772,7 @@ routes.informe=([id])=>{
  <h2 style="margin:4px 0 10px">Informe del turno</h2>
  <div class="seg" style="margin-bottom:12px"><button class="${mode==='fam'?'on':''}" data-act="imode" data-m="fam">Familiar</button><button class="${mode==='cli'?'on':''}" data-act="imode" data-m="cli">Clínico</button></div>
  <div class="col">
+ ${mode==='fam'?cardBox('informe',a.id):''}
  <div class="paper" id="rptpaper">${LOCKUP(46)}<div class="xs mut" style="margin-top:6px">${esc(S.profile.name)} · ${esc(S.profile.role)}</div>
  <div class="xs mut" style="margin:6px 0"><i>${esc(S.profile.tagline)}</i></div>
  <b>${esc(p.name)} · ${fdate(a.date,true).toLowerCase()} · ${a.start} a ${hhmm(toMin(a.start)+dur0)}</b>
@@ -774,7 +856,10 @@ routes.cotizacion=([id])=>{
  const p=P(q.patientId);const tot=qTotal(q);
  const exp=addDays(q.date,q.valid);const expired=q.status==='enviada'&&exp<today();
  return `${back('Cotizar','#/cotizar')}<div class="row sp" style="margin:4px 0 10px"><h2>Cotización N° ${q.n}</h2><span class="pill ${q.status==='aceptada'?'p-ok':expired?'p-bad':'p-warn'}">${expired?'vencida':q.status}</span></div>
- <div class="col"><div class="paper" id="qpaper">${LOCKUP(50)}<div class="xs mut" style="margin-top:6px">${esc(S.profile.name)} · ${esc(S.profile.role)}</div>
+ <div class="col">
+ <section class="navy col noprint" id="qhero" style="background:linear-gradient(150deg,#1F3A8F,#14275F 60%,#0C1A44);padding:22px;position:relative;overflow:hidden"><svg aria-hidden="true" viewBox="0 0 400 80" preserveAspectRatio="none" style="position:absolute;left:0;right:0;top:46%;width:100%;height:70px;opacity:.3"><path d="M0 40H120l12-12 10 24 12-12h30l16-34 18 52 14-18h30l14-8 12 8H400" fill="none" stroke="#9FD9CF" stroke-width="2.4" stroke-linejoin="round"/></svg><span class="xs" style="position:relative;letter-spacing:.22em;text-transform:uppercase;color:#9FD9CF;font-weight:700">Propuesta de cuidado · N° ${q.n}</span><b style="position:relative;font-family:'Cormorant Garamond',serif;font-size:58px;line-height:1;color:#fff;margin:6px 0 0;font-variant-numeric:lining-nums">${clp(tot)}</b><span style="position:relative" class="sm">${q.qty} × ${clp(q.unit)}${q.disc?' · descuento '+q.disc+'%':''} · ${esc(q.modo.toLowerCase())}</span><div class="row" style="position:relative;flex-wrap:wrap;gap:6px;margin-top:10px">${(q.slots||[]).slice(0,5).map(s=>`<span class="pill" style="background:rgba(159,217,207,.16);color:#DFF4EF;border:1px solid rgba(159,217,207,.45)">${fdate(s.date)} · ${s.start}</span>`).join('')}</div><div class="row sp" style="position:relative;margin-top:12px"><span class="xs">${expired?'Venció el '+fdate(exp):'Vigente hasta el '+fdate(exp)}</span><span class="pill ${q.status==='aceptada'?'p-ok':expired?'p-bad':'p-warn'}">${expired?'vencida':q.status}</span></div></section>
+ ${cardBox('cotizacion',q.id)}
+ <div class="paper" id="qpaper">${LOCKUP(50)}<div class="xs mut" style="margin-top:6px">${esc(S.profile.name)} · ${esc(S.profile.role)}</div>
  <p style="margin:12px 0 2px"><b>Cotización N° ${q.n}</b><br><span class="xs mut">Emitida ${fdate(q.date,true)} · Vigente hasta ${fdate(exp,true)}</span></p>
  <p>Para: <b>${esc(q.resp||p?.resp?.name||'')}</b> · Paciente: <b>${esc(p?.name||'')}</b></p>
  <p><b>${esc(q.servicio||q.modo)}</b><br><span class="xs mut">Se realiza únicamente con indicación médica vigente.</span></p>
@@ -995,7 +1080,7 @@ function portalRoute(code){
  const tabs=[['inicio','Inicio'],['historia','Historia'],...(d.ev?[['fotos','Fotos']]:[]),['informe','Informes'],['cuidado','Cuidado'],['pagos','Pagos'],['mensaje','Mensaje']];
  let body='';
  if(tab==='inicio'){
-  body=`<h1>Hola, ${esc(d.fn)}</h1><p class="mut" style="margin:0 0 10px">Así va el cuidado de ${esc(d.pn)}</p>
+  body=`<div class="row" style="gap:14px;margin-bottom:4px"><div aria-hidden="true" style="width:64px;height:64px;border-radius:32px;flex:none;background:linear-gradient(145deg,#1F3A8F,#14275F);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:30px;box-shadow:0 8px 20px rgba(20,39,95,.3)">${esc((d.pn||'?')[0].toUpperCase())}</div><div><h1 style="margin:0">Hola, ${esc(d.fn)}</h1><p class="mut" style="margin:0">Así va el cuidado de ${esc(d.pn)}</p></div></div>
   ${nxt?`<section class="navy"><span class="xs">Próxima visita</span><b class="big" style="font-size:26px;margin:4px 0">${fdate(nxt.d,true)} · ${nxt.s}</b><span class="xs">${esc(nxt.t)}</span><div class="row" style="margin-top:12px"><a class="btn amb grow" href="${wa('Hola '+d.vn.split(' ')[0]+', confirmo la visita de '+d.pn+' del '+fdate(nxt.d,true)+' a las '+nxt.s+'.')}">Confirmar</a><a class="btn sec grow" href="#/p/${code.split('/')[0]}/cuidado">Pedir cambio</a></div></section>`:'<div class="card">No hay visitas próximas.</div>'}
   ${d.tot?`<section class="card"><b class="sm">Tratamiento · ${d.dn.length} de ${d.tot} visitas</b><div class="row" style="gap:4px;margin-top:8px">${[...Array(Math.min(d.tot,14))].map((_,i)=>`<i style="flex:1;height:10px;border-radius:5px;background:${i<d.dn.length?'var(--ok)':'#EBDFCB'}"></i>`).join('')}</div></section>`:''}
   ${d.rp?`<section class="card"><div class="row sp"><b class="sm">Último informe · ${fdate(d.rp.d)}</b><a class="sm" style="text-decoration:underline;min-height:44px;display:flex;align-items:center" href="#/p/${code.split('/')[0]}/informe">Leer ›</a></div><p class="sm mut" style="margin:4px 0 0">${esc(d.rp.f.slice(0,160))}${d.rp.f.length>160?'…':''}</p></section>`:''}
@@ -1139,6 +1224,10 @@ document.addEventListener('click',async ev=>{
  case 'prevoke':{if(await ask('Se genera un PIN nuevo. El enlace anterior deja de abrir con el PIN viejo.')){const cfg=S.ui.portal[id];cfg.pin=newPin();save();route();toast('PIN nuevo generado')}break}
  case 'export':{const b=new Blob([JSON.stringify(S)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='nurse-app-respaldo-'+today()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);S.lastBackup=Date.now();save();toast('Respaldo descargado');if(location.hash==='#/hoy')route();break}
  case 'mediadel':{const a=A(id);if(!a)break;if(!await ask('¿Quitar esta foto o video de este teléfono? Si ya lo guardaste en Drive, allá queda.'))break;const m=(a.media||[]).find(x=>x.id===el.dataset.m);if(m){try{await MDB.del(m.id)}catch(e){}a.media=a.media.filter(x=>x!==m);save();hydrateMedia()}break}
+ case 'cardshare':case 'carddl':{const k=el.dataset.k;let b=CARDS[k+id];if(!b){try{b=k==='informe'?await reportCard(A(id)):await quoteCard(Q(id));CARDS[k+id]=b}catch(e){toast('No pude armar la tarjeta');break}}
+  const nm=k==='informe'?'informe-'+slug(P(A(id).patientId).name.split(/[ ,]/)[0])+'-'+A(id).date+'.png':'cotizacion-'+Q(id).n+'.png';
+  if(act==='carddl'){const u=URL.createObjectURL(b);const l=document.createElement('a');l.href=u;l.download=nm;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),3000);toast('Tarjeta descargada')}
+  else await shareCard(b,nm,k==='informe'?'Así estuvo hoy':'Tu propuesta de cuidado');break}
  case 'mediadrive':{const a=A(id);if(a)await shareMedia(a,false);break}
  case 'mediafam':{const a=A(id);if(a)await shareMedia(a,true);break}
  case 'install':if(window._bip){window._bip.prompt();window._bip=null}break;
@@ -1246,7 +1335,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator
   rPx.forEach((rp,i)=>{if(!played[i]&&head>=rp){played[i]=1;bip()}const d=head-rp;if(d>0&&d<140){x.strokeStyle='rgba(159,217,207,'+(.35*(1-d/140))+')';x.lineWidth=2;x.beginPath();x.arc(rp,yAt(rp),14+d*.5,0,7);x.stroke()}});
   if(p<1||head<W*1.12)requestAnimationFrame(frame);else try{ac&&setTimeout(()=>ac.close(),600)}catch(e){}};
  requestAnimationFrame(frame)})();
-window.NURSE={MDB,imgBlob,addMedia,shareMedia,mediaName,hydrateMedia,sealBackup,openBackup,parseLeadMsg,outbox,PCACHE,openPortal,get S(){return S},set S(v){S=v},route,conflicts,suggest,parsePhrase,qTotal,freeWindows,today,addDays,genFamily,tentSlots,startVisit,closeVisit,waLink,demo,DEFAULTS,saveNow,b64e,b64d,portalUrl,sha,A,P,loadOf,dayAppts};
+window.NURSE={reportCard,quoteCard,onboardSteps,onboardHtml,CARDS,MDB,imgBlob,addMedia,shareMedia,mediaName,hydrateMedia,sealBackup,openBackup,parseLeadMsg,outbox,PCACHE,openPortal,get S(){return S},set S(v){S=v},route,conflicts,suggest,parsePhrase,qTotal,freeWindows,today,addDays,genFamily,tentSlots,startVisit,closeVisit,waLink,demo,DEFAULTS,saveNow,b64e,b64d,portalUrl,sha,A,P,loadOf,dayAppts};
 loadDispImg();
 route();
 </script>
