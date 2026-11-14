@@ -61,11 +61,17 @@ nav.tabs svg{width:24px;height:24px}
 .demo{background:var(--warnbg);color:var(--warnfg)}
 @media(min-width:900px){#app{padding-bottom:90px}nav.tabs{max-width:none;justify-content:center}nav.tabs a{flex:0 0 120px}}
 .tline{position:relative;padding-left:22px;display:flex;flex-direction:column;gap:14px;margin:14px 0}.tline:before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:var(--line)}.tl-i{position:relative}.tl-i>i{position:absolute;left:-22px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--turq);border:3px solid var(--bg)}.tl-i.next>i{background:var(--terra)}
-.splash{position:fixed;inset:0;z-index:99;background:#14275F;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;pointer-events:none;animation:spOut .5s 1.5s forwards}
-.splash .tl{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;color:#E3EEF9;text-align:center;padding:0 24px}
-.splash svg{width:112px;height:112px}.splash svg path:last-child{stroke-dasharray:160;stroke-dashoffset:160;animation:spDr 1s .25s ease forwards}
+.splash{position:fixed;inset:0;z-index:99;background:radial-gradient(120% 90% at 50% 45%,#1B3578 0%,#14275F 55%,#0C1A44 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;pointer-events:none;animation:spOut .55s 3.1s forwards;overflow:hidden}
+.splash .sg{position:absolute;inset:0;background-image:linear-gradient(rgba(159,217,207,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(159,217,207,.06) 1px,transparent 1px);background-size:28px 28px;opacity:0;animation:spIn .8s .1s forwards}
+.splash canvas{position:absolute;inset:0;width:100%;height:100%;animation:spFade .6s 1.35s forwards}
+.splash .lg{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;opacity:0;transform:translateY(8px) scale(.96);animation:spLg .9s 1.55s cubic-bezier(.2,.8,.2,1) forwards}
+.splash .nm{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:40px;color:#fff;letter-spacing:.01em;line-height:1}
+.splash .rl{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:#9FD9CF;font-weight:600}
+.splash .tl{position:relative;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:22px;color:#E3EEF9;text-align:center;padding:0 24px;opacity:0;animation:spIn .8s 2.15s forwards}
+.splash svg{width:104px;height:104px}.splash svg path:last-child{stroke-dasharray:160;stroke-dashoffset:160;animation:spDr 1s 1.75s ease forwards}
 @keyframes spDr{to{stroke-dashoffset:0}}@keyframes spOut{to{opacity:0;visibility:hidden}}
-@media(prefers-reduced-motion:reduce){.splash svg path:last-child{animation:none;stroke-dashoffset:0}.splash{animation-delay:.6s}}
+@keyframes spIn{to{opacity:1}}@keyframes spFade{to{opacity:0}}@keyframes spLg{to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.splash canvas,.splash .sg{display:none}.splash .lg,.splash .tl{animation-delay:0s;animation-duration:.2s}.splash svg path:last-child{animation:none;stroke-dashoffset:0}.splash{animation-delay:1.2s}}
 @media print{nav.tabs,.noprint,.sheetbg,.toast{display:none!important}#app{max-width:none;padding:0}body{background:#fff}}
 .hide{display:none!important}
 .skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:#fff;padding:8px;z-index:99}
@@ -1207,7 +1213,39 @@ function shrink(file){return new Promise(res=>{const r=new FileReader();r.onload
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();window._bip=e;const b=$('#installbtn');if(b)b.style.display=''});
 if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 (function(){try{if(sessionStorage.getItem('splash'))return;sessionStorage.setItem('splash','1')}catch(e){}
- const s=document.createElement('div');s.className='splash';s.setAttribute('aria-hidden','true');s.innerHTML=LOGO(112,true)+'<div class="tl">Cuidados que acompañan.<br>En cada etapa de la vida.</div>';document.body.appendChild(s);setTimeout(()=>s.remove(),2200)})();
+ const s=document.createElement('div');s.className='splash';s.setAttribute('aria-hidden','true');
+ s.innerHTML='<div class="sg"></div><canvas></canvas><div class="lg">'+LOGO(104,true)+'<div class="nm">Valeria</div><div class="rl">Enfermera a domicilio</div></div><div class="tl">Cuidados que acompañan.<br>En cada etapa de la vida.</div>';
+ document.body.appendChild(s);
+ let dead=false;const kill=()=>{if(dead)return;dead=true;s.remove()};
+ setTimeout(kill,3800);
+ /* tocar en cualquier parte lo cierra (el toque igual llega a la app, el splash no captura clics) */
+ document.addEventListener('pointerdown',kill,{once:true,capture:true});
+ const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+ const cv=s.querySelector('canvas');if(reduce||!cv.getContext)return;
+ /* electro: suma de campanas (P, Q, R, S, T) por latido; el trazo avanza y deja estela con brillo */
+ const g=(t,m,sg,a)=>a*Math.exp(-Math.pow((t-m)/sg,2));
+ const beat=t=>g(t,.17,.035,.13)+g(t,.37,.012,-.12)+g(t,.41,.011,1)+g(t,.45,.013,-.3)+g(t,.68,.05,.24);
+ const dpr=Math.min(devicePixelRatio||1,2);const W=innerWidth,H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.scale(dpr,dpr);
+ const cy=H*.5,amp=Math.min(130,H*.17),cyc=W*.62,off=-W*.04;
+ const yAt=px=>{const t=((px-off)/cyc)%1;return cy-beat(t<0?t+1:t)*amp};
+ const DUR=1500,t0=performance.now();
+ const rPx=[0,1].map(k=>off+cyc*(k+.41)).filter(p=>p>0&&p<W*1.05);
+ /* sonido: solo si el navegador ya lo permite (en el celular suele estar en silencio hasta el primer toque) */
+ let ac=null,played=[];try{const AC=window.AudioContext||window.webkitAudioContext;ac=new AC();if(ac.state!=='running'){ac.close();ac=null}}catch(e){ac=null}
+ const bip=()=>{if(!ac)return;try{const t=ac.currentTime,o=ac.createOscillator(),lo=ac.createOscillator(),gn=ac.createGain(),g2=ac.createGain();o.type='sine';o.frequency.value=988;gn.gain.setValueAtTime(.0001,t);gn.gain.exponentialRampToValueAtTime(.05,t+.012);gn.gain.exponentialRampToValueAtTime(.0001,t+.1);o.connect(gn).connect(ac.destination);o.start(t);o.stop(t+.11);
+  lo.type='sine';lo.frequency.setValueAtTime(90,t);lo.frequency.exponentialRampToValueAtTime(52,t+.09);g2.gain.setValueAtTime(.0001,t);g2.gain.exponentialRampToValueAtTime(.35,t+.015);g2.gain.exponentialRampToValueAtTime(.0001,t+.2);lo.connect(g2).connect(ac.destination);lo.start(t);lo.stop(t+.22)}catch(e){}};
+ const frame=now=>{if(dead||!document.body.contains(cv)){try{ac&&ac.close()}catch(e){}return}
+  const p=Math.min(1,(now-t0)/DUR),head=off+(W*1.12-off)*p;x.clearRect(0,0,W,H);
+  const tail=W*.7,x0=Math.max(0,head-tail);
+  const gr=x.createLinearGradient(x0,0,head,0);gr.addColorStop(0,'rgba(159,217,207,0)');gr.addColorStop(.7,'rgba(159,217,207,.75)');gr.addColorStop(1,'rgba(220,250,244,1)');
+  x.lineJoin='round';x.lineCap='round';
+  const trace=()=>{x.beginPath();for(let px=x0;px<=head;px+=2){const y=yAt(px);px===x0?x.moveTo(px,y):x.lineTo(px,y)}};
+  x.save();x.strokeStyle='rgba(159,217,207,.5)';x.lineWidth=14;x.filter='blur(9px)';trace();x.stroke();x.restore();
+  x.strokeStyle=gr;x.lineWidth=3.6;trace();x.stroke();
+  const hy=yAt(head);x.fillStyle='#fff';x.shadowColor='#9FD9CF';x.shadowBlur=22;x.beginPath();x.arc(head,hy,5,0,7);x.fill();x.shadowBlur=0;
+  rPx.forEach((rp,i)=>{if(!played[i]&&head>=rp){played[i]=1;bip()}const d=head-rp;if(d>0&&d<140){x.strokeStyle='rgba(159,217,207,'+(.35*(1-d/140))+')';x.lineWidth=2;x.beginPath();x.arc(rp,yAt(rp),14+d*.5,0,7);x.stroke()}});
+  if(p<1||head<W*1.12)requestAnimationFrame(frame);else try{ac&&setTimeout(()=>ac.close(),600)}catch(e){}};
+ requestAnimationFrame(frame)})();
 window.NURSE={MDB,imgBlob,addMedia,shareMedia,mediaName,hydrateMedia,sealBackup,openBackup,parseLeadMsg,outbox,PCACHE,openPortal,get S(){return S},set S(v){S=v},route,conflicts,suggest,parsePhrase,qTotal,freeWindows,today,addDays,genFamily,tentSlots,startVisit,closeVisit,waLink,demo,DEFAULTS,saveNow,b64e,b64d,portalUrl,sha,A,P,loadOf,dayAppts};
 loadDispImg();
 route();
