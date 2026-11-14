@@ -1087,7 +1087,7 @@ const _lh7=logrosHTML;logrosHTML=function(){return _lh7().replace(/<span>🔒<\/
 /* --- fotos de fondo (banco libre CC0) --- */
 (()=>{const add=(sec,img,t,s)=>{const el=$(sec);if(!el||el.querySelector(".photo"))return;const d=document.createElement("div");d.className="photo";d.style.backgroundImage=`linear-gradient(180deg,rgba(30,31,26,.15),rgba(30,31,26,.72)),url(${img})`;d.innerHTML=`<b>${t}</b><span>${s}</span>`;el.querySelector("h2").after(d)};
  add("#grabar","img/bg_estudio.jpg","Tu espacio para crear","A tu ritmo, una toma a la vez.");add("#agencia","img/bg_agencia.jpg","Estamos contigo","Conversa, pregunta y revisa todo aquí.")})();
-renderAll();if(!$("#inicio").hidden)renderHome();if(!$("#agenda").hidden)renderAgenda();if(!S.tutoV){const _sg=show;show=function(t){_sg(t);if(t=="grabar"&&!S.tutoV&&!$("#tut"))setTimeout(tutorial,500)};window.show=show}
+renderAll();if(!$("#inicio").hidden)renderHome();if(!$("#agenda").hidden)renderAgenda();{const _sg=show;show=function(t){_sg(t);if(t=="grabar"){misTomas();if(!S.tutoV&&!$("#tut"))setTimeout(tutorial,500)}};window.show=show}
 
 </script>
 </body></html>
