@@ -191,7 +191,7 @@ details p{font-size:15px}
 <div class="upq" id="upq"></div>
 <div class="big-prog"><i id="pg"></i></div><div class="muted" id="pgt" style="font-size:14px"></div>
 <div class="filt" id="filt">
- <label><input type="radio" name="fl" value="all" checked>Todo</label><label><input type="radio" name="fl" value="foto">📷 Fotos</label><label><input type="radio" name="fl" value="audio">🎙 Audios</label><label><input type="radio" name="fl" value="video">🎬 Videos</label></div>
+ <label><input type="radio" name="fl" value="all" checked>Kit de inicio</label><label><input type="radio" name="fl" value="edu">📚 Educativo</label><label><input type="radio" name="fl" value="flores">🌼 Ganchos flores</label><label><input type="radio" name="fl" value="reflexo">🦶 Ganchos reflexología</label><label><input type="radio" name="fl" value="foto">📷 Fotos</label><label><input type="radio" name="fl" value="audio">🎙 Audios</label><label><input type="radio" name="fl" value="video">🎬 Videos</label></div>
 <div id="shots"></div>
 </section>
 
@@ -323,14 +323,53 @@ const SH=[
 ["V4","video","Gancho a cámara",["Mira al lente, no a la pantalla.","Di la frase y quédate quieta 1 segundo.","Graba 5 veces."],"¿Duermes mal y ya no sabes qué cambiar?","rostro"],
 ["V5","video","Cierre a cámara",["Al final, señala hacia abajo con la mano: ahí va el botón."],"Escríbeme por WhatsApp y conversamos. Atiendo a domicilio en Concepción.","rostro"],
 ["V6","video","Tu primer video",["Si vas sin cara: V1 + el audio A1.","Si vas con cara: el texto de A1 mirando a cámara.","15 a 20 segundos."],"","mixta"]];
+/* ---- contenido educativo y ganchos (grupo en la posición 6) ---- */
+SH.forEach(s=>s[6]=s[6]||"kit");
+const B=["Celular vertical y apoyado.","Habla como si le explicaras a una amiga.","Si te equivocas, sigue: la agencia corta."];
+const H=["Di la frase en los primeros 2 segundos, sin saludar antes.","Graba 3 versiones: seria, sonriendo y en voz baja."];
+[
+/* EDUCATIVO: voz sobre tus manos u objetos (o a cámara si ya te animas) */
+["E1","audio","Qué es la naturopatía (y qué no es)",B,"La naturopatía acompaña tus hábitos de bienestar: descanso, agua, alimentación y pausas. No diagnostica ni reemplaza a tu médico. Trabajamos juntas, como complemento.","sin","edu"],
+["E2","audio","Tres hábitos con el agua",B,"Tres hábitos simples con el agua: un vaso a la vista, uno al despertar y otro a media tarde. Si tu médico te dio otra indicación, sigue la de tu médico.","sin","edu"],
+["E3","audio","Tu última hora del día",B,"Una hora antes de dormir: luz baja, pantalla lejos y una infusión tibia sin cafeína. Pequeños cambios, de a poquito.","sin","edu"],
+["E4","audio","Pausas para mamás que trabajan",B,"Si trabajas y eres mamá, prueba esto: tres pausas de un minuto al día. Respira, estira los hombros y toma agua. Tu cuerpo lo agradece.","sin","edu"],
+["E5","audio","Comer con calma",B,"Comer sentada, sin pantalla y masticando con calma es un hábito simple que te ayuda a escuchar a tu cuerpo.","sin","edu"],
+["E6","audio","¿Qué es la hidroterapia?",B,"La hidroterapia usa el agua, tibia o fresca, como parte de un momento de cuidado y bienestar. Siempre complementaria, y conversando antes si tienes alguna condición de salud.","sin","edu"],
+["E7","audio","¿Qué es la geoterapia?",B,"La geoterapia usa arcilla sobre la piel como parte de un momento de cuidado. Antes de aplicarla, siempre conversamos si tienes alguna condición en la piel.","sin","edu"],
+["E8","audio","Cómo es una consulta integral",B,"En la consulta integral conversamos de tus hábitos: cómo duermes, cómo comes, cómo te mueves y cómo estás. Con eso armamos pequeños pasos para tu bienestar.","sin","edu"],
+["E9","audio","Mito o verdad: natural es sin riesgo",B,"Mito o verdad: lo natural no tiene riesgos. Mito. Lo natural también se usa con cuidado, y si tomas medicamentos, primero conversa con tu médico.","sin","edu"],
+["E10","audio","Cuándo ir primero al médico",B,"Si tienes dolor fuerte, fiebre alta o algo que te preocupa, primero tu médico. La naturopatía acompaña tu bienestar, no reemplaza la atención médica.","sin","edu"],
+/* GANCHOS · ESENCIAS FLORALES (manos con frascos, cámara de atrás) */
+["GF1","video","Gancho flores: el origen",H.concat(["Muestra un frasco de esencias en tu mano."]),"¿Sabías que las flores de Bach nacieron en Inglaterra, en los años treinta?","sin","flores"],
+["GF2","video","Gancho flores: qué hay en el frasco",H.concat(["Gira el frasco despacio frente a la luz."]),"Esto es lo que hay dentro de un frasco de esencias florales.","sin","flores"],
+["GF3","video","Gancho flores: las 3 preguntas",H.concat(["Tres frascos en fila; toca uno por pregunta."]),"Tres preguntas que me hacen siempre sobre las flores de Bach.","sin","flores"],
+["GF4","video","Gancho flores: ¿reemplaza a tu psicóloga?",H.concat(["Mano quieta sobre el frasco. Tono tranquilo."]),"¿Las esencias florales reemplazan a tu psicóloga? No. Te explico cómo las uso.","sin","flores"],
+["GF5","video","Gancho flores: preparo un frasco",H.concat(["Plano desde arriba: frasco vacío, gotero, etiqueta."]),"Así preparo un frasco de esencias, paso a paso.","sin","flores"],
+["GF6","video","Gancho flores: una gota",H.concat(["Cámara lenta si tu celular la tiene: una gota cayendo."]),"Una gota, una pausa, un momento para ti.","sin","flores"],
+["GF7","video","Gancho flores: la noche",H.concat(["Luz cálida de lámpara, taza al lado del frasco."]),"¿Te cuesta desconectarte en la noche? Esto conversamos en una sesión.","sin","flores"],
+["GF8","video","Gancho flores: mito o verdad",H.concat(["Muestra el frasco y luego un perfume (o una flor)."]),"Mito o verdad: ¿las esencias florales son perfumes?","sin","flores"],
+["GF9","video","Gancho flores a cámara",H.concat(["Frasco en la mano, mirando al lente."]),"Te muestro cómo trabajo con esencias florales, como complemento de tu bienestar.","rostro","flores"],
+/* GANCHOS · REFLEXOLOGÍA (manos y pies con toalla; solo con autorización o tu propio pie) */
+["GR1","video","Gancho reflexología: tus pies",H.concat(["Pies sobre una toalla blanca, cámara a la altura de los pies."]),"Tus pies te cargan todo el día. ¿Cuándo fue la última vez que los cuidaste?","sin","reflexo"],
+["GR2","video","Gancho reflexología: la sesión",H.concat(["Tus manos tomando un pie con toalla, de lado."]),"Así es una sesión de reflexología a domicilio.","sin","reflexo"],
+["GR3","video","Gancho reflexología: ¿duele?",H.concat(["Presión suave con el pulgar, de cerca."]),"¿La reflexología duele? Te cuento cómo se siente.","sin","reflexo"],
+["GR4","video","Gancho reflexología: 5 minutos",H.concat(["Pies en una palangana con agua tibia."]),"Cinco minutos de pausa para tus pies, sin salir de tu casa.","sin","reflexo"],
+["GR5","video","Gancho reflexología: lo que no es",H.concat(["Manos quietas sobre la toalla. Tono claro."]),"La reflexología no diagnostica ni reemplaza a tu médico. Esto es lo que sí hace por tu descanso.","sin","reflexo"],
+["GR6","video","Gancho reflexología: mamás de pie",H.concat(["Zapatillas tiradas junto a la puerta, luego pies descansando."]),"Para las mamás que no se sientan en todo el día.","sin","reflexo"],
+["GR7","video","Gancho reflexología: preparo el espacio",H.concat(["Plano desde arriba: toalla, aceite, cojín."]),"Mira cómo preparo el espacio antes de una sesión.","sin","reflexo"],
+["GR8","video","Gancho reflexología facial",H.concat(["Tus manos sobre tu propio rostro, de perfil, ojos cerrados.","Si no quieres mostrar tu cara, usa un muñeco o solo tus manos."]),"Reflexología facial: qué es y cómo se siente.","mixta","reflexo"],
+["GR9","video","Gancho reflexología a cámara",H.concat(["Sentada, con una toalla doblada en las piernas."]),"Te cuento por qué la reflexología es mi momento favorito de una visita.","rostro","reflexo"]
+].forEach(x=>SH.push(x));
+const GRP={kit:"Kit de inicio",edu:"Educativo",flores:"Ganchos · flores",reflexo:"Ganchos · reflexología"};
 function shots(){const r=ruta(),f=($("input[name=fl]:checked")||{}).value||"all";
 const pri=s=>s[5]=="sin"?0:s[5]=="mixta"?(r=="sin"?2:1):(r=="rostro"?1:3);
-const L=SH.filter(s=>f=="all"||s[1]==f).sort((a,b)=>pri(a)-pri(b));
-$("#shots").innerHTML=L.map(s=>`<div class="shot ${S.done[s[0]]?"done":""}"><div class="top"><span class="id">${s[0]}</span>${pri(s)>=2?'<span class="chip w">Más adelante</span>':'<span class="chip">Ahora</span>'}</div><h4>${s[2]}</h4>${s[4]?`<div class="say">"${s[4]}"</div>`:""}<ol>${s[3].map(x=>`<li>${x}</li>`).join("")}</ol><div class="rshot"><button class="btn small" data-rec="${s[0]}">🎬 Grabar con el Director</button><button class="btn small ghost" data-nat="${s[0]}">📱 Cámara del celular</button></div><label class="ck"><input type="checkbox" data-id="${s[0]}" ${S.done[s[0]]?"checked":""}>La tengo y la mandé</label></div>`).join("");
+const L=SH.filter(s=>f=="all"?s[6]=="kit":(s[1]==f||s[6]==f)).sort((a,b)=>pri(a)-pri(b));
+$("#soloAll").textContent="🎬 Modo sola: "+(f=="all"?"kit de inicio":f=="edu"?"todo el educativo":f=="flores"?"todos los ganchos de flores":f=="reflexo"?"todos los ganchos de reflexología":"esta lista");
+$("#shots").innerHTML=L.map(s=>`<div class="shot ${S.done[s[0]]?"done":""}"><div class="top"><span class="id">${s[0]} · ${GRP[s[6]]}</span>${pri(s)>=2?'<span class="chip w">Más adelante</span>':'<span class="chip">Ahora</span>'}</div><h4>${s[2]}</h4>${s[4]?`<div class="say">"${s[4]}"</div>`:""}<ol>${s[3].map(x=>`<li>${x}</li>`).join("")}</ol><div class="rshot"><button class="btn small" data-rec="${s[0]}">🎬 Grabar con el Director</button><button class="btn small ghost" data-nat="${s[0]}">📱 Cámara del celular</button></div><label class="ck"><input type="checkbox" data-id="${s[0]}" ${S.done[s[0]]?"checked":""}>La tengo y la mandé</label></div>`).join("");
 $$("#shots [data-rec]").forEach(b=>b.onclick=()=>recOpen([b.dataset.rec]));
 $$("#shots [data-nat]").forEach(b=>b.onclick=()=>{natPick(b.dataset.nat);recOpen([b.dataset.nat],true)});
 $$("#shots input[data-id]").forEach(i=>i.onchange=()=>{S.done[i.dataset.id]=i.checked;persist();shots();renderSteps();if(i.checked)toast("¡Bien! Mándala por WhatsApp a la agencia")});
-const n=SH.filter(s=>S.done[s[0]]).length;$("#pg").style.width=(n/SH.length*100)+"%";$("#pgt").textContent=n+" de "+SH.length+" tomas listas";}
+const n=L.filter(s=>S.done[s[0]]).length;$("#pg").style.width=(L.length?n/L.length*100:0)+"%";$("#pgt").textContent=n+" de "+L.length+" tomas listas en "+(f=="all"?"el kit de inicio":"esta lista");}
 $$("input[name=fl]").forEach(i=>i.onchange=shots);
 
 /* ---------- textos ---------- */
@@ -433,7 +472,7 @@ async function recOpen(ids,nat){R.q=ids;R.i=0;R.toma=1;R.paused=false;R.nat=!!na
 const s=shotOf(ids[0]);R.face=s?wantFace(s):"user";if(!R.nat)await camStart();clearInterval(R.raf);R.raf=setInterval(rTick,100);try{R.wl=await navigator.wakeLock.request("screen")}catch(e){}
 $("#rG").textContent="Toca ▶ Partir. Después todo es por voz: di «buena» o «mala»."}
 function recClose(){recStop();camStop();R.ph="idle";clearInterval(R.raf);micOff();R.hand=false;$("#rHand").textContent="✋ Gestos";try{speechSynthesis.cancel()}catch(e){}try{R.wl&&R.wl.release()}catch(e){}$("#rec").hidden=true;document.body.style.overflow=""}
-$("#soloAll").onclick=()=>{const r=ruta();const pri=s=>s[5]=="sin"?0:s[5]=="mixta"?(r=="sin"?2:1):(r=="rostro"?1:3);const L=SH.filter(s=>!S.done[s[0]]&&pri(s)<2).sort((a,b)=>pri(a)-pri(b)).map(s=>s[0]);if(!L.length){toast("¡Ya tienes todas las tomas de ahora!");return}recOpen(L)};
+$("#soloAll").onclick=()=>{const r=ruta(),f=($("input[name=fl]:checked")||{}).value||"all";const pri=s=>s[5]=="sin"?0:s[5]=="mixta"?(r=="sin"?2:1):(r=="rostro"?1:3);const L=SH.filter(s=>(f=="all"?s[6]=="kit":(s[1]==f||s[6]==f))&&!S.done[s[0]]&&pri(s)<2).sort((a,b)=>pri(a)-pri(b)).map(s=>s[0]);if(!L.length){toast("¡Ya tienes todas las tomas de ahora!");return}recOpen(L)};
 $("#rGo").onclick=rGo;$("#rGood").onclick=()=>verdict(true);$("#rBad").onclick=()=>verdict(false);$("#rX").onclick=recClose;
 $("#rSkip").onclick=()=>{recStop();R.i++;R.toma=1;R.cool=0;if(R.ph=="idle")rDraw();else rScene()};
 $("#rFlip").onclick=async()=>{R.face=R.face==="user"?"environment":"user";await camStart()};
