@@ -206,6 +206,12 @@ details p{font-size:15px}
 .form textarea,.form select{width:100%;font:inherit;padding:12px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);color:var(--fg);margin-top:6px}
 .team{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.team div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}.team b{display:block}.team span{font-size:13px;color:var(--muted)}
 .ls{padding-left:18px;margin:8px 0 0;font-size:15px}.ls li{margin:4px 0}.chip2{font-size:12px;font-weight:700;border-radius:99px;padding:1px 8px;background:var(--olive-soft);color:var(--olive)}
+#intro .fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}#intro>div:not(.tap){position:relative;z-index:1}
+#intro.cine .ag{visibility:hidden}#intro.cine .by{animation-delay:2s}#intro.cine .ln{animation-delay:2.3s}#intro.cine .cl{animation-delay:2.9s}#intro.cine .cl svg path,#intro.cine .cl svg line{animation-delay:3s}#intro.cine .cl svg text{animation-delay:3.1s}#intro.cine .nm{animation-delay:3.8s}#intro.cine .go{animation-delay:4.3s}
+#intro .by{text-shadow:0 0 18px rgba(183,195,138,.6)}
+.tabbar button{position:relative}.dot{position:absolute;top:2px;right:calc(50% - 22px);min-width:18px;height:18px;border-radius:9px;background:#C2412D;color:#fff;font:700 11px/18px var(--body);padding:0 5px}
+.plusbox{background:radial-gradient(circle at 50% 0%,#3F4A31,#1E1F1A 75%)!important;color:#F4EEE4}.plusbox h2{color:#F4EEE4;font-size:clamp(26px,7vw,34px)}.plusbox p{color:rgba(244,238,228,.85)}.plusbox .btn{background:#F4EEE4;color:#1E1F1A;border-color:#F4EEE4}.plusbox .btn.ghost{background:none;color:#F4EEE4}
+#chat{max-height:52vh;overflow-y:auto}
 </style>
 
 <div id="intro"><div class="tap"><div><i></i>Toca para entrar</div></div><div><div class="ag" aria-label="AGENCIA"><span style="animation-delay:0.00s">A</span><span style="animation-delay:0.09s">G</span><span style="animation-delay:0.18s">E</span><span style="animation-delay:0.27s">N</span><span style="animation-delay:0.36s">C</span><span style="animation-delay:0.45s">I</span><span style="animation-delay:0.54s">A</span></div><div class="by">by Valeria</div><div class="ln"></div><div class="cl" id="introLogo"></div><div class="nm">Naturópata · Carolina Pereira</div><button class="go" id="introGo">Comenzar</button></div></div>
@@ -716,7 +722,7 @@ syncAnswers=function(){if(!PUENTE)return;clearTimeout(ansT);ansT=setTimeout(()=>
 /* intro AGENCIA by Valeria */
 (()=>{const it=$("#intro");let first=false;try{first=!localStorage.getItem("ag_intro")}catch(e){}
  const close=()=>{it.classList.add("out");try{localStorage.setItem("ag_intro","1")}catch(e){}setTimeout(()=>{it.remove();checkUnlock()},700)};
- $("#introGo").onclick=()=>{unlockSound();close();setTimeout(hello,350)};it.querySelector(".tap").onclick=()=>{it.classList.add("play");introSound();if(!first)setTimeout(()=>{close();setTimeout(hello,350)},3400)}
+ $("#introGo").onclick=()=>{unlockSound();close();setTimeout(hello,350)};it.querySelector(".tap").onclick=()=>{it.classList.add("play");introSound();if(!first)setTimeout(()=>{close();setTimeout(hello,350)},4700)}
  const svg=$("header svg.iso").cloneNode(true);svg.removeAttribute("class");$("#introLogo").appendChild(svg)})();
 $("#hdQ").onclick=()=>{$$("section").forEach(s=>s.hidden=s.id!=="dudas");renderTabs("");scrollTo(0,0)};
 
@@ -803,6 +809,71 @@ UNL[2][2]="¡Terminaste tu diagnóstico! Con tus gustos e intereses armamos tus 
 
 renderAll();
 persist();show(stage()==0?"cuenta":stage()==1&&answered()?"diag":"inicio");
+
+/* ================= EVOLUCIÓN 3 · chat en vivo, avisos, Plan Plus, intro cinematográfica ================= */
+/* --- chat conectado al Puente --- */
+let MSG=[],MSGok=false;S.pend=S.pend||[];
+async function loadMsgs(silent){if(!PUENTE)return;try{const j=await (await fetch(PUENTE+"?accion=mensajes&llave="+encodeURIComponent(LLAVE))).json();if(!j.ok)return;MSG=j.mensajes||[];MSGok=true;
+ S.pend=S.pend.filter(p=>!MSG.some(m=>m[1]=="clienta"&&m[2]==p.txt));persist();
+ const ag=MSG.filter(m=>m[1]=="agencia").length,nuevo=ag-(S.seenAg||0);
+ const pz=PZ.length-(S.seenPz||0);
+ if(!silent&&(nuevo>0||pz>0))avisar(nuevo>0?String(MSG.filter(m=>m[1]=="agencia").pop()[2]):`Tienes ${pz} pieza${pz>1?"s":""} nueva${pz>1?"s":""} para revisar 🌸`);
+ badge();if(!$("#agencia").hidden)renderAgencia()}catch(e){}}
+function unread(){return Math.max(0,MSG.filter(m=>m[1]=="agencia").length-(S.seenAg||0))+Math.max(0,PZ.length-(S.seenPz||0))}
+function badge(){const n=unread();try{n?navigator.setAppBadge&&navigator.setAppBadge(n):navigator.clearAppBadge&&navigator.clearAppBadge()}catch(e){}
+ const b=$('#tabs button[data-t="agencia"]');if(b){let d=b.querySelector(".dot");if(n&&!d){d=document.createElement("b");d.className="dot";b.appendChild(d)}if(d){d.textContent=n;d.hidden=!n}}}
+async function avisar(txt){try{if(document.visibilityState=="visible"){toast("💬 "+txt.slice(0,80));unlockSound();return}
+ if(window.Notification&&Notification.permission=="granted"){const r=await navigator.serviceWorker.ready;r.showNotification("AGENCIA by Valeria",{body:txt.slice(0,140),icon:"icon-192.png",tag:"agencia",data:{url:"./?tab=agencia"}})}}catch(e){}}
+renderAgencia=function(){const w={de:"ag",at:S.user&&S.user.desde,txt:`¡Hola ${nombre()}! Bienvenida a AGENCIA. Este es nuestro canal directo: escríbenos dudas, ideas, promociones o cambios cuando quieras. Te respondemos por aquí. 💚 Valeria`};
+ const th=[w,...MSG.map(m=>({de:m[1]=="agencia"?"ag":"yo",at:m[0],txt:m[2]})),...S.pend.map(p=>({de:"yo",at:p.at,txt:p.txt,pend:1})),...(MSGok?[]:S.msg.map(m=>({de:"yo",at:m.at,txt:m.txt})))];
+ $("#chat").innerHTML=th.map(m=>`<div class="bub ${m.de}"><div>${esc(m.txt)}</div><small>${m.de=="ag"?"AGENCIA":"Tú"} · ${fmtF(m.at)}${m.pend?" · enviando…":""}</small></div>`).join("");
+ S.seenAg=MSG.filter(m=>m[1]=="agencia").length;S.seenPz=PZ.length;persist();badge();try{navigator.serviceWorker&&navigator.serviceWorker.controller&&navigator.serviceWorker.controller.postMessage({vistos:S.seenAg})}catch(e){}
+ const pz=PZ.length?PZ.map(p=>`<li>${esc(p.titulo)} <span class="st ${(S.pz[p.id]||{}).st=="ok"?"ok":(S.pz[p.id]||{}).st=="cm"?"cm":"pd"}">${(S.pz[p.id]||{}).st=="ok"?"Aprobada":(S.pz[p.id]||{}).st=="cm"?"Con cambios":"Por revisar"}</span></li>`).join(""):"<li class=muted>Aún nada: estamos trabajando.</li>";
+ const se=S.sent.length?S.sent.slice().reverse().slice(0,30).map(s=>`<li><span class="chip2">${esc(s.toma)}</span> ${esc(s.name)} <span class="muted">· ${fmtF(s.at)}</span></li>`).join(""):`<li class=muted>${nDone()?nDone()+" tomas marcadas como buenas en este celular.":"Todavía no envías tomas. Se suben solas desde el Estudio."}</li>`;
+ $("#io").innerHTML=`<div class="card2"><b>📤 Lo que enviaste a la agencia</b><ul class="ls">${se}</ul></div><div class="card2"><b>📥 Lo que la agencia te entregó</b><ul class="ls">${pz}</ul></div>`;
+ const nb=$("#notiB");if(nb){const st=window.Notification?Notification.permission:"no";nb.hidden=st=="granted";nb.textContent=st=="denied"?"🔕 Avisos bloqueados (actívalos en los ajustes del celular)":"🔔 Activar avisos en mi celular"}
+ const c=$("#chat");c.scrollTop=c.scrollHeight};
+async function enviar(txt){S.pend.push({txt,at:new Date().toISOString()});persist();renderAgencia();unlockSound();
+ try{const r=await post({accion:"mensaje",texto:txt,correo:(S.user||{}).correo||""});if(!r.ok)throw 0;toast("Enviado a la agencia 💚");loadMsgs(true)}catch(e){toast("Sin conexión: lo enviamos apenas vuelva la señal")}}
+$("#msgF").onsubmit=e=>{e.preventDefault();const t=$("#msgT").value.trim();if(!t)return;$("#msgT").value="";enviar(t)};
+(()=>{const b=document.createElement("button");b.id="notiB";b.className="btn ghost";b.type="button";b.style.margin="4px 0 10px";$("#chat").before(b);
+ b.onclick=async()=>{if(!window.Notification){toast("Este celular no permite avisos web. En iPhone: agrega la app a tu inicio primero.");return}
+  const p=await Notification.requestPermission();if(p=="granted"){toast("¡Listo! Te avisaremos cuando haya novedades 🔔");try{const r=await navigator.serviceWorker.ready;if(r.periodicSync)await r.periodicSync.register("agencia",{minInterval:3600e3})}catch(e){}}renderAgencia()}})();
+setInterval(()=>{if(stage()>=1)loadMsgs()},60000);document.addEventListener("visibilitychange",()=>{if(document.visibilityState=="visible"&&stage()>=1)loadMsgs()});
+try{navigator.serviceWorker&&navigator.serviceWorker.addEventListener("message",e=>{if(e.data&&e.data.ir)show(e.data.ir)})}catch(e){}
+const _rt=renderTabs;renderTabs=function(c){_rt(c);badge()};
+/* reintento de mensajes pendientes */
+setTimeout(()=>{if(MSGok)S.pend.forEach(p=>post({accion:"mensaje",texto:p.txt,correo:(S.user||{}).correo||""}).then(()=>loadMsgs(true)).catch(()=>{}))},5000);
+
+/* --- Plan Plus: 4 pasos --- */
+const PLUS=[["🔥","Plan Plus es solo para valientes.","Confirma para seguir.","Confirmo"],["⚽","Para el Plan Plus deberás dejar absolutamente todo en la cancha.","Confirma para seguir.","Confirmo"],["🤝","El equipo AGENCIA evaluará tu caso","y te confirmará la automatización de tus redes sociales con AGENCIA by Valeria.","Entendido"],["💪","¡Vamos amiguita!","¡Tú puedes!","¡Vamos!"]];
+function plusFlow(i=0){const p=PLUS[i];const d=document.createElement("div");d.id="unlock";d.innerHTML=`<div class="box plusbox"><div class="ic">${p[0]}</div><h2>${p[1]}</h2><p>${p[2]}</p><button class="btn">${p[3]}</button>${i<2?`<button class="btn ghost" style="margin-top:8px">Ahora no</button>`:""}</div>`;document.body.appendChild(d);unlockSound();if(i==3)confetti();
+ const [ok,no]=d.querySelectorAll("button");ok.onclick=()=>{d.remove();if(i==2){S.plus=new Date().toISOString();persist();post({accion:"mensaje",texto:"🔥 Quiero el Plan Plus. Confirmé que soy valiente y que lo dejo todo en la cancha.",correo:(S.user||{}).correo||""}).then(()=>loadMsgs(true)).catch(()=>{})}if(i<3)plusFlow(i+1);else renderHome()};if(no)no.onclick=()=>d.remove()}
+const _rh=renderHome;renderHome=function(){_rh();const b=$("#plusB");if(b)b.onclick=()=>S.plus?toast("Ya estás en evaluación para el Plan Plus 🔥"):plusFlow(0);if(b&&S.plus)b.textContent="🔥 En evaluación por el equipo AGENCIA"};
+
+/* --- intro cinematográfica: partículas que forman AGENCIA --- */
+function introFX(){const it=$("#intro");if(!it||matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+ const cv=document.createElement("canvas");cv.className="fx";it.prepend(cv);it.classList.add("cine");
+ const dpr=Math.min(3,devicePixelRatio||1),W=innerWidth,H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext("2d");x.scale(dpr,dpr);
+ const ag=$("#intro .ag"),rc=ag.getBoundingClientRect(),fs=parseFloat(getComputedStyle(ag).fontSize)||Math.min(W*.13,74),ty=rc.top+rc.height/2;const off=document.createElement("canvas");off.width=W;off.height=H;const o=off.getContext("2d");o.fillStyle="#fff";o.textAlign="center";o.textBaseline="middle";o.font=`400 ${fs}px "Bodoni Moda",Georgia,serif`;
+ const txt="AGENCIA",sp=fs*.16;let tw=0;for(const c of txt)tw+=o.measureText(c).width+sp;tw-=sp;let cx=W/2-tw/2;for(const c of txt){const cw=o.measureText(c).width;o.fillText(c,cx+cw/2,ty);cx+=cw+sp}
+ const d=o.getImageData(0,0,W,H).data,T=[],st=Math.max(2,Math.round(fs/38));for(let yy=0;yy<H;yy+=st)for(let xx=0;xx<W;xx+=st)if(d[(yy*W+xx)*4+3]>128)T.push([xx,yy]);
+ const N=Math.min(T.length,2400),P=[];for(let i=0;i<N;i++){const t=T[Math.floor(i*T.length/N)],a=Math.random()*6.283,r=Math.max(W,H)*(.6+Math.random()*.6);
+  P.push({x:W/2+Math.cos(a)*r,y:ty+Math.sin(a)*r,tx:t[0],ty:t[1],d:Math.random()*.5,s:.6+Math.random()*1.3,c:Math.random()<.18?"#B7C38A":Math.random()<.1?"#C3B4E0":"#F4EEE4",vx:0,vy:0})}
+ const t0=performance.now();const ease=k=>1-Math.pow(1-k,4);
+ function fr(now){const t=(now-t0)/1000;x.clearRect(0,0,W,H);
+  const g=x.createRadialGradient(W/2,ty,0,W/2,ty,Math.max(W,H)*.7);g.addColorStop(0,`rgba(95,107,74,${Math.min(.35,t*.15)})`);g.addColorStop(1,"rgba(30,31,26,0)");x.fillStyle=g;x.fillRect(0,0,W,H);
+  x.globalCompositeOperation="lighter";
+  for(const p of P){let k=Math.min(1,Math.max(0,(t-p.d)/1.5)),e=ease(k);let px=p.x+(p.tx-p.x)*e,py=p.y+(p.ty-p.y)*e;
+   if(t>2.9){const u=t-2.9;if(!p.vx){p.vx=(Math.random()-.5)*2.2;p.vy=-Math.random()*1.6-.3}px+=p.vx*u*60*u;py+=p.vy*u*40*u}
+   const al=t>2.9?Math.max(0,1-(t-2.9)/1.1):Math.min(1,k*1.4);if(al<=0)continue;x.globalAlpha=al;x.fillStyle=p.c;x.beginPath();x.arc(px,py,p.s*(k<1?1.4:1),0,6.283);x.fill()}
+  x.globalAlpha=1;
+  if(t>1.6&&t<2.9){const sw=((t-1.6)/1)*(W+400)-200;const lg=x.createLinearGradient(sw-120,0,sw+120,0);lg.addColorStop(0,"rgba(255,255,255,0)");lg.addColorStop(.5,"rgba(255,250,235,.55)");lg.addColorStop(1,"rgba(255,255,255,0)");x.fillStyle=lg;x.fillRect(0,ty-fs*.7,W,fs*1.4)}
+  x.globalCompositeOperation="source-over";if(t<4.2)requestAnimationFrame(fr);else cv.remove()}
+ requestAnimationFrame(fr)}
+(()=>{const tap=$("#intro .tap");if(!tap)return;const prev=tap.onclick;tap.onclick=async()=>{try{await document.fonts.load('400 80px "Bodoni Moda"')}catch(e){}introFX();prev&&prev()}})();
+if(new URLSearchParams(location.search).get("tab")=="agencia")setTimeout(()=>{if(stage()>=1)show("agencia")},400);
+loadMsgs(true);
 
 </script>
 </body></html>
