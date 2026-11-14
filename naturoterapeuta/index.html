@@ -111,6 +111,26 @@ details[open] summary::after{content:"–"}
 details p{font-size:15px}
 .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;font-size:15px;z-index:30;max-width:90vw;text-align:center}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* ---- modo sola (Director) ---- */
+#rec{position:fixed;inset:0;z-index:40;background:#000;color:#fff;display:flex;flex-direction:column;font-family:var(--body)}
+#rv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+#rec.back #rv{transform:none}
+#rShade{position:absolute;inset:0;background:linear-gradient(#000c 0,#0000 38%,#0000 62%,#000c 100%);pointer-events:none}
+#rTop{position:relative;display:flex;justify-content:space-between;gap:8px;padding:calc(10px + env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) 6px max(14px,env(safe-area-inset-left,0px));font:700 14px var(--body);letter-spacing:.06em;color:#F2E6C2}
+#rBar{position:relative;height:6px;background:#ffffff33;margin:0 14px;border-radius:9px;overflow:hidden}#rFill{height:100%;width:0;background:#B7C38A}
+#rMain{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;padding:12px max(18px,env(safe-area-inset-left,0px));gap:10px;text-align:center;min-height:0}
+#rPh{font:700 13px var(--body);letter-spacing:.18em;padding:6px 14px;border-radius:99px;background:#ffffff26}
+#rPh.rec{background:#C0392B}#rPh.ver{background:#2E6FD8}#rPh.prep{background:#9A7B2E}
+#rTx{font:400 clamp(26px,7.5vw,44px)/1.2 var(--display);text-shadow:0 2px 12px #000;max-width:100%;text-wrap:balance}
+#rTip{font:500 clamp(15px,4vw,19px)/1.4 var(--body);color:#E8E2CF;max-width:36ch;text-shadow:0 1px 8px #000}
+#rBig{margin-top:auto;font:700 clamp(54px,18vw,96px)/1 var(--body);font-variant-numeric:tabular-nums;text-shadow:0 2px 16px #000}
+#rG{font-size:13px;color:#F2E6C2;min-height:18px}
+#rCtl{position:relative;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:10px max(12px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));background:#000a}
+#rCtl button,#rCtl select{font:700 15px var(--body);border-radius:14px;border:1px solid #ffffff55;background:#ffffff1a;color:#fff;padding:12px 14px}
+#rCtl .go{background:#5E6B3A;border-color:#5E6B3A;min-width:120px}#rCtl .bad{background:#9A3B2E;border-color:#9A3B2E}#rCtl .good{background:#3F6B34;border-color:#3F6B34}
+#rFlash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .15s}
+#rSaved{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);background:#000c;border-radius:16px;padding:14px 18px;font-weight:700;display:none}
+.rshot{display:flex;gap:8px;flex-wrap:wrap}
 </style>
 
 <div class="wrap">
@@ -148,6 +168,8 @@ details p{font-size:15px}
 <section id="grabar" hidden>
 <h2>Grabar con el Director</h2>
 <p class="muted">Tu kit de inicio. Las tarjetas que dicen <b>Ahora</b> van primero. Cuando tengas una, márcala y mándala por WhatsApp a la agencia.</p>
+<button class="btn" id="soloAll" style="margin:6px 0 4px">🎬 Modo sola: grabar con el Director</button>
+<details style="margin:8px 0 12px"><summary>¿Cómo funciona el modo sola?</summary><p>Apoya el celular vertical, a la altura de tus ojos. El Director te habla en voz alta: te dice qué toma viene, te da un consejo, cuenta 3-2-1 y graba solo. Al terminar pregunta "¿Buena o mala?". Responde con la voz, con el pulgar (👍 o 👎 frente a la cámara) o tocando el botón. Si es buena, se guarda en tu celular (carpeta Descargas) y pasa a la siguiente. Si es mala, se repite. Las fotos se toman de a 3 seguidas.</p><p>Para las tomas de manos o de objetos, toca 🔄 para usar la cámara de atrás. Para máxima calidad también puedes grabar con la cámara normal del celular y usar esta pantalla solo como guía.</p></details>
 <div class="big-prog"><i id="pg"></i></div><div class="muted" id="pgt" style="font-size:14px"></div>
 <div class="filt" id="filt">
  <label><input type="radio" name="fl" value="all" checked>Todo</label><label><input type="radio" name="fl" value="foto">📷 Fotos</label><label><input type="radio" name="fl" value="audio">🎙 Audios</label><label><input type="radio" name="fl" value="video">🎬 Videos</label></div>
@@ -174,6 +196,18 @@ details p{font-size:15px}
 <button class="btn ghost" id="reset" style="margin-top:10px">Borrar todo y empezar de nuevo</button>
 <div id="resetC" hidden class="alert" style="margin-top:10px">¿Segura? Se borran tus respuestas y tus tomas marcadas en este celular. <div class="row" style="margin-top:8px"><button class="btn small" id="resetY">Sí, borrar</button><button class="btn small ghost" id="resetN">No</button></div></div>
 </section>
+</div>
+
+<div id="rec" hidden>
+ <video id="rv" playsinline muted></video><div id="rShade"></div><div id="rFlash"></div><div id="rSaved"></div>
+ <div id="rTop"><span id="rId"></span><span id="rCnt"></span></div>
+ <div id="rBar"><div id="rFill"></div></div>
+ <div id="rMain"><div id="rPh">LISTA</div><div id="rTx"></div><div id="rTip"></div><div id="rBig"></div><div id="rG"></div></div>
+ <div id="rCtl">
+  <button class="go" id="rGo">▶ Partir</button><button class="bad" id="rBad">👎 Mala</button><button class="good" id="rGood">👍 Buena</button>
+  <select id="rDur" aria-label="Segundos de grabación"><option value="0">⏱ Auto</option><option value="10">10 s</option><option value="15">15 s</option><option value="20">20 s</option><option value="30">30 s</option><option value="45">45 s</option><option value="60">60 s</option></select>
+  <button id="rFlip" aria-label="Cambiar cámara">🔄</button><button id="rMic">🎙 Voz</button><button id="rHand">✋ Gestos</button><button id="rSkip" aria-label="Saltar toma">⏭</button><button id="rX" aria-label="Salir">✕</button>
+ </div>
 </div>
 
 <nav class="tabbar" aria-label="Secciones"><div id="tabs">
@@ -271,7 +305,8 @@ const SH=[
 function shots(){const r=ruta(),f=($("input[name=fl]:checked")||{}).value||"all";
 const pri=s=>s[5]=="sin"?0:s[5]=="mixta"?(r=="sin"?2:1):(r=="rostro"?1:3);
 const L=SH.filter(s=>f=="all"||s[1]==f).sort((a,b)=>pri(a)-pri(b));
-$("#shots").innerHTML=L.map(s=>`<div class="shot ${S.done[s[0]]?"done":""}"><div class="top"><span class="id">${s[0]}</span>${pri(s)>=2?'<span class="chip w">Más adelante</span>':'<span class="chip">Ahora</span>'}</div><h4>${s[2]}</h4>${s[4]?`<div class="say">"${s[4]}"</div>`:""}<ol>${s[3].map(x=>`<li>${x}</li>`).join("")}</ol><label class="ck"><input type="checkbox" data-id="${s[0]}" ${S.done[s[0]]?"checked":""}>La tengo y la mandé</label></div>`).join("");
+$("#shots").innerHTML=L.map(s=>`<div class="shot ${S.done[s[0]]?"done":""}"><div class="top"><span class="id">${s[0]}</span>${pri(s)>=2?'<span class="chip w">Más adelante</span>':'<span class="chip">Ahora</span>'}</div><h4>${s[2]}</h4>${s[4]?`<div class="say">"${s[4]}"</div>`:""}<ol>${s[3].map(x=>`<li>${x}</li>`).join("")}</ol><div class="rshot"><button class="btn small" data-rec="${s[0]}">🎬 Grabar con el Director</button></div><label class="ck"><input type="checkbox" data-id="${s[0]}" ${S.done[s[0]]?"checked":""}>La tengo y la mandé</label></div>`).join("");
+$$("#shots [data-rec]").forEach(b=>b.onclick=()=>recOpen([b.dataset.rec]));
 $$("#shots input[data-id]").forEach(i=>i.onchange=()=>{S.done[i.dataset.id]=i.checked;persist();shots();renderSteps();if(i.checked)toast("¡Bien! Mándala por WhatsApp a la agencia")});
 const n=SH.filter(s=>S.done[s[0]]).length;$("#pg").style.width=(n/SH.length*100)+"%";$("#pgt").textContent=n+" de "+SH.length+" tomas listas";}
 $$("input[name=fl]").forEach(i=>i.onchange=shots);
@@ -321,6 +356,77 @@ function renderAll(){$("#angles").innerHTML=answered()?plan().map(([k,v])=>`<div
 function show(t){$$("section").forEach(s=>s.hidden=s.id!==t);$$("#tabs button").forEach(b=>b.setAttribute("aria-current",b.dataset.t===t));if(t=="diag")wzRender();window.scrollTo(0,0)}
 $$("#tabs button").forEach(b=>b.onclick=()=>show(b.dataset.t));
 window.show=show;renderAll();wzRender();
+
+/* ================= MODO SOLA · DIRECTOR ================= */
+const R={q:[],i:0,toma:1,ph:"idle",end:0,len:1,paused:false,left:0,stream:null,face:"user",mr:null,chunks:[],blobs:[],cool:0,sr:null,mic:false,gr:null,hand:false,wl:null,raf:0,lb:0};
+let actx;function beep(fs,d=.14,v=.5){try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();fs.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=f;g.gain.value=v;o.connect(g).connect(actx.destination);const t=actx.currentTime+i*(d+.02);o.start(t);o.stop(t+d)})}catch(e){}}
+function badTone(){try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.type="sawtooth";o.frequency.setValueAtTime(420,actx.currentTime);o.frequency.exponentialRampToValueAtTime(140,actx.currentTime+.4);g.gain.value=.25;o.connect(g).connect(actx.destination);o.start();o.stop(actx.currentTime+.42)}catch(e){}}
+function shutter(){beep([2400,1200],.05,.35)}
+function sayThen(t,cb){let done=false;const fin=()=>{if(!done){done=true;cb&&cb()}};try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="es-CL";u.rate=1.02;const v=speechSynthesis.getVoices().find(x=>/^es/i.test(x.lang));if(v)u.voice=v;u.onend=fin;u.onerror=fin;speechSynthesis.speak(u);setTimeout(fin,Math.max(2500,t.length*95))}catch(e){fin()}}
+const shotOf=id=>SH.find(s=>s[0]===id);
+const typeDur=s=>s[1]=="foto"?0:s[1]=="audio"?Math.max(12,Math.ceil((s[4]||"").length/13)+4):(s[4]?Math.max(6,Math.ceil(s[4].length/13)+3):15);
+const dur=s=>+$("#rDur").value||typeDur(s);
+const PH={idle:"LISTA",brief:"ESCUCHA",prep:"PREPÁRATE",rec:"● GRABANDO",ver:"¿👍 O 👎?",pau:"⏸ PAUSA",fin:"TERMINASTE"};
+function rDraw(){const s=shotOf(R.q[R.i]);if(!s){$("#rTx").textContent="¡Terminaste! 🌿";$("#rTip").textContent="Ahora manda tus archivos por WhatsApp a la agencia, como Documento.";$("#rId").textContent="";return}
+$("#rId").textContent=s[0]+" · "+s[2].toUpperCase()+" · TOMA "+R.toma;$("#rCnt").textContent=(R.i+1)+"/"+R.q.length;
+$("#rTx").textContent=s[4]?"“"+s[4]+"”":s[2];$("#rTip").textContent=s[3].join(" ");}
+function rPhase(p,sec){R.ph=p;R.len=Math.max(.001,sec)*1000;R.end=performance.now()+R.len;const e=$("#rPh");e.textContent=PH[p];e.className=p;if(p!="rec"&&p!="prep"&&p!="ver")$("#rBig").textContent="";micSync();}
+async function camStart(){camStop();const s=shotOf(R.q[R.i]);const wantAudio=!s||s[1]!="foto";
+try{R.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:R.face,width:{ideal:1080},height:{ideal:1920}},audio:wantAudio?{echoCancellation:true,noiseSuppression:true}:false})}
+catch(e){$("#rG").textContent="No pude abrir la cámara o el micrófono. Revisa los permisos del navegador (candado junto a la dirección).";return false}
+const v=$("#rv");v.srcObject=R.stream;try{await v.play()}catch(e){}R.camFace=R.face;$("#rec").classList.toggle("back",R.face!=="user");return true}
+function camStop(){if(R.stream){R.stream.getTracks().forEach(t=>t.stop());R.stream=null}}
+function pickMime(audio){const L=audio?["audio/mp4","audio/webm;codecs=opus","audio/webm"]:["video/mp4;codecs=avc1,mp4a","video/mp4","video/webm;codecs=vp9,opus","video/webm"];return L.find(m=>window.MediaRecorder&&MediaRecorder.isTypeSupported(m))||""}
+function recStart(s){R.blobs=[];if(s[1]=="foto"){burst(3);return}
+const audioOnly=s[1]=="audio";const st=audioOnly?new MediaStream(R.stream.getAudioTracks()):R.stream;const mt=pickMime(audioOnly);
+try{R.mr=new MediaRecorder(st,mt?{mimeType:mt,videoBitsPerSecond:8e6,audioBitsPerSecond:192000}:{})}catch(e){R.mr=new MediaRecorder(st)}
+R.chunks=[];R.mr.ondataavailable=e=>{if(e.data&&e.data.size)R.chunks.push(e.data)};R.mr.onstop=()=>{const type=R.mr.mimeType||mt||"video/webm";R.blobs=[{b:new Blob(R.chunks,{type}),ext:/mp4/.test(type)?(audioOnly?"m4a":"mp4"):"webm"}]};R.mr.start(500)}
+function recStop(){try{if(R.mr&&R.mr.state!=="inactive")R.mr.stop()}catch(e){}}
+function burst(n){const v=$("#rv");let k=0;const one=()=>{const c=document.createElement("canvas");c.width=v.videoWidth||1080;c.height=v.videoHeight||1920;const x=c.getContext("2d");if(R.face==="user"){x.translate(c.width,0);x.scale(-1,1)}x.drawImage(v,0,0,c.width,c.height);c.toBlob(b=>{if(b)R.blobs.push({b,ext:"jpg"})},"image/jpeg",.95);$("#rFlash").style.opacity=.9;setTimeout(()=>$("#rFlash").style.opacity=0,120);shutter();if(++k<n)setTimeout(one,1300)};one()}
+function saveBlobs(s){R.blobs.forEach((o,j)=>{const a=document.createElement("a");a.href=URL.createObjectURL(o.b);a.download=`CP_${s[0]}_T${R.toma}${R.blobs.length>1?"_"+(j+1):""}.${o.ext}`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)});const m=$("#rSaved");m.textContent="Guardado en Descargas ✓";m.style.display="block";setTimeout(()=>m.style.display="none",1800)}
+const wantFace=s=>s[5]=="sin"&&s[1]!="audio"?"environment":"user";
+async function rScene(){const s=shotOf(R.q[R.i]);rDraw();if(!s){rPhase("fin",1);sayThen("Terminaste. Muy bien, Carolina. Manda tus archivos a la agencia.");return}
+rPhase("brief",1);const needAudio=s[1]!="foto",hasAudio=R.stream&&R.stream.getAudioTracks().length>0;
+if(!R.stream||wantFace(s)!==R.camFace||needAudio!==hasAudio){R.face=wantFace(s);await camStart()}const tip=R.toma>1?" Toma "+R.toma+". Respira, más lento y con una sonrisa.":" "+s[3][0];
+sayThen(s[2]+"."+tip+(s[4]&&s[1]!="foto"?" Lee el texto de la pantalla.":""),()=>{if(R.ph!=="brief")return;R.lb=0;rPhase("prep",3)})}
+function rTick(){R.raf=requestAnimationFrame(rTick);if(R.paused||!["prep","rec","ver"].includes(R.ph))return;const now=performance.now(),rem=Math.max(0,R.end-now);
+$("#rBig").textContent=R.ph=="ver"?"":Math.ceil(rem/1000);$("#rFill").style.width=(100-rem/R.len*100)+"%";$("#rFill").style.background=R.ph=="rec"?"#C0392B":R.ph=="ver"?"#2E6FD8":"#B7C38A";
+if(R.ph=="prep"){const sc=Math.ceil(rem/1000);if(sc!==R.lb&&sc>0){R.lb=sc;beep([520])}}
+if(rem>0)return;const s=shotOf(R.q[R.i]);
+if(R.ph=="prep"){beep([1040]);rPhase("rec",s[1]=="foto"?4.2:dur(s));recStart(s)}
+else if(R.ph=="rec"){recStop();rPhase("ver",8);setTimeout(()=>sayThen("¿Buena o mala?"),300)}
+else if(R.ph=="ver"){rPhase("ver",8);sayThen("¿Buena o mala?")}}
+function verdict(good){const now=performance.now();if(now<R.cool)return;R.cool=now+2200;
+if(R.ph=="idle"||R.ph=="pau"){rGo();return}if(R.ph!=="ver"&&R.ph!=="rec")return;
+if(R.ph=="rec"){recStop();}const s=shotOf(R.q[R.i]);
+const go=()=>{if(good){beep([1500,2000]);saveBlobs(s);S.done[s[0]]=true;persist();shots();renderSteps();sayThen("Buena. Guardada.",()=>{R.i++;R.toma=1;rScene()})}else{badTone();sayThen("Mala. Vamos de nuevo.",()=>{R.toma++;rScene()})}};
+setTimeout(go,R.ph=="rec"?400:0);R.ph="wait";$("#rPh").textContent=good?"★ BUENA":"✗ OTRA";}
+function rGo(){if(R.ph=="idle"||R.ph=="fin"||R.ph=="pau"){R.paused=false;$("#rGo").textContent="⏸ Pausa";rScene();return}
+R.paused=!R.paused;$("#rGo").textContent=R.paused?"▶ Seguir":"⏸ Pausa";if(R.paused){R.left=R.end-performance.now();$("#rPh").textContent=PH.pau;if(R.ph=="rec")try{R.mr.pause()}catch(e){}}else{R.end=performance.now()+R.left;$("#rPh").textContent=PH[R.ph];if(R.ph=="rec")try{R.mr.resume()}catch(e){}}}
+async function recOpen(ids){R.q=ids;R.i=0;R.toma=1;R.paused=false;$("#rec").hidden=false;document.body.style.overflow="hidden";rDraw();rPhase("idle",1);$("#rGo").textContent="▶ Partir";
+const s=shotOf(ids[0]);R.face=s?wantFace(s):"user";await camStart();cancelAnimationFrame(R.raf);rTick();try{R.wl=await navigator.wakeLock.request("screen")}catch(e){}
+$("#rG").textContent="Toca ▶ Partir. Después todo es por voz: di «buena» o «mala»."}
+function recClose(){recStop();camStop();R.ph="idle";cancelAnimationFrame(R.raf);micOff();R.hand=false;$("#rHand").textContent="✋ Gestos";try{speechSynthesis.cancel()}catch(e){}try{R.wl&&R.wl.release()}catch(e){}$("#rec").hidden=true;document.body.style.overflow=""}
+$("#soloAll").onclick=()=>{const r=ruta();const pri=s=>s[5]=="sin"?0:s[5]=="mixta"?(r=="sin"?2:1):(r=="rostro"?1:3);const L=SH.filter(s=>!S.done[s[0]]&&pri(s)<2).sort((a,b)=>pri(a)-pri(b)).map(s=>s[0]);if(!L.length){toast("¡Ya tienes todas las tomas de ahora!");return}recOpen(L)};
+$("#rGo").onclick=rGo;$("#rGood").onclick=()=>verdict(true);$("#rBad").onclick=()=>verdict(false);$("#rX").onclick=recClose;
+$("#rSkip").onclick=()=>{recStop();R.i++;R.toma=1;R.cool=0;if(R.ph=="idle")rDraw();else rScene()};
+$("#rFlip").onclick=async()=>{R.face=R.face==="user"?"environment":"user";await camStart()};
+document.addEventListener("keydown",e=>{if($("#rec").hidden)return;const k=e.key;if(["Enter"," ","ArrowUp","AudioVolumeUp"].includes(k)){e.preventDefault();verdict(true)}else if(["ArrowDown","Backspace","AudioVolumeDown"].includes(k)){e.preventDefault();verdict(false)}else if(k=="p")rGo()});
+/* voz: escucha solo cuando no se está grabando, para no chocar con el micrófono */
+function micSync(){if(!R.mic)return;const want=R.ph!=="rec"&&R.ph!=="prep";try{if(want&&!R.srOn){R.sr.start();R.srOn=true}else if(!want&&R.srOn){R.sr.stop();R.srOn=false}}catch(e){}}
+function micOff(){R.mic=false;try{R.sr&&R.sr.stop()}catch(e){}R.srOn=false;$("#rMic").textContent="🎙 Voz"}
+$("#rMic").onclick=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(R.mic){micOff();return}if(!SR){$("#rG").textContent="Este navegador no reconoce voz. Usa Chrome o los botones.";return}
+const r=new SR();r.lang="es-CL";r.continuous=true;r.interimResults=true;R.sr=r;R.mic=true;$("#rMic").textContent="🎙 Apagar";$("#rG").textContent="Di «buena», «mala», «pausa» o «lista»";
+r.onresult=ev=>{if(speechSynthesis.speaking)return;const w=ev.results[ev.results.length-1][0].transcript.toLowerCase().trim().split(/\s+/);if(w.length>3)return;const l=w[w.length-1];
+if(/^buen[ao]s?$/.test(l))verdict(true);else if(/^(mal[ao]s?|otra)$/.test(l))verdict(false);else if(/^(pausa|sigue|lista|listo|partir)$/.test(l)&&performance.now()>R.cool){R.cool=performance.now()+2200;rGo()}};
+r.onerror=e=>{if(/not-allowed/.test(e.error)){micOff();$("#rG").textContent="Micrófono bloqueado para la voz: usa gestos o botones."}};r.onend=()=>{R.srOn=false;if(R.mic)micSync()};micSync()};
+if(!R.mic){}
+/* gestos: 👍 buena · 👎 mala · ✋ pausa */
+$("#rHand").onclick=async()=>{if(R.hand){R.hand=false;$("#rHand").textContent="✋ Gestos";$("#rG").textContent="";return}const g=$("#rG");
+if(!R.gr){g.textContent="Cargando lector de gestos…";try{const m=await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs");const f=await m.FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm");R.gr=await m.GestureRecognizer.createFromOptions(f,{baseOptions:{modelAssetPath:"https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task"},runningMode:"VIDEO",numHands:1})}catch(e){g.textContent="El lector de gestos no cargó: usa la voz o los botones.";return}}
+R.hand=true;$("#rHand").textContent="✋ Apagar";g.textContent="👍 buena · 👎 mala · ✋ pausa";const v=$("#rv");let last="",n=0,lt=0;
+const loop=()=>{if(!R.hand)return;requestAnimationFrame(loop);const t=performance.now();if(t-lt<120||v.readyState<2||R.ph=="rec")return;lt=t;let c="";try{const r=R.gr.recognizeForVideo(v,t);const x=r.gestures&&r.gestures[0]&&r.gestures[0][0];if(x&&x.score>.65)c=x.categoryName}catch(e){}
+n=c&&c===last?n+1:0;last=c;if(n===4){if(c=="Thumb_Up")verdict(true);else if(c=="Thumb_Down")verdict(false);else if(c=="Open_Palm"&&performance.now()>R.cool){R.cool=performance.now()+2200;rGo()}}};loop()};
 </script>
 
 </body></html>
