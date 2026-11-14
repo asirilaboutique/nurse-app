@@ -218,6 +218,12 @@ details p{font-size:15px}
 #breath .orb{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,#B7C38A,#5F6B4A);box-shadow:0 0 60px rgba(183,195,138,.5);transition:transform 4s ease-in-out}
 #breath .orb.p0{transform:scale(1.8)}#breath .orb.p1{transform:scale(1.8)}#breath .orb.p2{transform:scale(1);transition-duration:6s}
 #breath p{font:400 26px var(--display);margin:40px 0 0}#breath .go{background:#F4EEE4;color:#1E1F1A;border:0;border-radius:99px;padding:14px 30px;font:700 16px var(--body)}
+.dipl{background:#FBF8F2!important;color:#2B2A27;border:2px solid #5F6B4A;outline:1px solid #5F6B4A;outline-offset:-10px}.dipl h2{color:#2B2A27}
+.dipl .dhead span{font:700 11px var(--body);letter-spacing:.3em;text-transform:uppercase;color:#6E5A93}.dipl .dname{font:italic 400 28px "Bodoni Moda",Georgia,serif;margin-top:10px;border-bottom:1px solid #5F6B4A;display:inline-block;padding:0 16px 4px}.dipl .dfoot{font-size:12px;color:#6A675E;margin-top:8px}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin:6px 0 18px}
+.lg{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 6px;display:grid;justify-items:center;gap:4px;cursor:pointer;color:var(--muted);font:inherit}
+.lg span{font-size:26px;filter:grayscale(1);opacity:.5}.lg small{font-size:11px;line-height:1.2;text-align:center}.lg.on{border-color:var(--olive);color:var(--fg);background:var(--olive-soft)}.lg.on span{filter:none;opacity:1}
+.prog7 .kp{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.prog7 .kp div{background:var(--bg);border-radius:12px;padding:10px}.prog7 .kp b{display:block;font:400 26px var(--display)}.prog7 .kp span{font-size:12px;color:var(--muted)}.prog7.hoy{border-color:var(--lav)}
 </style>
 
 <div id="intro"><div class="tap"><div><i></i>Toca para entrar</div></div><div><div class="ag" aria-label="AGENCIA"><span style="animation-delay:0.00s">A</span><span style="animation-delay:0.09s">G</span><span style="animation-delay:0.18s">E</span><span style="animation-delay:0.27s">N</span><span style="animation-delay:0.36s">C</span><span style="animation-delay:0.45s">I</span><span style="animation-delay:0.54s">A</span></div><div class="by">by Valeria</div><div class="ln"></div><div class="cl" id="introLogo"></div><div class="nm">Naturópata · Carolina Pereira</div><button class="go" id="introGo">Comenzar</button></div></div>
@@ -903,6 +909,72 @@ loadMsgs(true);
 
 /* vibración en los momentos clave */
 const _us=unlockSound;unlockSound=function(){_us();try{navigator.vibrate&&navigator.vibrate([18,40,28])}catch(e){}};
+
+/* ================= EVOLUCIÓN 5 · iPhone, registro de errores, logros, progreso semanal ================= */
+/* --- iPhone: desbloquear audio y voz en el primer toque real (iOS exige que partan dentro del gesto) --- */
+let _unl=false;function primeAudio(){if(_unl)return;_unl=true;try{ax()}catch(e){}try{const u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u)}catch(e){}}
+["touchend","click","keydown"].forEach(ev=>document.addEventListener(ev,primeAudio,{capture:true,passive:true}));
+(()=>{const tap=$("#intro .tap");if(!tap)return;tap.onclick=()=>{primeAudio();$("#intro").classList.add("play");introSound();
+ document.fonts.load('400 80px "Bodoni Moda"').catch(()=>{}).then(()=>introFX());
+ let first=false;try{first=!localStorage.getItem("ag_intro")}catch(e){}if(!first)setTimeout(()=>{const it=$("#intro");if(it){it.classList.add("out");try{localStorage.setItem("ag_intro","1")}catch(e){}setTimeout(()=>{it.remove();hello()},700)}},4700)}})();
+
+/* --- registro de errores en vivo (llegan a la hoja "Errores" de la agencia) --- */
+let _errN=0;function logErr(m){if(!PUENTE||_errN++>8)return;try{fetch(PUENTE,{method:"POST",body:JSON.stringify({llave:LLAVE,accion:"log",msg:String(m).slice(0,500),ua:navigator.userAgent.slice(0,180),etapa:stage(),pantalla:($$("section").find(s=>!s.hidden)||{}).id||""})}).catch(()=>{})}catch(e){}}
+window.addEventListener("error",e=>logErr((e.message||"error")+" @"+(e.lineno||"")+":"+(e.colno||"")));
+window.addEventListener("unhandledrejection",e=>logErr("promesa: "+(e.reason&&(e.reason.message||e.reason))));
+
+/* --- la frase motivacional solo vive en la bienvenida --- */
+(()=>{const f=$("#homeFr");if(f)f.remove()})();
+
+/* --- galería de logros (diplomas) --- */
+S.logros=S.logros||{};
+const LOG=[["cuenta","🌱","Bienvenida a AGENCIA","Diste el primer paso: crear tu cuenta.",()=>!!S.user],
+["diag","📝","Te conocemos","Completaste tu diagnóstico. Gracias por tu sinceridad.",()=>answered()>=Q.length],
+["toma1","🎬","Primera toma","Tu primera toma buena. La más difícil ya pasó.",()=>nDone()>=1],
+["respira","🌬","Calma antes de grabar","Usaste la respiración guiada. Cuidarte también es parte del trabajo.",()=>!!S.respiro],
+["mitad","🌿","Medio kit","8 tomas listas. Ya podemos armar tu primera semana.",()=>nDone()>=8],
+["kit","🏅","Kit completo","Las 16 tomas de tu kit de inicio. ¡Qué orgullo!",()=>nDone()>=16],
+["esc1","🎙","Tu voz","Primer escalón en cámara: tu voz ya está en tu contenido.",()=>(S.escN||0)>=1],
+["esc3","🌸","Ya apareces","Tercer escalón: apareces en tu contenido, a tu manera.",()=>(S.escN||0)>=3],
+["esc5","✨","A cámara","Último escalón: hablaste a cámara. La vergüenza perdió.",()=>(S.escN||0)>=5],
+["msg","💬","Conversación abierta","Tu primer mensaje a la agencia.",()=>(S.msg||[]).length+(S.pend||[]).length>0||MSG.some(m=>m[1]=="clienta")],
+["sem1","🗓","Primera semana aprobada","Validaste tu primera semana de contenido.",()=>weeksOk()>=1],
+["mes1","📅","Mes 1 aprobado","Tu lanzamiento está aprobado. ¡A producir!",()=>weeksOk()>=4],
+["pieza","👍","Primera pieza aprobada","Aprobaste tu primer material.",()=>Object.values(S.pz||{}).some(v=>v.st=="ok")],
+["reel","🚀","Primer reel publicado","Tu primer reel ya está en el mundo.",()=>PZ.some(p=>p.estado=="publicado")],
+["plus","🔥","Valiente","Te atreviste con el Plan Plus.",()=>!!S.plus]];
+function diploma(l,fecha){const d=document.createElement("div");d.id="unlock";d.innerHTML=`<div class="box dipl"><div class="dhead"><span>Diploma AGENCIA</span></div><div class="ic">${l[1]}</div><h2>${l[2]}</h2><p>${l[3]}</p>
+ <div class="dname">${esc((S.user&&S.user.nombre)||"Carolina Pereira")}</div><div class="dfoot">${fecha?new Date(fecha).toLocaleDateString("es-CL",{day:"numeric",month:"long",year:"numeric"}):""} · AGENCIA by Valeria</div>
+ <div class="row" style="margin-top:14px"><button class="btn small" data-sv>Guardar diploma</button><button class="btn small ghost" data-cl>Cerrar</button></div></div>`;document.body.appendChild(d);
+ d.querySelector("[data-cl]").onclick=()=>d.remove();d.querySelector("[data-sv]").onclick=()=>guardarDiploma(l,fecha)}
+async function guardarDiploma(l,fecha){const c=document.createElement("canvas");c.width=1080;c.height=1350;const x=c.getContext("2d");
+ x.fillStyle="#F4EEE4";x.fillRect(0,0,1080,1350);x.strokeStyle="#5F6B4A";x.lineWidth=3;x.strokeRect(50,50,980,1250);x.lineWidth=1;x.strokeRect(70,70,940,1210);
+ x.textAlign="center";x.fillStyle="#6E5A93";x.font='700 30px Figtree,sans-serif';x.fillText("D I P L O M A   A G E N C I A",540,190);
+ x.font='160px serif';x.fillText(l[1],540,430);x.fillStyle="#2B2A27";x.font='400 76px "Gilda Display",Georgia,serif';x.fillText(l[2],540,600);
+ x.fillStyle="#6A675E";x.font='400 36px Figtree,sans-serif';const w=l[3].split(" ");let ln="",y=690;for(const p of w){if(x.measureText(ln+p).width>820){x.fillText(ln,540,y);ln="";y+=50}ln+=p+" "}x.fillText(ln,540,y);
+ x.fillStyle="#2B2A27";x.font='italic 400 64px "Bodoni Moda",Georgia,serif';x.fillText((S.user&&S.user.nombre)||"Carolina Pereira",540,1000);x.fillStyle="#5F6B4A";x.fillRect(340,1030,400,2);
+ x.fillStyle="#6A675E";x.font='400 30px Figtree,sans-serif';x.fillText((fecha?new Date(fecha).toLocaleDateString("es-CL",{day:"numeric",month:"long",year:"numeric"}):"")+" · AGENCIA by Valeria",540,1090);
+ const b=await new Promise(r=>c.toBlob(r,"image/png"));const f=new File([b],"diploma-"+l[0]+".png",{type:"image/png"});
+ try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:l[2]});return}}catch(e){if(e&&e.name=="AbortError")return}
+ const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=f.name;a.click()}
+function checkLogros(){const nuevos=[];for(const l of LOG){try{if(!S.logros[l[0]]&&l[4]()){S.logros[l[0]]=new Date().toISOString();nuevos.push(l)}}catch(e){}}
+ if(nuevos.length){_persist5();const l=nuevos[nuevos.length-1];setTimeout(()=>{if(!$("#unlock")&&!$("#intro")&&!$("#hello")){diploma(l,S.logros[l[0]]);unlockSound();confetti()}},900)}}
+function logrosHTML(){const n=Object.keys(S.logros).length;return `<h3>Tus logros · ${n} de ${LOG.length}</h3><div class="lgrid">${LOG.map(l=>`<button class="lg ${S.logros[l[0]]?"on":""}" data-lg="${l[0]}" aria-label="${esc(l[2])}"><span>${S.logros[l[0]]?l[1]:"🔒"}</span><small>${esc(l[2])}</small></button>`).join("")}</div>`}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-lg]");if(!b)return;const l=LOG.find(x=>x[0]==b.dataset.lg);if(S.logros[l[0]])diploma(l,S.logros[l[0]]);else toast("Aún no: "+l[3])});
+const _persist5=persist;persist=function(){_persist5();clearTimeout(window._lgT);window._lgT=setTimeout(checkLogros,300)};
+document.addEventListener("click",e=>{if(e.target.closest("#breath .go")){S.respiro=1;persist()}});
+
+/* --- progreso semanal (se activa cuando la clienta tenga sus redes y conectemos Meta) --- */
+let PROG={activo:false};fetch("progreso.json?"+Date.now()).then(r=>r.ok?r.json():{}).then(j=>{PROG=j||{activo:false};if(!$("#inicio").hidden)renderHome()}).catch(()=>{});
+function progresoHTML(){if(stage()<3)return"";const lunes=new Date().getDay()==1;
+ if(!PROG.activo)return `<div class="card2 prog7"><b>📈 Tu progreso semanal</b><p class="muted" style="font-size:14px;margin:6px 0 0">Se activa cuando tengas tus redes creadas y las conectemos. Cada lunes verás aquí lo que se publicó y lo que más le gustó a tu público.</p></div>`;
+ const k=PROG.kpis||{};return `<div class="card2 prog7 ${lunes?"hoy":""}"><b>📈 Tu progreso · ${esc(PROG.semana||"esta semana")}</b>${lunes?`<span class="chip2" style="margin-left:6px">¡Es lunes!</span>`:""}
+ <div class="kp">${[["Publicaciones",k.publicaciones],["Personas alcanzadas",k.alcance],["Guardados",k.guardados],["Mensajes",k.mensajes]].map(x=>`<div><b>${x[1]??"—"}</b><span>${x[0]}</span></div>`).join("")}</div>
+ ${PROG.mejor?`<div class="insight">🏆 Lo que más gustó: <b>${esc(PROG.mejor)}</b></div>`:""}${PROG.nota?`<p style="font-size:15px;margin:8px 0 0">${esc(PROG.nota)}</p>`:""}</div>`}
+
+/* --- Inicio con logros y progreso --- */
+const _rh5=renderHome;renderHome=function(){_rh5();const h=$("#home");if(!h)return;const p=document.createElement("div");p.innerHTML=progresoHTML()+logrosHTML();(h.querySelector("h3")||h.querySelector(".jr")).before(...[...p.children])};
+checkLogros();if(!$("#inicio").hidden)renderHome();
 
 </script>
 </body></html>
