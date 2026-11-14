@@ -250,6 +250,7 @@ details p{font-size:15px}
 section:not([hidden]){animation:secIn .35s ease both}@keyframes secIn{from{opacity:0;transform:translateY(8px)}}
 @media (prefers-reduced-motion:reduce){section:not([hidden]){animation:none}}
 #hello .hb{animation:fade .9s .35s both}
+.btn.hd{display:inline-block;margin-top:8px;text-decoration:none;background:var(--fg,#1E1F1A);color:var(--bg,#F4EEE4)}#hdDir{display:block;text-align:center;text-decoration:none}
 </style>
 
 <div id="intro"><div class="tap"><div><i></i>Toca para entrar</div></div><div><div class="ag" aria-label="AGENCIA"><span style="animation-delay:0.00s">A</span><span style="animation-delay:0.09s">G</span><span style="animation-delay:0.18s">E</span><span style="animation-delay:0.27s">N</span><span style="animation-delay:0.36s">C</span><span style="animation-delay:0.45s">I</span><span style="animation-delay:0.54s">A</span></div><div class="by">by Valeria</div><div class="ln"></div><div class="cl" id="introLogo"></div><div class="nm">Naturópata · Carolina Pereira</div><button class="go" id="introGo">Comenzar</button></div></div>
@@ -1099,6 +1100,13 @@ introSound=function(){try{const c=ax(),t=c.currentTime,out=c.createGain();out.ga
  const p=c.createOscillator(),pg=c.createGain();p.type="sine";p.frequency.value=220;pg.gain.setValueAtTime(.0001,t+3.6);pg.gain.exponentialRampToValueAtTime(.05,t+4.1);pg.gain.exponentialRampToValueAtTime(.0001,t+5.6);p.connect(pg).connect(out);p.start(t+3.6);p.stop(t+5.7)}catch(e){}};
 /* el saludo se monta YA opaco debajo de la intro: al desvanecerse la intro nunca se ve la app */
 const _hello8=hello;hello=function(){_hello8();const d=$("#hello");if(d){d.style.animation="none";d.style.opacity="1"}};
+/* --- Ver en HD: cada pieza abre su original en Drive (sin compresión) + carpeta completa --- */
+const HD_DIR="https://drive.google.com/drive/folders/1PYA7wBrDSrCsT4619DpEoFZntkNl-wVL";
+const _ra8=renderAgenda;renderAgenda=function(){_ra8();const L=$("#pzL");if(!L||!PZ.length)return;
+ L.querySelectorAll(".pz").forEach((el,i)=>{const p=PZ[i];if(!p)return;const a=el.querySelector("a[target]"),u=p.hd||p.url;if(!u){a&&a.remove();return}
+  const b=a||document.createElement("a");b.href=u;b.target="_blank";b.rel="noopener";b.className="btn small hd";b.textContent="▶ Ver en HD";if(!a)el.querySelector(".row").before(b)});
+ if(!$("#hdDir")){const d=document.createElement("a");d.id="hdDir";d.href=HD_DIR;d.target="_blank";d.rel="noopener";d.className="btn ghost";d.style.margin="10px 0";d.textContent="📁 Todo tu material en alta calidad";L.after(d)}};
+if(!$("#agenda").hidden)renderAgenda();
 
 </script>
 </body></html>
