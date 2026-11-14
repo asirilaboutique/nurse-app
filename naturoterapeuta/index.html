@@ -498,7 +498,7 @@ const loop=()=>{if(!R.hand)return;requestAnimationFrame(loop);const t=performanc
 n=c&&c===last?n+1:0;last=c;if(n===4){if(c=="Thumb_Up")verdict(true);else if(c=="Thumb_Down")verdict(false);else if(c=="Open_Palm"&&performance.now()>R.cool){R.cool=performance.now()+2200;rGo()}}};loop()};
 
 /* ================= PUENTE A DRIVE ================= */
-const PUENTE="";            /* URL /exec del Apps Script de la agencia. Vacío = guarda en el celular */
+const PUENTE="https://script.google.com/macros/s/AKfycbyO56oCiyngFkMlCS9EG-6pAZiXXV5K4t57om96cgMP-b1weD-_7X5tslPib0DoevJi/exec";            /* URL /exec del Apps Script de la agencia. Vacío = guarda en el celular */
 const LLAVE="cp-naturo-2026";
 const CH=8*1024*1024;       /* partes de 8 MB (múltiplo de 256 KB) */
 async function post(o){const r=await fetch(PUENTE,{method:"POST",body:JSON.stringify(Object.assign({llave:LLAVE},o))});return r.json()}

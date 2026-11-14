@@ -26,7 +26,7 @@ a{color:var(--o)}.m{color:var(--m)}.chip{font-size:12px;font-weight:700;border-r
  <p><button id="re">Actualizar</button></p>
 </div>
 <script>
-const PUENTE="";const KIT=["F1","F2","F3","F4","F5","F6","A1","A2","A3","A4","V1","V2","V3","V4","V5","V6"];
+const PUENTE="https://script.google.com/macros/s/AKfycbyO56oCiyngFkMlCS9EG-6pAZiXXV5K4t57om96cgMP-b1weD-_7X5tslPib0DoevJi/exec";const KIT=["F1","F2","F3","F4","F5","F6","A1","A2","A3","A4","V1","V2","V3","V4","V5","V6"];
 const $=s=>document.querySelector(s),e=t=>String(t??"").replace(/&/g,"&amp;").replace(/</g,"&lt;");
 let key="";try{key=sessionStorage.getItem("pk")||""}catch(x){}
 async function load(){if(!PUENTE){$("#msg").textContent="Falta conectar el Puente a Drive (URL del Apps Script).";return}
