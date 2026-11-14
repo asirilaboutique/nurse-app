@@ -377,7 +377,7 @@ catch(e){$("#rG").textContent="No pude abrir la cámara o el micrófono. Revisa 
 const v=$("#rv");v.srcObject=R.stream;try{await v.play()}catch(e){}R.camFace=R.face;$("#rec").classList.toggle("back",R.face!=="user");return true}
 function camStop(){if(R.stream){R.stream.getTracks().forEach(t=>t.stop());R.stream=null}}
 function pickMime(audio){const L=audio?["audio/mp4","audio/webm;codecs=opus","audio/webm"]:["video/mp4;codecs=avc1,mp4a","video/mp4","video/webm;codecs=vp9,opus","video/webm"];return L.find(m=>window.MediaRecorder&&MediaRecorder.isTypeSupported(m))||""}
-function recStart(s){R.blobs=[];if(s[1]=="foto"){burst(3);return}
+function recStart(s){R.blobs=[];if(!R.stream){$("#rG").textContent="Sin cámara: graba con la cámara normal del celular y usa esta pantalla como guía.";return}if(s[1]=="foto"){burst(3);return}
 const audioOnly=s[1]=="audio";const st=audioOnly?new MediaStream(R.stream.getAudioTracks()):R.stream;const mt=pickMime(audioOnly);
 try{R.mr=new MediaRecorder(st,mt?{mimeType:mt,videoBitsPerSecond:8e6,audioBitsPerSecond:192000}:{})}catch(e){R.mr=new MediaRecorder(st)}
 R.chunks=[];R.mr.ondataavailable=e=>{if(e.data&&e.data.size)R.chunks.push(e.data)};R.mr.onstop=()=>{const type=R.mr.mimeType||mt||"video/webm";R.blobs=[{b:new Blob(R.chunks,{type}),ext:/mp4/.test(type)?(audioOnly?"m4a":"mp4"):"webm"}]};R.mr.start(500)}
