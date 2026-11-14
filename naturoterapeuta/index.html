@@ -189,15 +189,32 @@ details p{font-size:15px}
 .pz .th{width:76px;height:96px;border-radius:12px;background:var(--olive-soft);display:grid;place-items:center;font-size:26px;overflow:hidden}.pz .th img{width:100%;height:100%;object-fit:cover}
 .fadein{animation:fade .45s forwards;opacity:0}
 .tabbar button{animation:fade .4s forwards}
+#intro .tap{position:absolute;inset:0;display:grid;place-items:center;background:#1E1F1A;z-index:2;cursor:pointer;color:#F4EEE4;font:600 13px var(--body);letter-spacing:.3em;text-transform:uppercase;transition:opacity .6s}
+#intro .tap i{display:block;width:74px;height:74px;border-radius:50%;border:1.5px solid #B7C38A;margin:0 auto 18px;animation:breathe 2.4s infinite}
+@keyframes breathe{50%{transform:scale(1.12);opacity:.5}}
+#intro.play .tap{opacity:0;pointer-events:none}#intro:not(.play) *{animation-play-state:paused!important}#intro:not(.play) .tap i{animation-play-state:running!important}
+#hello{position:fixed;inset:0;z-index:58;background:radial-gradient(circle at 30% 20%,#3F4A31,#1E1F1A 70%);color:#F4EEE4;display:grid;place-items:center;padding:28px;text-align:center;animation:fade .6s forwards;opacity:0;transition:opacity .5s}
+#hello.out{opacity:0!important}#hello .eyb{font:700 12px var(--body);letter-spacing:.3em;text-transform:uppercase;color:#B7C38A}
+#hello h2{font:400 clamp(40px,12vw,60px)/1.05 var(--display);color:#F4EEE4;margin:8px 0 18px}
+#hello .fr{font:400 italic 21px/1.4 var(--display);max-width:30ch;margin:0 auto 30px;color:rgba(244,238,228,.9)}
+#hello .go{background:#F4EEE4;color:#1E1F1A;border:0;border-radius:99px;padding:15px 34px;font:700 16px var(--body);cursor:pointer}
+.frase{font:italic 18px/1.4 var(--display);color:var(--lav);margin:0 0 6px}
+.chat{display:flex;flex-direction:column;gap:8px;margin:8px 0 12px}
+.bub{max-width:85%;padding:10px 14px;border-radius:18px;font-size:15px}.bub small{display:block;font-size:11px;opacity:.7;margin-top:4px}
+.bub.ag{background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:4px}.bub.yo{align-self:flex-end;background:var(--olive);color:#F4EEE4;border-bottom-right-radius:4px}
+.qm{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.qm button{font:600 13px var(--body);border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:99px;padding:7px 12px;cursor:pointer}
+.form textarea,.form select{width:100%;font:inherit;padding:12px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);color:var(--fg);margin-top:6px}
+.team{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.team div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}.team b{display:block}.team span{font-size:13px;color:var(--muted)}
+.ls{padding-left:18px;margin:8px 0 0;font-size:15px}.ls li{margin:4px 0}.chip2{font-size:12px;font-weight:700;border-radius:99px;padding:1px 8px;background:var(--olive-soft);color:var(--olive)}
 </style>
 
-<div id="intro"><div><div class="ag" aria-label="AGENCIA"><span style="animation-delay:0.00s">A</span><span style="animation-delay:0.09s">G</span><span style="animation-delay:0.18s">E</span><span style="animation-delay:0.27s">N</span><span style="animation-delay:0.36s">C</span><span style="animation-delay:0.45s">I</span><span style="animation-delay:0.54s">A</span></div><div class="by">by Valeria</div><div class="ln"></div><div class="cl" id="introLogo"></div><div class="nm">Naturópata · Carolina Pereira</div><button class="go" id="introGo">Comenzar</button></div></div>
+<div id="intro"><div class="tap"><div><i></i>Toca para entrar</div></div><div><div class="ag" aria-label="AGENCIA"><span style="animation-delay:0.00s">A</span><span style="animation-delay:0.09s">G</span><span style="animation-delay:0.18s">E</span><span style="animation-delay:0.27s">N</span><span style="animation-delay:0.36s">C</span><span style="animation-delay:0.45s">I</span><span style="animation-delay:0.54s">A</span></div><div class="by">by Valeria</div><div class="ln"></div><div class="cl" id="introLogo"></div><div class="nm">Naturópata · Carolina Pereira</div><button class="go" id="introGo">Comenzar</button></div></div>
 <div class="wrap">
 <header><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" class="iso" aria-hidden="true"><text x="94" y="128" font-family="Bodoni Moda" font-size="120" fill="currentColor" text-anchor="end">C</text>
 <text x="96" y="178" font-family="Bodoni Moda" font-size="120" fill="currentColor">P</text>
 <line x1="101" y1="12" x2="101" y2="190" stroke="currentColor" stroke-width="1.3"/>
 <g transform="translate(150 44) scale(0.6)"><path transform="rotate(10)" d="M0 0 C 10 -10 11 -28 3 -42 C -7 -30 -9 -10 0 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path transform="rotate(10)" d="M0 -6 L0 -30" stroke="currentColor" stroke-width=".8"/><path transform="rotate(70)" d="M0 0 C 10 -10 11 -28 3 -42 C -7 -30 -9 -10 0 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path transform="rotate(70)" d="M0 -6 L0 -30" stroke="currentColor" stroke-width=".8"/><path transform="rotate(130)" d="M0 0 C 10 -10 11 -28 3 -42 C -7 -30 -9 -10 0 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path transform="rotate(130)" d="M0 -6 L0 -30" stroke="currentColor" stroke-width=".8"/><path transform="rotate(190)" d="M0 0 C 10 -10 11 -28 3 -42 C -7 -30 -9 -10 0 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path transform="rotate(190)" d="M0 -6 L0 -30" stroke="currentColor" stroke-width=".8"/><path transform="rotate(250)" d="M0 0 C 10 -10 11 -28 3 -42 C -7 -30 -9 -10 0 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path transform="rotate(250)" d="M0 -6 L0 -30" stroke="currentColor" stroke-width=".8"/><path transform="rotate(310)" d="M0 0 C 10 -10 11 -28 3 -42 C -7 -30 -9 -10 0 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path transform="rotate(310)" d="M0 -6 L0 -30" stroke="currentColor" stroke-width=".8"/><line x1="0" y1="0" x2="8.0" y2="-13.9" stroke="currentColor" stroke-width="1"/><circle cx="8.5" cy="-14.7" r="1.8" fill="currentColor"/><line x1="0" y1="0" x2="15.7" y2="3.3" stroke="currentColor" stroke-width="1"/><circle cx="16.6" cy="3.5" r="1.8" fill="currentColor"/><line x1="0" y1="0" x2="1.7" y2="15.9" stroke="currentColor" stroke-width="1"/><circle cx="1.8" cy="16.9" r="1.8" fill="currentColor"/><line x1="0" y1="0" x2="-14.6" y2="6.5" stroke="currentColor" stroke-width="1"/><circle cx="-15.5" cy="6.9" r="1.8" fill="currentColor"/><line x1="0" y1="0" x2="-10.7" y2="-11.9" stroke="currentColor" stroke-width="1"/><circle cx="-11.4" cy="-12.6" r="1.8" fill="currentColor"/></g><path transform="translate(168 68) rotate(55)" d="M0 0 C 5 -6 5 -16 0 -22 C -5 -16 -5 -6 0 0Z M0 0 L0 -20" fill="none" stroke="currentColor" stroke-width="1.3"/><path transform="translate(132 24) rotate(-40)" d="M0 0 C 5 -6 5 -16 0 -22 C -5 -16 -5 -6 0 0Z M0 0 L0 -20" fill="none" stroke="currentColor" stroke-width="1.3"/>
-<g transform="translate(76 150) scale(0.55)"><path transform="rotate(-12)" d="M0 0 C 10 -10 11 -28 3 -42 C -7 -30 -9 -10 0 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path transform="rotate(-12)" d="M0 -6 L0 -30" stroke="currentColor" stroke-width=".8"/><path transform="rotate(48)" d="M0 0 C 10 -10 11 -28 3 -42 C -7 -30 -9 -10 0 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path transform="rotate(48)" d="M0 -6 L0 -30" stroke="currentColor" stroke-width=".8"/><path transform="rotate(108)" d="M0 0 C 10 -10 11 -28 3 -42 C -7 -30 -9 -10 0 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path transform="rotate(108)" d="M0 -6 L0 -30" stroke="currentColor" stroke-width=".8"/><path transform="rotate(168)" d="M0 0 C 10 -10 11 -28 3 -42 C -7 -30 -9 -10 0 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path transform="rotate(168)" d="M0 -6 L0 -30" stroke="currentColor" stroke-width=".8"/><path transform="rotate(228)" d="M0 0 C 10 -10 11 -28 3 -42 C -7 -30 -9 -10 0 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path transform="rotate(228)" d="M0 -6 L0 -30" stroke="currentColor" stroke-width=".8"/><path transform="rotate(288)" d="M0 0 C 10 -10 11 -28 3 -42 C -7 -30 -9 -10 0 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path transform="rotate(288)" d="M0 -6 L0 -30" stroke="currentColor" stroke-width=".8"/><line x1="0" y1="0" x2="2.2" y2="-15.8" stroke="currentColor" stroke-width="1"/><circle cx="2.4" cy="-16.8" r="1.8" fill="currentColor"/><line x1="0" y1="0" x2="15.8" y2="-2.8" stroke="currentColor" stroke-width="1"/><circle cx="16.7" cy="-3.0" r="1.8" fill="currentColor"/><line x1="0" y1="0" x2="7.5" y2="14.1" stroke="currentColor" stroke-width="1"/><circle cx="8.0" cy="15.0" r="1.8" fill="currentColor"/><line x1="0" y1="0" x2="-11.1" y2="11.5" stroke="currentColor" stroke-width="1"/><circle cx="-11.8" cy="12.2" r="1.8" fill="currentColor"/><line x1="0" y1="0" x2="-14.4" y2="-7.0" stroke="currentColor" stroke-width="1"/><circle cx="-15.3" cy="-7.5" r="1.8" fill="currentColor"/></g><path transform="translate(56 168) rotate(-60)" d="M0 0 C 5 -6 5 -16 0 -22 C -5 -16 -5 -6 0 0Z M0 0 L0 -20" fill="none" stroke="currentColor" stroke-width="1.3"/></svg><div><div class="eyebrow">Naturópata · Carolina Pereira</div><h1>Naturoterapeuta</h1></div><button class="hdbtn" id="hdQ" aria-label="Dudas">?</button></header>
+<g transform="translate(76 150) scale(0.55)"><path transform="rotate(-12)" d="M0 0 C 10 -10 11 -28 3 -42 C -7 -30 -9 -10 0 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path transform="rotate(-12)" d="M0 -6 L0 -30" stroke="currentColor" stroke-width=".8"/><path transform="rotate(48)" d="M0 0 C 10 -10 11 -28 3 -42 C -7 -30 -9 -10 0 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path transform="rotate(48)" d="M0 -6 L0 -30" stroke="currentColor" stroke-width=".8"/><path transform="rotate(108)" d="M0 0 C 10 -10 11 -28 3 -42 C -7 -30 -9 -10 0 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path transform="rotate(108)" d="M0 -6 L0 -30" stroke="currentColor" stroke-width=".8"/><path transform="rotate(168)" d="M0 0 C 10 -10 11 -28 3 -42 C -7 -30 -9 -10 0 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path transform="rotate(168)" d="M0 -6 L0 -30" stroke="currentColor" stroke-width=".8"/><path transform="rotate(228)" d="M0 0 C 10 -10 11 -28 3 -42 C -7 -30 -9 -10 0 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path transform="rotate(228)" d="M0 -6 L0 -30" stroke="currentColor" stroke-width=".8"/><path transform="rotate(288)" d="M0 0 C 10 -10 11 -28 3 -42 C -7 -30 -9 -10 0 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path transform="rotate(288)" d="M0 -6 L0 -30" stroke="currentColor" stroke-width=".8"/><line x1="0" y1="0" x2="2.2" y2="-15.8" stroke="currentColor" stroke-width="1"/><circle cx="2.4" cy="-16.8" r="1.8" fill="currentColor"/><line x1="0" y1="0" x2="15.8" y2="-2.8" stroke="currentColor" stroke-width="1"/><circle cx="16.7" cy="-3.0" r="1.8" fill="currentColor"/><line x1="0" y1="0" x2="7.5" y2="14.1" stroke="currentColor" stroke-width="1"/><circle cx="8.0" cy="15.0" r="1.8" fill="currentColor"/><line x1="0" y1="0" x2="-11.1" y2="11.5" stroke="currentColor" stroke-width="1"/><circle cx="-11.8" cy="12.2" r="1.8" fill="currentColor"/><line x1="0" y1="0" x2="-14.4" y2="-7.0" stroke="currentColor" stroke-width="1"/><circle cx="-15.3" cy="-7.5" r="1.8" fill="currentColor"/></g><path transform="translate(56 168) rotate(-60)" d="M0 0 C 5 -6 5 -16 0 -22 C -5 -16 -5 -6 0 0Z M0 0 L0 -20" fill="none" stroke="currentColor" stroke-width="1.3"/></svg><div><div class="eyebrow">Naturópata</div><h1>Carolina Pereira</h1></div><button class="hdbtn" id="hdQ" aria-label="Dudas">?</button></header>
 
 <!-- INICIO -->
 <section id="cuenta" hidden>
@@ -212,18 +229,36 @@ details p{font-size:15px}
 </section>
 <section id="inicio" hidden>
 <h2 id="hola">Hola 🌿</h2>
-<div id="home"></div>
+<p class="frase" id="homeFr"></p><div id="home"></div>
 <div hidden><div id="steps"></div><button id="goNext"></button></div>
 </section>
 <section id="agenda" hidden>
 <h2>Agenda</h2>
 <p class="muted">Tu planificación de material, tu validación y las piezas que la agencia crea para ti.</p>
 <h3>Material para validar</h3><div id="pzL"></div>
-<details open><summary><b>Tu estrategia y tus 4 semanas</b></summary><div id="agEst"></div></details>
+<details open><summary><b>Tu estrategia y tus 3 meses</b></summary><div id="agEst"></div></details>
 <details><summary><b>Textos listos para copiar</b></summary><div id="agTx"></div></details>
 <div id="valW"></div>
 </section>
-
+<section id="agencia" hidden>
+<h2>Agencia</h2>
+<p class="muted">Nuestro canal directo. Aquí conversamos, nos mandas ideas o cambios, y ves todo lo que entra y sale entre tú y la agencia.</p>
+<div class="team"><div><b>Valeria</b><span>Directora de AGENCIA</span></div><div><b>Equipo creativo</b><span>Guiones, edición y diseño</span></div></div>
+<h3>Mensajes</h3><div id="chat" class="chat"></div>
+<div class="qm"><button type="button" data-qm="Tengo una promoción que quiero comunicar: ">🎁 Tengo una promo</button><button type="button" data-qm="Quiero cambiar o repetir una toma: ">🔁 Repetir una toma</button><button type="button" data-qm="Necesito ayuda para grabar: ">🙋 Necesito ayuda</button><button type="button" data-qm="Tengo una idea de contenido: ">💡 Tengo una idea</button></div>
+<form id="msgF" class="form"><textarea id="msgT" placeholder="Escribe a la agencia…" rows="3"></textarea><button class="btn" style="margin-top:8px">Enviar</button></form>
+<h3>Entradas y salidas</h3><div id="io"></div>
+</section>
+<section id="consulta" hidden>
+<div class="hero"><div class="eyb">Consulta cada 6 semanas</div><h2>Afinemos tu plan</h2><p>Pasaron 6 semanas. Con 5 respuestas cortas planificamos tus próximas 8 semanas.</p></div>
+<form id="conF" class="form">
+<label>¿Qué contenido sentiste que funcionó mejor?<textarea name="funciono" rows="2"></textarea></label>
+<label>¿Algo te incomodó o no te representó?<textarea name="incomodo" rows="2"></textarea></label>
+<label>¿Tienes promociones, fechas o servicios nuevos que comunicar?<textarea name="novedades" rows="2"></textarea></label>
+<label>¿Cuánto tiempo a la semana tendrás para grabar?<textarea name="tiempo" rows="1"></textarea></label>
+<label>Hoy, ¿qué tan cómoda te sientes en cámara? (1 nada · 5 mucho)<select name="camara"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label>
+<button class="btn" style="margin-top:16px">Enviar y planificar 8 semanas</button></form>
+</section>
 
 <!-- DIAGNOSTICO -->
 <section id="diag" hidden>
@@ -629,7 +664,7 @@ function confetti(){if(matchMedia("(prefers-reduced-motion:reduce)").matches)ret
 function nextStep(){const st=stage(),a=answered(),n=nDone();
  return [null,[`Responde tu diagnóstico`,a?`Vas en la ${a} de ${Q.length}. Te queda poco.`:`Son 20 preguntas, unos 15 minutos. Puedes pausar cuando quieras.`,a?"Seguir respondiendo":"Empezar","diag"],
  [`Graba tu kit de inicio`,`${n} de 16 tomas listas. Con 8 ya podemos armar tu primera semana.`,"Entrar al Estudio","grabar"],
- [`Aprueba tu planificación`,`${weeksOk()} de 4 semanas aprobadas. Revísalas y dinos si algo no te representa.`,"Ver Agenda","agenda"],
+ [`Aprueba tu planificación`,`${weeksOk()} de 4 semanas del mes 1 aprobadas. Revísalas y dinos si algo no te representa.`,"Ver Agenda","agenda"],
  [`Revisa tu material`,PZ.filter(p=>!S.pz[p.id]).length?`Tienes ${PZ.filter(p=>!S.pz[p.id]).length} piezas esperando tu visto bueno.`:`La agencia está produciendo. Te avisamos apenas haya piezas para validar.`,"Ir a Agenda","agenda"]][st]}
 function insights(){const a=S.ans,o=[],r=ruta();if(!answered())return"";
  o.push(r=="sin"?"Partimos <b>sin mostrar tu cara</b>: manos, voz y espacios. Tu calma se transmite igual.":r=="mixta"?"Vamos con un <b>formato mixto</b>: tu voz y tus manos, y de a poco la cámara.":"Te sientes cómoda en cámara: <b>tu rostro será el sello</b> de la marca.");
@@ -643,16 +678,16 @@ function renderHome(){const st=stage(),pct=Math.round(st/4*100),nx=nextStep()||[
  $("#home").innerHTML=`<div class="hero fadein"><div class="eyb">Tu siguiente paso</div><h2>${nx[0]}</h2><p>${nx[1]}</p><button class="btn" id="hGo">${nx[2]}</button></div>
  <div class="ring">${ring}<div><b>${pct}%</b><div class="muted" style="font-size:14px">de tu proceso con la agencia</div></div></div>
  <h3>Tu camino</h3><ol class="jr">${STG.map((s,i)=>`<li class="${i<st||i==4&&st==4&&PZ.length&&PZ.every(p=>(S.pz[p.id]||{}).st=="ok")?"ok":i==st?"now":"lock"}"><div class="d">${i<st?"✓":i==st?"●":"🔒"}</div><div><b>${s[1]}</b><span>${s[2]}</span></div></li>`).join("")}</ol>
- ${insights()}
+ ${stage()>=2?escHTML():""}${insights()}
  <div class="plus" style="margin-top:18px"><b>Plan Plus · publicación automática</b><p style="margin:6px 0 10px">Con el Plan Plus, por un monto adicional módico, la agencia programa y publica todo por ti en Instagram y Facebook, en los mejores horarios. Tú solo apruebas.</p><button class="btn small" id="plusB">${S.plus?"✓ Ya avisaste tu interés":"Me interesa el Plan Plus"}</button></div>
  ${st>=2?`<p style="margin-top:14px"><button class="btn small ghost" onclick="show('diag')">Revisar mis respuestas</button></p>`:""}`;
  $("#hGo").onclick=()=>show(nx[3]);$("#plusB").onclick=()=>{S.plus=new Date().toISOString();persist();renderHome();toast("¡Listo! Valeria te escribirá con los detalles 💚")};
- $("#hola").textContent=`Hola, ${nombre()} 🌿`}
+ $("#hola").textContent=`${saludo()}, ${nombre()} 🌿`}
 
 /* --- agenda: planificación + validación --- */
-function renderAgenda(){const ws=[1,2,3,4];
- $("#valW").innerHTML=`<h3>Valida tu planificación</h3><p class="muted" style="font-size:15px">Aprueba cada semana o pídenos cambios. Nada se produce sin tu visto bueno.</p>`+ws.map(w=>{const v=S.val[w]||{};
- return `<div class="vw"><b>Semana ${w}</b><span class="st ${v.st=="ok"?"ok":v.st=="cm"?"cm":"pd"}">${v.st=="ok"?"Aprobada":v.st=="cm"?"Pediste cambios":"Por revisar"}</span>
+function renderAgenda(){const ws=[1,2,3,4,5,6,7,8,9,10,11,12];
+ $("#valW").innerHTML=`<h3>Valida tu planificación</h3><p class="muted" style="font-size:15px">Son 12 semanas (3 meses). Aprueba cada semana o pídenos cambios. Con el mes 1 aprobado empezamos a producir. Nada se produce sin tu visto bueno.</p>`+ws.map(w=>{const v=S.val[w]||{};
+ return `${w%4==1?`<h3 style="margin-top:18px">Mes ${(w+3)/4}</h3>`:""}<div class="vw"><b>Semana ${w}</b><span class="st ${v.st=="ok"?"ok":v.st=="cm"?"cm":"pd"}">${v.st=="ok"?"Aprobada":v.st=="cm"?"Pediste cambios":"Por revisar"}</span>
  <button class="btn small" data-ok="${w}">👍 Aprobar</button><button class="btn small ghost" data-cm="${w}">✎ Pedir cambio</button>
  <textarea data-nt="${w}" placeholder="¿Qué cambiarías de esta semana?" ${v.st=="cm"?"":"hidden"}>${esc(v.nota||"")}</textarea></div>`}).join("");
  $$("[data-ok]").forEach(b=>b.onclick=()=>{S.val[b.dataset.ok]={st:"ok",at:new Date().toISOString()};persist();renderAgenda();checkUnlock()});
@@ -674,14 +709,14 @@ $("#cal").after($("#valW"));
 syncAnswers=function(){if(!PUENTE)return;clearTimeout(ansT);ansT=setTimeout(()=>{const u=S.user||{};
  const filas=[["Nombre",u.nombre||""],["Cómo le decimos",u.apodo||""],["Correo",u.correo||""],["WhatsApp",u.wsp||""],["Etapa",STG[stage()][1]],["Tomas listas",nDone()+" de 16"],["Interés Plan Plus",S.plus?"Sí ("+S.plus.slice(0,10)+")":"—"],["Visitas a la app",S.ev.visitas]]
  .concat(Q.map(q=>[q.q,[].concat(S.ans[q.k]??"").join(", ")]))
- .concat([1,2,3,4].map(w=>["Validación semana "+w,((S.val[w]||{}).st=="ok"?"Aprobada":(S.val[w]||{}).st=="cm"?"Cambio: "+((S.val[w]||{}).nota||""):"Pendiente")]))
- .concat(PZ.map(p=>["Pieza "+p.id+" · "+p.titulo,((S.pz[p.id]||{}).st=="ok"?"Aprobada":(S.pz[p.id]||{}).st=="cm"?"Cambio: "+((S.pz[p.id]||{}).nota||""):"Pendiente")]));
+ .concat([1,2,3,4,5,6,7,8,9,10,11,12].map(w=>["Validación semana "+w,((S.val[w]||{}).st=="ok"?"Aprobada":(S.val[w]||{}).st=="cm"?"Cambio: "+((S.val[w]||{}).nota||""):"Pendiente")]))
+ .concat([["Escalón en cámara",(S.escN||0)+" de 5"]]).concat((S.msg||[]).map((m,i)=>["Mensaje "+(i+1)+" · "+String(m.at).slice(0,16).replace("T"," "),m.txt])).concat((S.cons||[]).map((c,i)=>["Consulta "+(i+1)+" · "+String(c.at).slice(0,10),"Funcionó: "+(c.funciono||"")+" | Incomodó: "+(c.incomodo||"")+" | Novedades: "+(c.novedades||"")+" | Tiempo: "+(c.tiempo||"")+" | Cámara: "+(c.camara||"")])).concat(PZ.map(p=>["Pieza "+p.id+" · "+p.titulo,((S.pz[p.id]||{}).st=="ok"?"Aprobada":(S.pz[p.id]||{}).st=="cm"?"Cambio: "+((S.pz[p.id]||{}).nota||""):"Pendiente")]));
  post({accion:"respuestas",filas}).catch(()=>{})},1500)};
 
 /* intro AGENCIA by Valeria */
 (()=>{const it=$("#intro");let first=false;try{first=!localStorage.getItem("ag_intro")}catch(e){}
  const close=()=>{it.classList.add("out");try{localStorage.setItem("ag_intro","1")}catch(e){}setTimeout(()=>{it.remove();checkUnlock()},700)};
- $("#introGo").onclick=close;if(!first){setTimeout(close,2600)}
+ $("#introGo").onclick=()=>{unlockSound();close();setTimeout(hello,350)};it.querySelector(".tap").onclick=()=>{it.classList.add("play");introSound();if(!first)setTimeout(()=>{close();setTimeout(hello,350)},3400)}
  const svg=$("header svg.iso").cloneNode(true);svg.removeAttribute("class");$("#introLogo").appendChild(svg)})();
 $("#hdQ").onclick=()=>{$$("section").forEach(s=>s.hidden=s.id!=="dudas");renderTabs("");scrollTo(0,0)};
 persist();show(stage()==0?"cuenta":stage()==1&&answered()?"diag":"inicio");
