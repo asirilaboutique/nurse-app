@@ -721,5 +721,85 @@ syncAnswers=function(){if(!PUENTE)return;clearTimeout(ansT);ansT=setTimeout(()=>
 $("#hdQ").onclick=()=>{$$("section").forEach(s=>s.hidden=s.id!=="dudas");renderTabs("");scrollTo(0,0)};
 persist();show(stage()==0?"cuenta":stage()==1&&answered()?"diag":"inicio");
 
+/* ================= EVOLUCIÓN 2 · sonido, saludo, frases, Agencia, escalera, 3 meses, consulta ================= */
+/* --- sonidos (sintetizados, sin archivos) --- */
+let AX;function ax(){AX=AX||new(window.AudioContext||window.webkitAudioContext)();if(AX.state=="suspended")AX.resume();return AX}
+function introSound(){try{const c=ax(),t=c.currentTime,out=c.createGain();out.gain.value=.55;out.connect(c.destination);
+ const dl=c.createDelay();dl.delayTime.value=.32;const fb=c.createGain();fb.gain.value=.35;dl.connect(fb).connect(dl);dl.connect(out);
+ const lp=c.createBiquadFilter();lp.type="lowpass";lp.frequency.setValueAtTime(180,t);lp.frequency.exponentialRampToValueAtTime(1400,t+2.4);lp.Q.value=6;lp.connect(out);
+ [55,82.4,110.3].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.type=i==1?"triangle":"sawtooth";o.frequency.value=f;o.detune.value=i*7-7;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.22,t+.9);g.gain.linearRampToValueAtTime(0,t+3.6);o.connect(g).connect(lp);o.start(t);o.stop(t+3.7)});
+ [880,1318.5,987.8,1108.7,1760].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain(),s=t+1.1+i*.17;o.type="sine";o.frequency.value=f;g.gain.setValueAtTime(0,s);g.gain.linearRampToValueAtTime(.12,s+.02);g.gain.exponentialRampToValueAtTime(.001,s+.9);o.connect(g);g.connect(out);g.connect(dl);o.start(s);o.stop(s+1)});
+ const sub=c.createOscillator(),sg=c.createGain();sub.frequency.setValueAtTime(70,t+2.2);sub.frequency.exponentialRampToValueAtTime(38,t+3.2);sg.gain.setValueAtTime(.0001,t+2.2);sg.gain.exponentialRampToValueAtTime(.5,t+2.25);sg.gain.exponentialRampToValueAtTime(.001,t+3.3);sub.connect(sg).connect(out);sub.start(t+2.2);sub.stop(t+3.4)}catch(e){}}
+function unlockSound(){try{const c=ax(),t=c.currentTime;const nb=c.createBuffer(1,c.sampleRate*.03,c.sampleRate),d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,6);
+ [0,.075].forEach((o,i)=>{const s=c.createBufferSource(),hp=c.createBiquadFilter(),g=c.createGain();s.buffer=nb;hp.type="bandpass";hp.frequency.value=i?3200:2200;hp.Q.value=1.4;g.gain.value=.9;s.connect(hp).connect(g).connect(c.destination);s.start(t+o)});
+ [1567.98,2093].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain(),s=t+.16+i*.09;o.type="sine";o.frequency.value=f;g.gain.setValueAtTime(0,s);g.gain.linearRampToValueAtTime(.09,s+.01);g.gain.exponentialRampToValueAtTime(.001,s+.5);o.connect(g).connect(c.destination);o.start(s);o.stop(s+.55)})}catch(e){}}
+
+/* --- saludo según la hora + banco de frases --- */
+function saludo(){const h=new Date().getHours();return h>=5&&h<12?"Buenos días":h<20&&h>=12?"Buenas tardes":"Buenas noches"}
+const FR=["Lo que hoy te da un poco de miedo, mañana será parte de tu historia.","No necesitas hacerlo perfecto. Necesitas empezar.","Cada paso pequeño cuenta. Hoy diste uno.","Tu calma también comunica. No tienes que gritar para que te escuchen.","La confianza no se espera: se construye haciendo.","Mostrar lo que sabes es una forma de cuidar a más personas.","Respira. Vamos a tu ritmo.","Lo que haces con las manos ya habla por ti.","Tu historia es tu mejor carta de presentación.","La vergüenza dura unos segundos. Tu mensaje se queda.","No compites con nadie: acompañas a quien te necesita.","Sentirse nerviosa es señal de que te importa.","Hoy basta con una toma. Mañana, otra.","Las personas no buscan perfección, buscan a alguien en quien confiar.","Celebra lo que ya avanzaste, aunque parezca poco.","Tu voz tiene un tono que tranquiliza. Úsala.","Equivocarse en una toma es parte del oficio. Se repite y listo.","Cuidar de otros empieza por darte un espacio a ti.","Lo constante vence a lo intenso.","Cuando enseñas, también te conocen.","No tienes que salir en cámara hoy. Solo un poco más que ayer.","Eres la misma persona dentro y fuera de la pantalla: con eso basta.","El primer video es el más difícil. Después, cada uno pesa menos.","Lo que te apasiona se nota. Deja que se vea.","Tu ritmo es el correcto.","Un día a la vez, una semana a la vez, una clienta a la vez.","Tus clientas ya confían en ti en persona. Ahora te van a conocer más.","Dar el paso también es un acto de cuidado propio.","Lo simple, bien hecho, conecta.","Hoy tu tarea es pequeña y alcanzable. Eso es suficiente.","Tu trabajo merece ser visto.","No estás sola en esto: la agencia camina contigo.","Agradece a la Carolina de hace un mes por empezar.","Cada respuesta tuya hace tu material más tuyo.","La autenticidad no se ensaya: se comparte.","Hacerlo con miedo también cuenta como hacerlo.","Lo que siembras esta semana florece en unas semanas.","Tu energía tranquila es tu sello.","Pequeños avances, grandes cambios.","Hoy, sé amable contigo."];
+function frase(){let k=0;try{k=+(localStorage.getItem("ag_fr")||0)}catch(e){}const f=FR[k%FR.length];try{localStorage.setItem("ag_fr",k+1)}catch(e){}return f}
+function hello(){const d=document.createElement("div");d.id="hello";d.innerHTML=`<div class="hb"><div class="eyb">${saludo()}</div><h2>${esc(nombre())}</h2><p class="fr">“${frase()}”</p><button class="go">Entrar</button></div>`;document.body.appendChild(d);d.querySelector("button").onclick=()=>{d.classList.add("out");setTimeout(()=>{d.remove();checkUnlock()},500)}}
+
+/* --- escalera de confianza en cámara --- */
+const ESC=[["🎙","Solo tu voz","Graba un audio contando por qué elegiste la naturopatía. Nadie te ve: solo te escuchan.","Tu voz ya transmite calma. Ese es el primer ladrillo."],
+["🤲","Tus manos","Graba tus manos preparando una infusión o un frasco de esencias, con tu voz encima.","Tus manos cuentan tu oficio. Ya estás en pantalla, a tu manera."],
+["🌿","De perfil o de espalda","Grábate de espaldas o de perfil, junto a la ventana, preparando tu bolso.","Ya apareces en tu contenido. Paso enorme."],
+["🙂","Media cara y sonrisa","Una toma corta mirando a un costado y sonriendo. Sin hablar a cámara.","Tu sonrisa genera confianza al tiro. Bien hecho."],
+["✨","Una frase a cámara","Mira al lente y di una sola frase: \"Hola, soy Carolina, naturópata a domicilio\".","¡Lo lograste! Ahora la cámara es una aliada."]];
+function escHTML(){const n=S.escN||0;return `<div class="card2"><b>Tu escalera de confianza en cámara</b><p class="muted" style="font-size:14px;margin:4px 0 10px">Sin presión: subes un escalón cuando te sientas lista. Tu contenido va creciendo contigo.</p>
+ <ol class="jr">${ESC.map((e,i)=>`<li class="${i<n?"ok":i==n?"now":"lock"}"><div class="d">${i<n?"✓":e[0]}</div><div><b>${e[1]}</b><span>${i==n?e[2]:i<n?e[3]:"Se abre después"}</span>${i==n?`<div style="margin-top:8px"><button class="btn small" data-esc="1">Lo logré</button></div>`:""}</div></li>`).join("")}</ol></div>`}
+document.addEventListener("click",e=>{if(e.target.closest("[data-esc]")){S.escN=Math.min(5,(S.escN||0)+1);persist();unlockSound();confetti();toast(ESC[S.escN-1][3]);renderEsc()}});
+function renderEsc(){const g=$("#escG");if(g)g.innerHTML=escHTML();if(!$("#inicio").hidden)renderHome()}
+(()=>{const d=document.createElement("div");d.id="escG";$("#grabar h2").after(d);renderEsc()})();
+
+/* --- ánimo durante las preguntas --- */
+const CHEER={0:"Respira y responde con calma. No hay respuestas correctas: queremos conocerte a ti.",4:"¡Vas muy bien! Cada respuesta hace tu material más tuyo.",8:"Ya llevas casi la mitad. Lo que nos cuentas aquí es oro para tus guiones.",12:"Más de la mitad. Gracias por tu sinceridad: así te representamos de verdad.",16:"¡Últimas preguntas! Ya casi se libera tu Estudio de grabación.",19:"Última. Después de esta, empieza lo entretenido."};
+const _wz=wzRender;wzRender=function(){_wz();let m="";for(const k in CHEER)if(S.i>=+k)m=CHEER[k];let c=$("#wzCheer");if(!c){c=document.createElement("div");c.id="wzCheer";c.className="insight";$("#diag .prog").after(c)}c.innerHTML="🌿 "+m;c.hidden=S.i>=Q.length;
+ if(Q[S.i]&&Q[S.i].k=="camara")c.innerHTML="🌿 Responde con honestidad. Si hoy no te sientes cómoda en cámara, partimos sin mostrar tu cara y avanzamos de a poco, a tu ritmo. Nadie te va a apurar."};
+
+/* --- planificación de 3 meses que evoluciona con sus respuestas --- */
+const _cal=cal;
+function calExt(){const a=S.ans,r=ruta(),n=S.escN||0,sv=[].concat(a.servicios||[]),cm=[].concat(a.comunas||[]);const C=i=>cm.length?cm[i%cm.length]:["Concepción","Chiguayante","San Pedro de la Paz","Talcahuano"][i%4];
+ const lvl=w=>w<=6?Math.max(n,r=="rostro"?5:r=="mixta"?2:0):Math.max(n,r=="rostro"?5:r=="mixta"?3:1);
+ const cara=(w,txt,alt)=>lvl(w)>=4?txt:alt;
+ const svc=sv.length?sv:["Consulta naturopática integral","Flores de Bach","Reflexología podal y facial","Hidroterapia y geoterapia"];
+ const M2=[0,1,2,3].map(i=>{const s=svc[i%svc.length],w=5+i;return{t:`Semana ${w} · ${s}`,d:[["Lun","R",cara(w,`A cámara: "¿Qué es ${s.toLowerCase()} y para quién es?"`,`Voz en off + manos: qué es ${s.toLowerCase()} (y qué no es)`)],["Mar","H",`Encuesta: ¿conocías ${s.toLowerCase()}?`],["Mié","C",`Carrusel: cómo es una sesión de ${s.toLowerCase()} a domicilio`],["Vie","R",i%2?"Gancho reflexología: \"Tus pies te cargan todo el día…\"":"Gancho flores: \"Una gota, una pausa, un momento para ti\""],["Sáb","H",`Zona de la semana: ${C(i)}`]]}});
+ const M3=[{t:"Semana 9 · Mitos y verdades",d:[["Lun","R","Mito o verdad: \"lo natural no tiene riesgos\" (educativo E9)"],["Mié","C","Carrusel: 5 mitos sobre la naturopatía"],["Jue","H","Quiz en historias: ¿mito o verdad?"],["Vie","R","Cuándo ir primero al médico (educativo E10)"],["Sáb","H","Respuestas al quiz"]]},
+ {t:"Semana 10 · Un día conmigo",d:[["Lun","R",cara(10,"A cámara: un día de visitas a domicilio, de principio a fin","Un día de visitas con B-roll: bolso, auto, manos y tu voz")],["Mar","H",`Ruta del día por ${C(1)} y ${C(2)}`],["Mié","C","Carrusel: lo que llevo en mi bolso y para qué sirve"],["Vie","R","Rutina antes de dormir (educativo E3)"],["Dom","H","Pausa de domingo: una pregunta para ti"]]},
+ {t:"Semana 11 · Tu comunidad pregunta",d:[["Lun","H","Caja de preguntas abierta toda la semana"],["Mar","R",cara(11,"A cámara: respondo 3 preguntas de la comunidad","Voz en off: respondo 3 preguntas de la comunidad")],["Jue","C","Carrusel: preguntas frecuentes de reserva"],["Vie","R","Gancho flores o reflexología (el que mejor funcionó)"],["Sáb","H","Testimonio en texto (solo con permiso escrito de la clienta)"]]},
+ {t:"Semana 12 · Cierre del trimestre",d:[["Lun","R","Lo que aprendimos juntas en 3 meses"],["Mié","C","Carrusel: tu agenda del próximo mes"],["Jue","H",`Cupos por comuna: ${C(0)}, ${C(1)}, ${C(2)}`],["Vie","R",cara(12,"A cámara: \"Gracias por estos meses. Así seguimos.\"","Voz + manos: \"Gracias por estos meses\"")],["Sáb","H","Consulta con la agencia: planificamos las próximas 8 semanas"]]}];
+ const wk=w=>`<div class="week"><h4>${w.t}</h4>${w.d.map(d=>`<div class="day"><span class="d">${d[0]}</span><span><span class="fmt ${d[1]}">${{R:"Reel",C:"Carrusel",H:"Historias"}[d[1]]}</span>${esc(d[2])}</span></div>`).join("")}</div>`;
+ return `<h3>Mes 2 · Profundizar en tus servicios</h3>${M2.map(wk).join("")}<h3>Mes 3 · Comunidad y agenda llena</h3>${M3.map(wk).join("")}`}
+cal=function(){return `<h3>Mes 1 · Lanzamiento</h3>`+_cal().replace(/<p class="muted"[\s\S]*$/,"")+calExt()+`<p class="muted" style="font-size:14px">El plan se ajusta solo a tus respuestas y a tu escalón en cámara. Cada pieza de servicios lleva: "Complementario. No reemplaza diagnóstico ni tratamiento médico."</p>`};
+
+/* --- AGENCIA: comunicación, entradas y salidas --- */
+S.msg=S.msg||[];S.sent=S.sent||[];let MS=[];
+const _up=upload;upload=async function(b,name,toma,tipo,row){const r=await _up(b,name,toma,tipo,row);S.sent.push({toma,name,at:new Date().toISOString()});persist();return r};
+fetch("mensajes.json?"+Date.now()).then(r=>r.ok?r.json():[]).then(j=>{MS=Array.isArray(j)?j:[];if($("#agencia")&&!$("#agencia").hidden)renderAgencia()}).catch(()=>{});
+const fmtF=s=>{try{return new Date(s).toLocaleDateString("es-CL",{day:"numeric",month:"short"})}catch(e){return""}};
+function renderAgencia(){const th=[...MS.map(m=>({de:"ag",at:m.fecha,txt:m.texto})),...S.msg.map(m=>({de:"yo",at:m.at,txt:m.txt}))].sort((a,b)=>String(a.at).localeCompare(String(b.at)));
+ if(!th.length)th.push({de:"ag",at:S.user&&S.user.desde,txt:`¡Hola ${nombre()}! Bienvenida a AGENCIA. Este es nuestro canal directo: escríbenos dudas, ideas, promociones o cambios cuando quieras. Te respondemos por aquí o por WhatsApp. 💚 Valeria`});
+ $("#chat").innerHTML=th.map(m=>`<div class="bub ${m.de}"><div>${esc(m.txt)}</div><small>${m.de=="ag"?"AGENCIA":"Tú"} · ${fmtF(m.at)}</small></div>`).join("");
+ const pz=PZ.length?PZ.map(p=>`<li>${esc(p.titulo)} <span class="st ${(S.pz[p.id]||{}).st=="ok"?"ok":(S.pz[p.id]||{}).st=="cm"?"cm":"pd"}">${(S.pz[p.id]||{}).st=="ok"?"Aprobada":(S.pz[p.id]||{}).st=="cm"?"Con cambios":"Por revisar"}</span></li>`).join(""):"<li class=muted>Aún nada: estamos trabajando.</li>";
+ const se=S.sent.length?S.sent.slice().reverse().slice(0,30).map(s=>`<li><span class="chip2">${esc(s.toma)}</span> ${esc(s.name)} <span class="muted">· ${fmtF(s.at)}</span></li>`).join(""):`<li class=muted>${nDone()?nDone()+" tomas marcadas como buenas en este celular.":"Todavía no envías tomas. Se suben solas desde el Estudio."}</li>`;
+ $("#io").innerHTML=`<div class="card2"><b>📤 Lo que enviaste a la agencia</b><ul class="ls">${se}</ul></div><div class="card2"><b>📥 Lo que la agencia te entregó</b><ul class="ls">${pz}</ul></div>`}
+$("#msgF").onsubmit=e=>{e.preventDefault();const t=$("#msgT").value.trim();if(!t)return;S.msg.push({txt:t,at:new Date().toISOString()});$("#msgT").value="";persist();renderAgencia();unlockSound();toast("Enviado a la agencia 💚")};
+$$("[data-qm]").forEach(b=>b.onclick=()=>{$("#msgT").value=b.dataset.qm;$("#msgT").focus()});
+
+/* --- modo consulta cada 6 semanas --- */
+function consultaToca(){if(stage()<3)return false;const last=S.consAt||(S.user&&S.user.desde);if(!last)return false;return (Date.now()-new Date(last))/864e5>=42}
+$("#conF").onsubmit=e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target));S.cons=S.cons||[];S.cons.push(Object.assign({at:new Date().toISOString()},f));S.consAt=new Date().toISOString();
+ if(f.camara){S.ans.camara=f.camara}persist();unlockSound();confetti();toast("¡Gracias! Con esto planificamos tus próximas 8 semanas");show("inicio")};
+
+/* --- enganche con el sistema de etapas --- */
+LBL.agencia="Agencia";ICO.agencia='<path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/>';
+tabsFor=function(st){return st==0?[]:st==1?["inicio","diag","agencia"]:st==2?["inicio","grabar","agencia"]:["inicio","agenda","grabar","agencia"]};
+const _show2=show;show=function(t){if(t=="inicio"&&consultaToca()&&!S._consHoy){S._consHoy=1;t="consulta"}
+ if(t=="consulta"||t=="agencia"){if(stage()==0)return _show2("cuenta");$$("section").forEach(s=>s.hidden=s.id!==t);renderTabs(t);if(t=="agencia")renderAgencia();scrollTo(0,0);return}
+ _show2(t);if(t=="inicio"){const h=$("#hola");if(h)h.textContent=`${saludo()}, ${nombre()} 🌿`;const fr=$("#homeFr");if(fr)fr.textContent="“"+frase()+"”"}};
+window.show=show;
+UNL[1][2]="Ya eres parte de AGENCIA. Ahora vienen 20 preguntas sobre ti, tu servicio y tus clientas. No hay respuestas correctas: entre más honesta seas, más tuyo será tu material. También se abrió la sección Agencia, nuestro canal directo contigo.";
+UNL[2][2]="¡Terminaste tu diagnóstico! Con tus gustos e intereses armamos tus guiones. En el Estudio el Director te acompaña toma por toma. Partimos por tu voz y tus manos: la cámara llega de a poco, cuando tú quieras. Nadie te apura.";
+
 </script>
 </body></html>
