@@ -389,7 +389,7 @@ async function rScene(){const s=shotOf(R.q[R.i]);rDraw();if(!s){rPhase("fin",1);
 rPhase("brief",1);const needAudio=s[1]!="foto",hasAudio=R.stream&&R.stream.getAudioTracks().length>0;
 if(!R.stream||wantFace(s)!==R.camFace||needAudio!==hasAudio){R.face=wantFace(s);await camStart()}const tip=R.toma>1?" Toma "+R.toma+". Respira, más lento y con una sonrisa.":" "+s[3][0];
 sayThen(s[2]+"."+tip+(s[4]&&s[1]!="foto"?" Lee el texto de la pantalla.":""),()=>{if(R.ph!=="brief")return;R.lb=0;rPhase("prep",3)})}
-function rTick(){R.raf=requestAnimationFrame(rTick);if(R.paused||!["prep","rec","ver"].includes(R.ph))return;const now=performance.now(),rem=Math.max(0,R.end-now);
+function rTick(){if(R.paused||!["prep","rec","ver"].includes(R.ph))return;const now=performance.now(),rem=Math.max(0,R.end-now);
 $("#rBig").textContent=R.ph=="ver"?"":Math.ceil(rem/1000);$("#rFill").style.width=(100-rem/R.len*100)+"%";$("#rFill").style.background=R.ph=="rec"?"#C0392B":R.ph=="ver"?"#2E6FD8":"#B7C38A";
 if(R.ph=="prep"){const sc=Math.ceil(rem/1000);if(sc!==R.lb&&sc>0){R.lb=sc;beep([520])}}
 if(rem>0)return;const s=shotOf(R.q[R.i]);
@@ -404,9 +404,9 @@ setTimeout(go,R.ph=="rec"?400:0);R.ph="wait";$("#rPh").textContent=good?"★ BUE
 function rGo(){if(R.ph=="idle"||R.ph=="fin"||R.ph=="pau"){R.paused=false;$("#rGo").textContent="⏸ Pausa";rScene();return}
 R.paused=!R.paused;$("#rGo").textContent=R.paused?"▶ Seguir":"⏸ Pausa";if(R.paused){R.left=R.end-performance.now();$("#rPh").textContent=PH.pau;if(R.ph=="rec")try{R.mr.pause()}catch(e){}}else{R.end=performance.now()+R.left;$("#rPh").textContent=PH[R.ph];if(R.ph=="rec")try{R.mr.resume()}catch(e){}}}
 async function recOpen(ids){R.q=ids;R.i=0;R.toma=1;R.paused=false;$("#rec").hidden=false;document.body.style.overflow="hidden";rDraw();rPhase("idle",1);$("#rGo").textContent="▶ Partir";
-const s=shotOf(ids[0]);R.face=s?wantFace(s):"user";await camStart();cancelAnimationFrame(R.raf);rTick();try{R.wl=await navigator.wakeLock.request("screen")}catch(e){}
+const s=shotOf(ids[0]);R.face=s?wantFace(s):"user";await camStart();clearInterval(R.raf);R.raf=setInterval(rTick,100);try{R.wl=await navigator.wakeLock.request("screen")}catch(e){}
 $("#rG").textContent="Toca ▶ Partir. Después todo es por voz: di «buena» o «mala»."}
-function recClose(){recStop();camStop();R.ph="idle";cancelAnimationFrame(R.raf);micOff();R.hand=false;$("#rHand").textContent="✋ Gestos";try{speechSynthesis.cancel()}catch(e){}try{R.wl&&R.wl.release()}catch(e){}$("#rec").hidden=true;document.body.style.overflow=""}
+function recClose(){recStop();camStop();R.ph="idle";clearInterval(R.raf);micOff();R.hand=false;$("#rHand").textContent="✋ Gestos";try{speechSynthesis.cancel()}catch(e){}try{R.wl&&R.wl.release()}catch(e){}$("#rec").hidden=true;document.body.style.overflow=""}
 $("#soloAll").onclick=()=>{const r=ruta();const pri=s=>s[5]=="sin"?0:s[5]=="mixta"?(r=="sin"?2:1):(r=="rostro"?1:3);const L=SH.filter(s=>!S.done[s[0]]&&pri(s)<2).sort((a,b)=>pri(a)-pri(b)).map(s=>s[0]);if(!L.length){toast("¡Ya tienes todas las tomas de ahora!");return}recOpen(L)};
 $("#rGo").onclick=rGo;$("#rGood").onclick=()=>verdict(true);$("#rBad").onclick=()=>verdict(false);$("#rX").onclick=recClose;
 $("#rSkip").onclick=()=>{recStop();R.i++;R.toma=1;R.cool=0;if(R.ph=="idle")rDraw();else rScene()};
