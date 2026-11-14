@@ -212,6 +212,12 @@ details p{font-size:15px}
 .tabbar button{position:relative}.dot{position:absolute;top:2px;right:calc(50% - 22px);min-width:18px;height:18px;border-radius:9px;background:#C2412D;color:#fff;font:700 11px/18px var(--body);padding:0 5px}
 .plusbox{background:radial-gradient(circle at 50% 0%,#3F4A31,#1E1F1A 75%)!important;color:#F4EEE4}.plusbox h2{color:#F4EEE4;font-size:clamp(26px,7vw,34px)}.plusbox p{color:rgba(244,238,228,.85)}.plusbox .btn{background:#F4EEE4;color:#1E1F1A;border-color:#F4EEE4}.plusbox .btn.ghost{background:none;color:#F4EEE4}
 #chat{max-height:52vh;overflow-y:auto}
+.iabox{border-color:var(--lav);background:linear-gradient(180deg,var(--lav-soft),var(--surface) 60%)}
+.typing span{animation:blink 1.2s infinite}.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}@keyframes blink{50%{opacity:.2}}
+#breath{position:fixed;inset:0;z-index:57;background:radial-gradient(circle at 50% 40%,#3F4A31,#1E1F1A 70%);color:#F4EEE4;display:grid;place-items:center;align-content:center;gap:26px;text-align:center;padding:24px}
+#breath .orb{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,#B7C38A,#5F6B4A);box-shadow:0 0 60px rgba(183,195,138,.5);transition:transform 4s ease-in-out}
+#breath .orb.p0{transform:scale(1.8)}#breath .orb.p1{transform:scale(1.8)}#breath .orb.p2{transform:scale(1);transition-duration:6s}
+#breath p{font:400 26px var(--display);margin:40px 0 0}#breath .go{background:#F4EEE4;color:#1E1F1A;border:0;border-radius:99px;padding:14px 30px;font:700 16px var(--body)}
 </style>
 
 <div id="intro"><div class="tap"><div><i></i>Toca para entrar</div></div><div><div class="ag" aria-label="AGENCIA"><span style="animation-delay:0.00s">A</span><span style="animation-delay:0.09s">G</span><span style="animation-delay:0.18s">E</span><span style="animation-delay:0.27s">N</span><span style="animation-delay:0.36s">C</span><span style="animation-delay:0.45s">I</span><span style="animation-delay:0.54s">A</span></div><div class="by">by Valeria</div><div class="ln"></div><div class="cl" id="introLogo"></div><div class="nm">Naturópata · Carolina Pereira</div><button class="go" id="introGo">Comenzar</button></div></div>
@@ -874,6 +880,29 @@ function introFX(){const it=$("#intro");if(!it||matchMedia("(prefers-reduced-mot
 (()=>{const tap=$("#intro .tap");if(!tap)return;const prev=tap.onclick;tap.onclick=async()=>{try{await document.fonts.load('400 80px "Bodoni Moda"')}catch(e){}introFX();prev&&prev()}})();
 if(new URLSearchParams(location.search).get("tab")=="agencia")setTimeout(()=>{if(stage()>=1)show("agencia")},400);
 loadMsgs(true);
+
+/* ================= EVOLUCIÓN 4 · Asistente IA, respiración antes de grabar, vibración ================= */
+(()=>{const box=document.createElement("div");box.className="card2 iabox";box.innerHTML=`<b>✨ Asistente AGENCIA <span class="chip2">IA</span></b>
+ <p class="muted" style="font-size:14px;margin:4px 0 8px">Te responde al tiro dudas sobre cómo grabar, la app o tu contenido. Para decisiones (cambios de plan, publicaciones) escríbele a Valeria en el chat de abajo.</p>
+ <div class="qm"><button type="button" data-ia="¿Cómo pierdo la vergüenza de grabarme?">😳 Vergüenza en cámara</button><button type="button" data-ia="¿Cómo consigo buena luz en mi casa para grabar?">💡 Buena luz</button><button type="button" data-ia="Dame 3 ganchos cortos para un reel de flores de Bach">🌼 Ganchos flores</button><button type="button" data-ia="¿Qué digo si me equivoco grabando?">🎬 Me equivoqué</button></div>
+ <form id="iaF" class="form"><textarea id="iaQ" rows="2" placeholder="Pregúntale al asistente…"></textarea><button class="btn small" style="margin-top:8px">Preguntar</button></form><div id="iaA"></div>`;
+ $("#agencia h3").before(box);
+ const ask=async q=>{if(!q)return;const a=$("#iaA");a.innerHTML=`<div class="bub yo" style="margin-left:auto">${esc(q)}</div><div class="bub ag typing">Pensando<span>.</span><span>.</span><span>.</span></div>`;
+  try{const r=await post({accion:"ia",tarea:"asistente",entrada:`${nombre()} pregunta: ${q}\n(Su escalón en cámara: ${S.escN||0} de 5. Etapa: ${STG[stage()][1]}.)`});
+   if(!r.ok)throw r.error;a.querySelector(".typing").outerHTML=`<div class="bub ag"><div>${esc(r.texto)}</div><small>Asistente IA · revisado por la agencia cuando lo necesites</small></div>`;unlockSound()}
+  catch(e){a.querySelector(".typing").outerHTML=`<div class="bub ag"><div>${e=="cupo"?"Por hoy llegamos al máximo de preguntas al asistente. Escríbele a Valeria en el chat 💚":e=="sin_clave"?"El asistente se está activando. Mientras, escríbele a Valeria en el chat 💚":"No pude responder ahora. Intenta de nuevo o escríbele a Valeria en el chat."}</div></div>`}};
+ $("#iaF").onsubmit=e=>{e.preventDefault();const q=$("#iaQ").value.trim();$("#iaQ").value="";ask(q)};
+ box.querySelectorAll("[data-ia]").forEach(b=>b.onclick=()=>ask(b.dataset.ia))})();
+
+/* respiración guiada antes de grabar (30 s) */
+(()=>{const b=document.createElement("button");b.className="btn ghost";b.textContent="🌬 Respirar 30 segundos antes de grabar";b.style.margin="6px 0";$("#soloAll").before(b);
+ b.onclick=()=>{const d=document.createElement("div");d.id="breath";d.innerHTML=`<div class="orb"></div><p id="brT">Inhala…</p><button class="go">Estoy lista</button>`;document.body.appendChild(d);
+  let i=0;const F=["Inhala… 4","Sostén… 4","Exhala lento… 6"],D=[4000,4000,6000];let k=0,alive=true;
+  const step=()=>{if(!alive)return;$("#brT").textContent=F[k%3];d.querySelector(".orb").className="orb p"+(k%3);try{navigator.vibrate&&navigator.vibrate(30)}catch(e){}setTimeout(()=>{k++;if(k<6)step();else $("#brT").textContent="Lista. Tu voz tranquila es tu sello 🌿"},D[k%3])};step();
+  d.querySelector(".go").onclick=()=>{alive=false;d.remove()}}})();
+
+/* vibración en los momentos clave */
+const _us=unlockSound;unlockSound=function(){_us();try{navigator.vibrate&&navigator.vibrate([18,40,28])}catch(e){}};
 
 </script>
 </body></html>

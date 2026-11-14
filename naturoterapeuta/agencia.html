@@ -13,6 +13,7 @@ button{font:700 15px "Figtree";padding:10px 16px;border-radius:12px;border:0;bac
 .tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:8px;border-bottom:1px solid var(--l);vertical-align:top}
 textarea{font:inherit;width:100%;padding:10px 12px;border:1.5px solid var(--l);border-radius:12px;background:var(--s);color:var(--fg)}
 .chat{display:flex;flex-direction:column;gap:8px;max-height:420px;overflow-y:auto;margin-bottom:10px}.b{max-width:80%;padding:9px 13px;border-radius:16px;font-size:15px;background:var(--s);border:1px solid var(--l)}.b.ag{align-self:flex-end;background:var(--o);color:var(--bg);border:0}.b small{display:block;font-size:11px;opacity:.7}
+.ia{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.ia button{background:var(--os);color:var(--o)}.iaout{white-space:pre-wrap;background:var(--s);border:1px solid var(--l);border-left:4px solid var(--o);border-radius:12px;padding:14px;margin:10px 0;font-size:15px}
 a{color:var(--o)}.m{color:var(--m)}.chip{font-size:12px;font-weight:700;border-radius:99px;padding:2px 8px;background:var(--os);color:var(--o)}
 </style></head><body><div class="w">
 <div class="m" style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700">Agencia · supervisión Amparo</div>
@@ -25,6 +26,12 @@ a{color:var(--o)}.m{color:var(--m)}.chip{font-size:12px;font-weight:700;border-r
  <h2>Chat con Carolina</h2><div id="chat" class="chat"></div>
  <textarea id="rt" rows="3" placeholder="Responder a Carolina… (le llega a su app y a su correo)"></textarea>
  <p><button id="rs">Enviar respuesta</button> <span class="m" id="rm"></span></p>
+ <h2>✨ Amparo IA · dirección creativa</h2>
+ <p class="m">Asistente de la agencia (Claude). Lee el diagnóstico y el chat de Carolina. Revisa siempre antes de enviar.</p>
+ <div class="ia"><button data-ia="respuesta">💬 Sugerir respuesta a Carolina</button><button data-ia="estrategia">🧭 Estrategia del diagnóstico</button><button data-ia="ideas">💡 7 ideas para la semana</button><button data-ia="critic">🛡 Kill Critic de un texto</button></div>
+ <textarea id="iaIn" rows="3" placeholder="Para Kill Critic: pega aquí el texto. Para las otras: instrucciones extra (opcional)."></textarea>
+ <div id="iaOut" class="iaout" hidden></div>
+ <p id="iaUse" hidden><button id="iaToChat">Usar como respuesta</button> <button id="iaCopy">Copiar</button></p>
  <h2>Tomas recibidas</h2><div class="tw"><table id="tt"></table></div>
  <h2>Pendientes del kit</h2><p id="pend" class="m"></p>
  <h2>Diagnóstico</h2><div class="tw"><table id="ta"></table></div>
@@ -37,12 +44,31 @@ let key="";try{key=sessionStorage.getItem("pk")||""}catch(x){}
 async function load(){if(!PUENTE){$("#msg").textContent="Falta conectar el Puente a Drive (URL del Apps Script).";return}
 $("#msg").textContent="Cargando…";try{const r=await (await fetch(PUENTE+"?llave="+encodeURIComponent(key))).json();if(!r.ok){$("#msg").textContent="Llave incorrecta.";return}
 try{sessionStorage.setItem("pk",key)}catch(x){}$("#login").hidden=true;$("#out").hidden=false;$("#fold").href=r.carpeta;
-const ms=r.mensajes||[];$("#chat").innerHTML=ms.length?ms.map(m=>`<div class="b ${m[1]=="agencia"?"ag":""}"><div>${e(m[2])}</div><small>${m[1]=="agencia"?"Agencia":"Carolina"} · ${new Date(m[0]).toLocaleString("es-CL")}</small></div>`).join(""):"<p class=m>Aún no hay mensajes.</p>";$("#chat").scrollTop=1e6;
+LAST=r;const ms=r.mensajes||[];$("#chat").innerHTML=ms.length?ms.map(m=>`<div class="b ${m[1]=="agencia"?"ag":""}"><div>${e(m[2])}</div><small>${m[1]=="agencia"?"Agencia":"Carolina"} · ${new Date(m[0]).toLocaleString("es-CL")}</small></div>`).join(""):"<p class=m>Aún no hay mensajes.</p>";$("#chat").scrollTop=1e6;
 const got=new Set(r.tomas.map(t=>t[1]));const resp=r.respuestas.filter(x=>String(x[2]).trim()).length;
 $("#kpi").innerHTML=`<div><b>${resp}/20</b>preguntas respondidas</div><div><b>${got.size}/16</b>tomas del kit</div><div><b>${r.tomas.length}</b>archivos subidos</div><div><b>${r.tomas.reduce((a,t)=>a+ +t[4],0).toFixed(0)} MB</b>en Drive</div>`;
 $("#tt").innerHTML="<tr><th>Fecha</th><th>Toma</th><th>Archivo</th><th>MB</th></tr>"+r.tomas.slice().reverse().map(t=>`<tr><td>${new Date(t[0]).toLocaleString("es-CL")}</td><td><span class=chip>${e(t[1])}</span></td><td><a href="${e(t[5])}" target="_blank" rel="noopener">${e(t[2])}</a></td><td>${e(t[4])}</td></tr>`).join("");
 $("#pend").textContent=KIT.filter(k=>!got.has(k)).join(" · ")||"¡Kit completo!";
 $("#ta").innerHTML="<tr><th>Pregunta</th><th>Respuesta</th></tr>"+r.respuestas.map(x=>`<tr><td>${e(x[1])}</td><td>${e(x[2])||'<span class=m>—</span>'}</td></tr>`).join("")}catch(x){$("#msg").textContent="No se pudo conectar con el Puente."}}
 $("#rs").onclick=async()=>{const t=$("#rt").value.trim();if(!t)return;$("#rm").textContent="Enviando…";try{const r=await (await fetch(PUENTE,{method:"POST",body:JSON.stringify({llave:key,accion:"mensaje",texto:t})})).json();if(!r.ok)throw r.error;$("#rt").value="";$("#rm").textContent="Enviado ✓";load()}catch(x){$("#rm").textContent="No se pudo enviar ("+x+"). ¿Actualizaste el Puente?"}};
+let LAST=null;
+document.querySelectorAll("[data-ia]").forEach(b=>b.onclick=async()=>{if(!LAST){alert("Primero entra al panel");return}const t=b.dataset.ia,extra=$("#iaIn").value.trim();
+ const diag=LAST.respuestas.filter(x=>String(x[2]).trim()).map(x=>x[1]+": "+x[2]).join("
+");const chat=(LAST.mensajes||[]).slice(-15).map(m=>(m[1]=="agencia"?"Agencia":"Carolina")+": "+m[2]).join("
+");
+ const entrada=t=="critic"?extra:("DIAGNÓSTICO:
+"+(diag||"(aún sin respuestas)")+"
+
+CHAT RECIENTE:
+"+(chat||"(sin mensajes)")+"
+
+TOMAS SUBIDAS: "+LAST.tomas.length+(extra?"
+
+INDICACIÓN DE VALERIA: "+extra:""));
+ if(t=="critic"&&!extra){alert("Pega el texto a revisar");return}
+ $("#iaOut").hidden=false;$("#iaOut").textContent="Amparo está pensando…";$("#iaUse").hidden=true;
+ try{const r=await (await fetch(PUENTE,{method:"POST",body:JSON.stringify({llave:key,accion:"ia",tarea:t,entrada})})).json();
+  if(!r.ok)throw r.error=="sin_clave"?"Falta la clave de IA (ANTHROPIC_KEY) en el Puente":(r.detalle||r.error);$("#iaOut").textContent=r.texto;$("#iaUse").hidden=false;$("#iaToChat").hidden=t!="respuesta"}catch(x){$("#iaOut").textContent="⚠ "+x}});
+$("#iaCopy").onclick=()=>navigator.clipboard.writeText($("#iaOut").textContent);$("#iaToChat").onclick=()=>{$("#rt").value=$("#iaOut").textContent;$("#rt").focus()};
 $("#go").onclick=()=>{key=$("#k").value.trim();load()};$("#re").onclick=load;if(key)load();
 </script></div></body></html>
