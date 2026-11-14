@@ -778,7 +778,7 @@ const _up=upload;upload=async function(b,name,toma,tipo,row){const r=await _up(b
 fetch("mensajes.json?"+Date.now()).then(r=>r.ok?r.json():[]).then(j=>{MS=Array.isArray(j)?j:[];if($("#agencia")&&!$("#agencia").hidden)renderAgencia()}).catch(()=>{});
 const fmtF=s=>{try{return new Date(s).toLocaleDateString("es-CL",{day:"numeric",month:"short"})}catch(e){return""}};
 function renderAgencia(){const th=[...MS.map(m=>({de:"ag",at:m.fecha,txt:m.texto})),...S.msg.map(m=>({de:"yo",at:m.at,txt:m.txt}))].sort((a,b)=>String(a.at).localeCompare(String(b.at)));
- if(!th.length)th.push({de:"ag",at:S.user&&S.user.desde,txt:`¡Hola ${nombre()}! Bienvenida a AGENCIA. Este es nuestro canal directo: escríbenos dudas, ideas, promociones o cambios cuando quieras. Te respondemos por aquí o por WhatsApp. 💚 Valeria`});
+ th.unshift({de:"ag",at:S.user&&S.user.desde,txt:`¡Hola ${nombre()}! Bienvenida a AGENCIA. Este es nuestro canal directo: escríbenos dudas, ideas, promociones o cambios cuando quieras. Te respondemos por aquí o por WhatsApp. 💚 Valeria`});
  $("#chat").innerHTML=th.map(m=>`<div class="bub ${m.de}"><div>${esc(m.txt)}</div><small>${m.de=="ag"?"AGENCIA":"Tú"} · ${fmtF(m.at)}</small></div>`).join("");
  const pz=PZ.length?PZ.map(p=>`<li>${esc(p.titulo)} <span class="st ${(S.pz[p.id]||{}).st=="ok"?"ok":(S.pz[p.id]||{}).st=="cm"?"cm":"pd"}">${(S.pz[p.id]||{}).st=="ok"?"Aprobada":(S.pz[p.id]||{}).st=="cm"?"Con cambios":"Por revisar"}</span></li>`).join(""):"<li class=muted>Aún nada: estamos trabajando.</li>";
  const se=S.sent.length?S.sent.slice().reverse().slice(0,30).map(s=>`<li><span class="chip2">${esc(s.toma)}</span> ${esc(s.name)} <span class="muted">· ${fmtF(s.at)}</span></li>`).join(""):`<li class=muted>${nDone()?nDone()+" tomas marcadas como buenas en este celular.":"Todavía no envías tomas. Se suben solas desde el Estudio."}</li>`;
@@ -800,6 +800,8 @@ const _show2=show;show=function(t){if(t=="inicio"&&consultaToca()&&!S._consHoy){
 window.show=show;
 UNL[1][2]="Ya eres parte de AGENCIA. Ahora vienen 20 preguntas sobre ti, tu servicio y tus clientas. No hay respuestas correctas: entre más honesta seas, más tuyo será tu material. También se abrió la sección Agencia, nuestro canal directo contigo.";
 UNL[2][2]="¡Terminaste tu diagnóstico! Con tus gustos e intereses armamos tus guiones. En el Estudio el Director te acompaña toma por toma. Partimos por tu voz y tus manos: la cámara llega de a poco, cuando tú quieras. Nadie te apura.";
+
+renderAll();
 
 </script>
 </body></html>
