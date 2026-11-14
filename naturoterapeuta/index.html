@@ -232,6 +232,8 @@ details p{font-size:15px}
 #intro .ag{font-size:clamp(24px,8.2vw,56px);letter-spacing:.3em;margin-right:0;padding-left:.3em;white-space:nowrap}
 #intro .nm{font-size:10.5px;letter-spacing:.22em;white-space:nowrap}
 #intro>div:not(.tap){max-width:100%}
+
+.inst{border-color:var(--olive);background:linear-gradient(180deg,var(--olive-soft),var(--surface) 70%)}.inst .ico{display:inline-block;border:1px solid var(--line);border-radius:6px;padding:0 5px}
 </style>
 
 <div id="intro"><div class="tap"><div><i></i>Toca para entrar</div></div><div><div class="ag" aria-label="AGENCIA"><span style="animation-delay:0.00s">A</span><span style="animation-delay:0.09s">G</span><span style="animation-delay:0.18s">E</span><span style="animation-delay:0.27s">N</span><span style="animation-delay:0.36s">C</span><span style="animation-delay:0.45s">I</span><span style="animation-delay:0.54s">A</span></div><div class="by">by Valeria</div><div class="ln"></div><div class="cl" id="introLogo"></div><div class="nm">Naturópata · Carolina Pereira</div><button class="go" id="introGo">Comenzar</button></div></div>
@@ -742,7 +744,7 @@ syncAnswers=function(){if(!PUENTE)return;clearTimeout(ansT);ansT=setTimeout(()=>
 /* intro AGENCIA by Valeria */
 (()=>{const it=$("#intro");let first=false;try{first=!localStorage.getItem("ag_intro")}catch(e){}
  const close=()=>{it.classList.add("out");try{localStorage.setItem("ag_intro","1")}catch(e){}setTimeout(()=>{it.remove();checkUnlock()},700)};
- $("#introGo").onclick=()=>{unlockSound();close();setTimeout(hello,350)};it.querySelector(".tap").onclick=()=>{it.classList.add("play");introSound();if(!first)setTimeout(()=>{close();setTimeout(hello,350)},4700)}
+ $("#introGo").onclick=()=>{unlockSound();hello();close()};it.querySelector(".tap").onclick=()=>{it.classList.add("play");introSound();if(!first)setTimeout(()=>{hello();close()},4700)}
  const svg=$("header svg.iso").cloneNode(true);svg.removeAttribute("class");$("#introLogo").appendChild(svg)})();
 $("#hdQ").onclick=()=>{$$("section").forEach(s=>s.hidden=s.id!=="dudas");renderTabs("");scrollTo(0,0)};
 
@@ -845,8 +847,8 @@ function badge(){const n=unread();try{n?navigator.setAppBadge&&navigator.setAppB
 async function avisar(txt){try{if(document.visibilityState=="visible"){toast("💬 "+txt.slice(0,80));unlockSound();return}
  if(window.Notification&&Notification.permission=="granted"){const r=await navigator.serviceWorker.ready;r.showNotification("AGENCIA by Valeria",{body:txt.slice(0,140),icon:"icon-192.png",tag:"agencia",data:{url:"./?tab=agencia"}})}}catch(e){}}
 renderAgencia=function(){const w={de:"ag",at:S.user&&S.user.desde,txt:`¡Hola ${nombre()}! Bienvenida a AGENCIA. Este es nuestro canal directo: escríbenos dudas, ideas, promociones o cambios cuando quieras. Te respondemos por aquí. 💚 Valeria`};
- const th=[w,...MSG.map(m=>({de:m[1]=="agencia"?"ag":"yo",at:m[0],txt:m[2]})),...S.pend.map(p=>({de:"yo",at:p.at,txt:p.txt,pend:1})),...(MSGok?[]:S.msg.map(m=>({de:"yo",at:m.at,txt:m.txt})))];
- $("#chat").innerHTML=th.map(m=>`<div class="bub ${m.de}"><div>${esc(m.txt)}</div><small>${m.de=="ag"?"AGENCIA":"Tú"} · ${fmtF(m.at)}${m.pend?" · enviando…":""}</small></div>`).join("");
+ const th=[w,...MSG.map(m=>({de:m[1]=="agencia"?"ag":"yo",at:m[0],txt:m[2]})),...(S.auto||[]).map(m=>({de:"ag",at:m.at,txt:m.txt,auto:1})),...S.pend.map(p=>({de:"yo",at:p.at,txt:p.txt,pend:1})),...(MSGok?[]:S.msg.map(m=>({de:"yo",at:m.at,txt:m.txt})))];
+ $("#chat").innerHTML=th.slice(0,1).concat(th.slice(1).sort((a,b)=>String(a.at).localeCompare(String(b.at)))).map(m=>`<div class="bub ${m.de}"><div>${esc(m.txt)}</div><small>${m.de=="ag"?(m.auto?"AGENCIA · mensaje automático":"AGENCIA"):"Tú"} · ${fmtF(m.at)}${m.pend?" · enviando…":""}</small></div>`).join("");
  S.seenAg=MSG.filter(m=>m[1]=="agencia").length;S.seenPz=PZ.length;persist();badge();try{navigator.serviceWorker&&navigator.serviceWorker.controller&&navigator.serviceWorker.controller.postMessage({vistos:S.seenAg})}catch(e){}
  const pz=PZ.length?PZ.map(p=>`<li>${esc(p.titulo)} <span class="st ${(S.pz[p.id]||{}).st=="ok"?"ok":(S.pz[p.id]||{}).st=="cm"?"cm":"pd"}">${(S.pz[p.id]||{}).st=="ok"?"Aprobada":(S.pz[p.id]||{}).st=="cm"?"Con cambios":"Por revisar"}</span></li>`).join(""):"<li class=muted>Aún nada: estamos trabajando.</li>";
  const se=S.sent.length?S.sent.slice().reverse().slice(0,30).map(s=>`<li><span class="chip2">${esc(s.toma)}</span> ${esc(s.name)} <span class="muted">· ${fmtF(s.at)}</span></li>`).join(""):`<li class=muted>${nDone()?nDone()+" tomas marcadas como buenas en este celular.":"Todavía no envías tomas. Se suben solas desde el Estudio."}</li>`;
@@ -924,7 +926,7 @@ let _unl=false;function primeAudio(){if(_unl)return;_unl=true;try{ax()}catch(e){
 ["touchend","click","keydown"].forEach(ev=>document.addEventListener(ev,primeAudio,{capture:true,passive:true}));
 (()=>{const tap=$("#intro .tap");if(!tap)return;tap.onclick=()=>{primeAudio();$("#intro").classList.add("play");introSound();
  document.fonts.load('300 80px "Montserrat"').catch(()=>{}).then(()=>introFX());
- let first=false;try{first=!localStorage.getItem("ag_intro")}catch(e){}if(!first)setTimeout(()=>{const it=$("#intro");if(it){it.classList.add("out");try{localStorage.setItem("ag_intro","1")}catch(e){}setTimeout(()=>{it.remove();hello()},700)}},4700)}})();
+ let first=false;try{first=!localStorage.getItem("ag_intro")}catch(e){}if(!first)setTimeout(()=>{const it=$("#intro");if(it){hello();it.classList.add("out");try{localStorage.setItem("ag_intro","1")}catch(e){}setTimeout(()=>it.remove(),700)}},4700)}})();
 
 /* --- registro de errores en vivo (llegan a la hoja "Errores" de la agencia) --- */
 let _errN=0;function logErr(m){if(!PUENTE||_errN++>8)return;try{fetch(PUENTE,{method:"POST",body:JSON.stringify({llave:LLAVE,accion:"log",msg:String(m).slice(0,500),ua:navigator.userAgent.slice(0,180),etapa:stage(),pantalla:($$("section").find(s=>!s.hidden)||{}).id||""})}).catch(()=>{})}catch(e){}}
@@ -983,6 +985,43 @@ function progresoHTML(){if(stage()<3)return"";const lunes=new Date().getDay()==1
 /* --- Inicio con logros y progreso --- */
 const _rh5=renderHome;renderHome=function(){_rh5();const h=$("#home");if(!h)return;const p=document.createElement("div");p.innerHTML=progresoHTML()+logrosHTML();(h.querySelector("h3")||h.querySelector(".jr")).before(...[...p.children])};
 checkLogros();if(!$("#inicio").hidden)renderHome();
+
+/* ================= EVOLUCIÓN 6 · instalar en el celular, mensajes automáticos, editar guiones ================= */
+/* --- guía para instalar (iPhone: Safari → Compartir → Agregar a inicio; Android: botón Instalar) --- */
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform=="MacIntel"&&navigator.maxTouchPoints>1);
+const instalada=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+let _bip=null;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();_bip=e;if(!$("#inicio").hidden)renderHome()});
+function instalarHTML(){if(instalada()||S.noInst)return"";
+ if(isIOS)return `<div class="card2 inst"><b>📲 Instala tu app en el iPhone</b><ol class="ls"><li>Abre este link en <b>Safari</b> (no dentro de Instagram ni WhatsApp).</li><li>Toca <b>Compartir</b> <span class="ico">⬆︎</span> abajo al centro.</li><li>Elige <b>"Agregar a inicio"</b> y toca <b>Agregar</b>.</li><li>Abre la app desde el ícono CP de tu pantalla.</li></ol><p class="muted" style="font-size:13px;margin:6px 0 0">Así funcionan la cámara, el sonido y los avisos, y todo queda guardado.</p><button class="btn small ghost" data-noinst style="margin-top:8px">Ya la instalé</button></div>`;
+ return `<div class="card2 inst"><b>📲 Instala tu app</b><p style="font-size:15px;margin:6px 0 8px">Queda con su ícono en tu celular, a pantalla completa y con avisos.</p>${_bip?`<button class="btn small" data-inst>Instalar ahora</button>`:`<p class="muted" style="font-size:14px;margin:0">En Chrome: menú ⋮ → <b>"Instalar app"</b> o <b>"Agregar a pantalla principal"</b>.</p>`} <button class="btn small ghost" data-noinst>Ya la instalé</button></div>`}
+document.addEventListener("click",async e=>{if(e.target.closest("[data-inst]")&&_bip){_bip.prompt();try{await _bip.userChoice}catch(x){}_bip=null;renderHome()}if(e.target.closest("[data-noinst]")){S.noInst=1;persist();renderHome()}});
+
+/* --- mensajes automáticos de la agencia en los hitos (la conversación nunca parte vacía) --- */
+S.auto=S.auto||[];S.autoK=S.autoK||{};
+const AUTO=[["diag",()=>answered()>=Q.length,()=>`¡${nombre()}, gracias por responder todo! 🌿 Ya leímos tu diagnóstico. Con esto armamos tus guiones: se abrió tu Estudio de grabación. Parte tranquila, por tu voz y tus manos.`],
+["toma1",()=>nDone()>=1,()=>`¡Tu primera toma llegó a la agencia! 🎬 Así se empieza: una a la vez. Cualquier duda, escríbenos aquí.`],
+["mitad",()=>nDone()>=8,()=>`8 tomas listas 👏 Con esto ya podemos armar tu primera semana. Se abrió tu Agenda: revisa tu planificación y apruébala cuando puedas.`],
+["mes1",()=>weeksOk()>=4,()=>`¡Mes 1 aprobado! 🌸 Empezamos a producir tu material. Te avisaremos aquí apenas haya piezas para revisar.`],
+["esc3",()=>(S.escN||0)>=3,()=>`Vimos que ya subiste al escalón 3 en cámara. ¡Eso es valentía! 💚`]];
+function autoMsgs(){let n=0;for(const a of AUTO){if(!S.autoK[a[0]]&&S.user&&a[1]()){S.autoK[a[0]]=1;S.auto.push({at:new Date().toISOString(),txt:a[2]()});n++}}if(n){_p6();const b=$('#tabs button[data-t="agencia"]');if(b&&$("#agencia").hidden){let d=b.querySelector(".dot");if(!d){d=document.createElement("b");d.className="dot";b.appendChild(d)}d.hidden=false;d.textContent=(+d.textContent||0)+n}}}
+const _p6=persist;persist=function(){_p6();clearTimeout(window._amT);window._amT=setTimeout(autoMsgs,400)};
+
+/* --- editar guiones en el Estudio --- */
+S.guion=S.guion||{};SH.forEach(s=>{if(S.guion[s[0]])s[4]=S.guion[s[0]]});
+const _sh6=shots;shots=function(){_sh6();$$("#shots .shot").forEach(el=>{const id=(el.querySelector(".id")||{}).textContent;if(!id)return;const s=SH.find(x=>x[0]==id.split(" ")[0]);if(!s||!s[4]||el.querySelector("[data-ed]"))return;
+ const b=document.createElement("button");b.className="btn small ghost";b.dataset.ed=s[0];b.textContent=S.guion[s[0]]?"✏️ Editar mi guion (editado)":"✏️ Editar guion";b.style.marginTop="8px";el.appendChild(b)})};
+document.addEventListener("click",e=>{const b=e.target.closest("[data-ed]");if(!b)return;const s=SH.find(x=>x[0]==b.dataset.ed);if(!s)return;
+ const d=document.createElement("div");d.id="unlock";d.innerHTML=`<div class="box" style="text-align:left"><h2 style="margin-top:0">Tu guion · ${esc(s[0])}</h2><p class="muted" style="font-size:14px">Cámbialo para que suene a ti. Frases cortas y sin promesas de salud (nada de "cura" o "sana"). La agencia lo revisa antes de publicar.</p>
+ <textarea id="edT" rows="6" style="width:100%;font:inherit;padding:12px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);color:var(--fg)">${esc(s[4])}</textarea><div id="edW"></div>
+ <div class="row" style="margin-top:12px"><button class="btn small" data-g>Guardar</button><button class="btn small ghost" data-x>Cancelar</button></div></div>`;document.body.appendChild(d);
+ const chk=()=>{const v=$("#edT").value.toLowerCase();const lista=(typeof BAD!="undefined"&&Array.isArray(BAD))?BAD.map(w=>Array.isArray(w)?w[0]:w):["cura","sana","elimina","garantiz"];const bad=lista.filter(w=>w&&v.includes(String(w).toLowerCase()));$("#edW").innerHTML=bad.length?`<div class="alert" style="margin-top:8px">⚠ Evita: ${bad.map(esc).join(", ")}</div>`:""};$("#edT").oninput=chk;chk();
+ d.querySelector("[data-x]").onclick=()=>d.remove();
+ d.querySelector("[data-g]").onclick=()=>{const v=$("#edT").value.trim();if(!v)return;S.guion[s[0]]=v;s[4]=v;persist();d.remove();shots();toast("Guion guardado ✓ La agencia lo verá");
+  post({accion:"mensaje",texto:`✏️ Edité mi guion ${s[0]} (${s[2]}):\n"${v}"`,correo:(S.user||{}).correo||""}).then(()=>loadMsgs(true)).catch(()=>{})}});
+
+/* --- Inicio: guía de instalación arriba --- */
+const _rh6=renderHome;renderHome=function(){_rh6();const h=$("#home");if(!h)return;const x=instalarHTML();if(x){const p=document.createElement("div");p.innerHTML=x;h.prepend(p.firstElementChild)}};
+shots();autoMsgs();if(!$("#inicio").hidden)renderHome();
 
 </script>
 </body></html>
