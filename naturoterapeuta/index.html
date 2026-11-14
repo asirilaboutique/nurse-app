@@ -249,6 +249,7 @@ details p{font-size:15px}
 .photo{height:150px;border-radius:20px;background:center/cover;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;color:#F4EEE4;margin:6px 0 14px;box-shadow:0 10px 30px rgba(0,0,0,.12)}.photo b{font:400 24px var(--display)}.photo span{font-size:14px;opacity:.9}
 section:not([hidden]){animation:secIn .35s ease both}@keyframes secIn{from{opacity:0;transform:translateY(8px)}}
 @media (prefers-reduced-motion:reduce){section:not([hidden]){animation:none}}
+#hello .hb{animation:fade .9s .35s both}
 </style>
 
 <div id="intro"><div class="tap"><div><i></i>Toca para entrar</div></div><div><div class="ag" aria-label="AGENCIA"><span style="animation-delay:0.00s">A</span><span style="animation-delay:0.09s">G</span><span style="animation-delay:0.18s">E</span><span style="animation-delay:0.27s">N</span><span style="animation-delay:0.36s">C</span><span style="animation-delay:0.45s">I</span><span style="animation-delay:0.54s">A</span></div><div class="by">by Valeria</div><div class="ln"></div><div class="cl" id="introLogo"></div><div class="nm">Naturópata · Carolina Pereira</div><button class="go" id="introGo">Comenzar</button></div></div>
@@ -1088,6 +1089,16 @@ const _lh7=logrosHTML;logrosHTML=function(){return _lh7().replace(/<span>🔒<\/
 (()=>{const add=(sec,img,t,s)=>{const el=$(sec);if(!el||el.querySelector(".photo"))return;const d=document.createElement("div");d.className="photo";d.style.backgroundImage=`linear-gradient(180deg,rgba(30,31,26,.15),rgba(30,31,26,.72)),url(${img})`;d.innerHTML=`<b>${t}</b><span>${s}</span>`;el.querySelector("h2").after(d)};
  add("#grabar","img/bg_estudio.jpg","Tu espacio para crear","A tu ritmo, una toma a la vez.");add("#agencia","img/bg_agencia.jpg","Estamos contigo","Conversa, pregunta y revisa todo aquí.")})();
 renderAll();if(!$("#inicio").hidden)renderHome();if(!$("#agenda").hidden)renderAgenda();{const _sg=show;show=function(t){_sg(t);if(t=="grabar"){misTomas();if(!S.tutoV&&!$("#tut"))setTimeout(tutorial,500)}};window.show=show}
+
+/* ================= EVOLUCIÓN 8 · latido de corazón + transición sin "portal" ================= */
+introSound=function(){try{const c=ax(),t=c.currentTime,out=c.createGain();out.gain.value=.9;out.connect(c.destination);
+ const beat=(s,v)=>{[[0,58,v],[.17,48,v*.7]].forEach(([o,f,g0])=>{const os=c.createOscillator(),g=c.createGain(),lp=c.createBiquadFilter();lp.type="lowpass";lp.frequency.value=140;
+  os.type="sine";os.frequency.setValueAtTime(f*1.6,s+o);os.frequency.exponentialRampToValueAtTime(f,s+o+.06);g.gain.setValueAtTime(.0001,s+o);g.gain.exponentialRampToValueAtTime(g0,s+o+.012);g.gain.exponentialRampToValueAtTime(.0008,s+o+.22);
+  os.connect(lp).connect(g).connect(out);os.start(s+o);os.stop(s+o+.25)})};
+ [0,.95,1.85,2.7,3.5].forEach((d,i)=>beat(t+.15+d,.55+i*.08));
+ const p=c.createOscillator(),pg=c.createGain();p.type="sine";p.frequency.value=220;pg.gain.setValueAtTime(.0001,t+3.6);pg.gain.exponentialRampToValueAtTime(.05,t+4.1);pg.gain.exponentialRampToValueAtTime(.0001,t+5.6);p.connect(pg).connect(out);p.start(t+3.6);p.stop(t+5.7)}catch(e){}};
+/* el saludo se monta YA opaco debajo de la intro: al desvanecerse la intro nunca se ve la app */
+const _hello8=hello;hello=function(){_hello8();const d=$("#hello");if(d){d.style.animation="none";d.style.opacity="1"}};
 
 </script>
 </body></html>
