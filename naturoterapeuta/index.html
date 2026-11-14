@@ -719,7 +719,7 @@ syncAnswers=function(){if(!PUENTE)return;clearTimeout(ansT);ansT=setTimeout(()=>
  $("#introGo").onclick=()=>{unlockSound();close();setTimeout(hello,350)};it.querySelector(".tap").onclick=()=>{it.classList.add("play");introSound();if(!first)setTimeout(()=>{close();setTimeout(hello,350)},3400)}
  const svg=$("header svg.iso").cloneNode(true);svg.removeAttribute("class");$("#introLogo").appendChild(svg)})();
 $("#hdQ").onclick=()=>{$$("section").forEach(s=>s.hidden=s.id!=="dudas");renderTabs("");scrollTo(0,0)};
-persist();show(stage()==0?"cuenta":stage()==1&&answered()?"diag":"inicio");
+
 
 /* ================= EVOLUCIÓN 2 · sonido, saludo, frases, Agencia, escalera, 3 meses, consulta ================= */
 /* --- sonidos (sintetizados, sin archivos) --- */
@@ -802,6 +802,7 @@ UNL[1][2]="Ya eres parte de AGENCIA. Ahora vienen 20 preguntas sobre ti, tu serv
 UNL[2][2]="¡Terminaste tu diagnóstico! Con tus gustos e intereses armamos tus guiones. En el Estudio el Director te acompaña toma por toma. Partimos por tu voz y tus manos: la cámara llega de a poco, cuando tú quieras. Nadie te apura.";
 
 renderAll();
+persist();show(stage()==0?"cuenta":stage()==1&&answered()?"diag":"inicio");
 
 </script>
 </body></html>
