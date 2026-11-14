@@ -234,6 +234,21 @@ details p{font-size:15px}
 #intro>div:not(.tap){max-width:100%}
 
 .inst{border-color:var(--olive);background:linear-gradient(180deg,var(--olive-soft),var(--surface) 70%)}.inst .ico{display:inline-block;border:1px solid var(--line);border-radius:6px;padding:0 5px}
+
+/* v7 */
+#rTx.tp{max-height:38vh;overflow:hidden;font-size:clamp(28px,8vw,46px);line-height:1.35;padding:6px 4px;-webkit-mask-image:linear-gradient(180deg,transparent,#000 14%,#000 80%,transparent);mask-image:linear-gradient(180deg,transparent,#000 14%,#000 80%,transparent)}
+#tut{position:fixed;inset:0;z-index:57;background:rgba(20,21,17,.82);display:grid;place-items:center;padding:20px;animation:fade .3s forwards;opacity:0}
+#tut .tb{background:var(--bg);border-radius:24px;padding:28px 22px;max-width:420px;width:100%;text-align:center;animation:pop .45s cubic-bezier(.2,1.4,.4,1)}#tut .ti{font-size:48px}
+#tut .dots{display:flex;gap:6px;justify-content:center;margin:12px 0 16px}#tut .dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}#tut .dots i.on{background:var(--olive);width:22px;border-radius:4px}
+.mt{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.lock{border-style:dashed}
+.hbar{margin:-4px 0 14px}.hbar .hb{height:6px;border-radius:3px;background:rgba(244,238,228,.25);overflow:hidden}.hbar .hb i{display:block;height:100%;background:#F4EEE4;border-radius:3px;transition:width .6s}.hbar small{display:block;margin-top:6px;opacity:.85;font-size:13px}
+.li{width:28px;height:28px}.lg span .li{width:26px;height:26px}.dipl .ic .li,#unlock .ic .li{width:54px;height:54px;color:var(--olive)}
+.lg.on span{color:var(--olive)}
+.hero{background:linear-gradient(150deg,rgba(95,107,74,.9) 0%,rgba(52,61,40,.94) 100%),url(img/bg_inicio.jpg) center/cover}
+.photo{height:150px;border-radius:20px;background:center/cover;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;color:#F4EEE4;margin:6px 0 14px;box-shadow:0 10px 30px rgba(0,0,0,.12)}.photo b{font:400 24px var(--display)}.photo span{font-size:14px;opacity:.9}
+section:not([hidden]){animation:secIn .35s ease both}@keyframes secIn{from{opacity:0;transform:translateY(8px)}}
+@media (prefers-reduced-motion:reduce){section:not([hidden]){animation:none}}
 </style>
 
 <div id="intro"><div class="tap"><div><i></i>Toca para entrar</div></div><div><div class="ag" aria-label="AGENCIA"><span style="animation-delay:0.00s">A</span><span style="animation-delay:0.09s">G</span><span style="animation-delay:0.18s">E</span><span style="animation-delay:0.27s">N</span><span style="animation-delay:0.36s">C</span><span style="animation-delay:0.45s">I</span><span style="animation-delay:0.54s">A</span></div><div class="by">by Valeria</div><div class="ln"></div><div class="cl" id="introLogo"></div><div class="nm">Naturópata · Carolina Pereira</div><button class="go" id="introGo">Comenzar</button></div></div>
@@ -1022,6 +1037,57 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-ed]");if(!
 /* --- Inicio: guía de instalación arriba --- */
 const _rh6=renderHome;renderHome=function(){_rh6();const h=$("#home");if(!h)return;const x=instalarHTML();if(x){const p=document.createElement("div");p.innerHTML=x;h.prepend(p.firstElementChild)}};
 shots();autoMsgs();if(!$("#inicio").hidden)renderHome();
+
+/* ================= EVOLUCIÓN 7 · teleprompter, tutorial, mis tomas, plan por etapas, íconos propios, fotos ================= */
+/* --- teleprompter: el texto sube solo mientras grabas --- */
+setInterval(()=>{const tx=$("#rTx");if(!tx||$("#rec").hidden)return;const s=SH.find(x=>x[0]==R.q[R.i]);const on=R.ph=="rec"&&s&&s[4]&&s[1]!="foto";
+ tx.classList.toggle("tp",!!on);if(!on){tx.scrollTop=0;return}if(R.paused)return;const p=Math.min(1,Math.max(0,1-(R.end-performance.now())/R.len));
+ const max=tx.scrollHeight-tx.clientHeight;if(max>0)tx.scrollTop=Math.max(0,(p-.08)/.84)*max},60);
+
+/* --- tutorial del modo sola (5 pasos, se muestra la primera vez) --- */
+const TUT=[["📱","Apoya el celular","Vertical, a la altura de tus ojos, cerca de una ventana. Si es una toma de manos, usa la cámara de atrás (🔄)."],
+["🗣","El Director te habla","Te dice qué toma viene y te da un consejo. Después cuenta 3, 2, 1 y graba solo."],
+["📜","Lee sin apuro","El texto sube solo en la pantalla mientras grabas, como un teleprompter. Si quieres cambiar algo, toca ✏️ Editar guion antes."],
+["👍","¿Buena o mala?","Al terminar te pregunta. Responde con la voz, con el pulgar frente a la cámara o tocando el botón. Si es mala, se repite."],
+["☁","Llega sola a la agencia","Cada toma buena se sube sola. Tú solo te preocupas de estar tranquila. ¡Lo estás haciendo muy bien!"]];
+function tutorial(){let i=0;const d=document.createElement("div");d.id="tut";const draw=()=>{d.innerHTML=`<div class="tb"><div class="ti">${TUT[i][0]}</div><h2>${TUT[i][1]}</h2><p>${TUT[i][2]}</p>
+ <div class="dots">${TUT.map((_,k)=>`<i class="${k==i?"on":""}"></i>`).join("")}</div><div class="row"><button class="btn ghost small" data-sk>Saltar</button><button class="btn small" data-nx>${i<TUT.length-1?"Siguiente":"¡Vamos!"}</button></div></div>`;
+ d.querySelector("[data-sk]").onclick=fin;d.querySelector("[data-nx]").onclick=()=>{if(i<TUT.length-1){i++;draw()}else fin()}};const fin=()=>{d.remove();S.tutoV=1;persist()};draw();document.body.appendChild(d)}
+(()=>{const b=document.createElement("button");b.className="btn ghost";b.textContent="❔ ¿Cómo funciona el modo sola?";b.style.margin="6px 0";$("#soloAll").after(b);b.onclick=tutorial})();
+
+/* --- mis tomas enviadas, con opción de repetir --- */
+function misTomas(){let box=$("#misT");if(!box){box=document.createElement("div");box.id="misT";$("#shots").before(box)}
+ const ids=[...new Set(SH.filter(s=>S.done[s[0]]).map(s=>s[0]))];if(!ids.length){box.innerHTML="";return}
+ box.innerHTML=`<details class="card2"><summary><b>✅ Tus tomas listas (${ids.length})</b></summary><ul class="ls" style="list-style:none;padding:0">${ids.map(id=>{const s=SH.find(x=>x[0]==id);const up=S.sent.filter(x=>x.toma==id).length;
+  return `<li class="mt"><span><span class="chip2">${id}</span> ${esc(s[2])}<br><small class="muted">${up?"☁ "+up+" archivo"+(up>1?"s":"")+" en la agencia":"Marcada en este celular"}</small></span><button class="btn small ghost" data-rep="${id}">🔁 Repetir</button></li>`}).join("")}</ul></details>`}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-rep]");if(b)recOpen([b.dataset.rep])});
+const _sh7=shots;shots=function(){_sh7();misTomas()};
+
+/* --- planificación por etapas: meses 2 y 3 se abren al aprobar el mes 1 --- */
+const _cal7=cal;cal=function(){const h=_cal7();if(weeksOk()>=4)return h;const a=h.indexOf("<h3>Mes 2"),b=h.lastIndexOf('<p class="muted"');
+ return a<0?h:h.slice(0,a)+`<div class="card2 lock"><b>🔒 Meses 2 y 3</b><p class="muted" style="font-size:14px;margin:4px 0 0">Se abren cuando apruebes las 4 semanas del mes 1. Vamos paso a paso.</p></div>`+(b>a?h.slice(b):"")};
+const _ra7=renderAgenda;renderAgenda=function(){_ra7();const c=$("#cal");if(c)c.innerHTML=cal();if(weeksOk()<4){$$("#valW .vw").forEach((v,i)=>{if(i>=4)v.hidden=true});$$("#valW h3").forEach(h=>{if(/Mes [23]/.test(h.textContent))h.hidden=true})}};
+
+/* --- "cuánto me falta" en la tarjeta principal --- */
+const _rh7=renderHome;renderHome=function(){_rh7();const st=stage(),hero=$("#home .hero");if(!hero||!st)return;
+ const m=[null,[answered(),Q.length,"preguntas"],[Math.min(nDone(),8),8,"tomas para abrir tu Agenda"],[weeksOk(),4,"semanas del mes 1"],[Object.values(S.pz||{}).filter(v=>v.st=="ok").length,Math.max(PZ.length,1),"piezas aprobadas"]][st];if(!m)return;
+ const p=Math.round(m[0]/m[1]*100),f=Math.max(0,m[1]-m[0]);const d=document.createElement("div");d.className="hbar";d.innerHTML=`<div class="hb"><i style="width:${p}%"></i></div><small>${m[0]} de ${m[1]} ${m[2]}${f?` · te falta${f>1?"n":""} ${f}`:" · ¡listo!"}</small>`;hero.querySelector("button").before(d)};
+
+/* --- íconos propios en línea fina (reemplazan los emojis de los logros) --- */
+const SV=p=>`<svg viewBox="0 0 24 24" class="li" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${p}</g></svg>`;
+const LI={cuenta:'<path d="M12 21V11"/><path d="M12 13c-4 0-6-3-6-7 4 0 6 3 6 7z"/><path d="M12 11c0-4 2-7 6-7 0 4-2 7-6 7z"/>',diag:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/>',toma1:'<rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/>',
+respira:'<path d="M3 9h11a3 3 0 1 0-3-3"/><path d="M3 13h15a3 3 0 1 1-3 3"/><path d="M3 17h7"/>',mitad:'<path d="M12 21c-5-3-8-7-8-12a8 8 0 0 1 16 0c0 5-3 9-8 12z"/><path d="M12 21V9"/>',kit:'<circle cx="12" cy="9" r="5"/><path d="M9 13l-2 8 5-3 5 3-2-8"/>',
+esc1:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/>',esc3:'<circle cx="12" cy="12" r="2.5"/><path d="M12 9.5C11 6 12 3 12 3s1 3 0 6.5M14.5 12C18 11 21 12 21 12s-3 1-6.5 0M12 14.5c1 3.5 0 6.5 0 6.5s-1-3 0-6.5M9.5 12C6 13 3 12 3 12s3-1 6.5 0"/>',esc5:'<path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/>',
+msg:'<path d="M4 5h16v11H8l-4 4z"/>',sem1:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',mes1:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/>',pieza:'<path d="M7 11v9H4v-9zM7 11l4-8a2 2 0 0 1 2 2v4h6a2 2 0 0 1 2 2l-2 7a2 2 0 0 1-2 2H7"/>',
+reel:'<path d="M5 15c-1 2-1 4-1 5 1 0 3 0 5-1M12 15l-3-3a12 12 0 0 1 10-9 12 12 0 0 1-9 10z"/><circle cx="15" cy="9" r="1.5"/>',plus:'<path d="M12 22c4 0 7-3 7-7 0-5-5-7-5-12-3 2-4 5-4 7-1-1-2-2-2-3-2 2-3 5-3 8 0 4 3 7 7 7z"/>',lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'};
+LOG.forEach(l=>{l.emoji=l.emoji||l[1];if(LI[l[0]])l[1]=SV(LI[l[0]])});
+const _gd7=guardarDiploma;guardarDiploma=(l,f)=>{const c=l.slice();c[1]=l.emoji||"🌿";return _gd7(c,f)};
+const _lh7=logrosHTML;logrosHTML=function(){return _lh7().replace(/<span>🔒<\/span>/g,`<span>${SV(LI.lock)}</span>`)};
+
+/* --- fotos de fondo (banco libre CC0) --- */
+(()=>{const add=(sec,img,t,s)=>{const el=$(sec);if(!el||el.querySelector(".photo"))return;const d=document.createElement("div");d.className="photo";d.style.backgroundImage=`linear-gradient(180deg,rgba(30,31,26,.15),rgba(30,31,26,.72)),url(${img})`;d.innerHTML=`<b>${t}</b><span>${s}</span>`;el.querySelector("h2").after(d)};
+ add("#grabar","img/bg_estudio.jpg","Tu espacio para crear","A tu ritmo, una toma a la vez.");add("#agencia","img/bg_agencia.jpg","Estamos contigo","Conversa, pregunta y revisa todo aquí.")})();
+renderAll();if(!$("#inicio").hidden)renderHome();if(!$("#agenda").hidden)renderAgenda();if(!S.tutoV){const _sg=show;show=function(t){_sg(t);if(t=="grabar"&&!S.tutoV&&!$("#tut"))setTimeout(tutorial,500)};window.show=show}
 
 </script>
 </body></html>
