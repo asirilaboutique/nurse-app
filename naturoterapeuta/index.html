@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#5E6B3A"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style><script>if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{})</script></head><body>
 <title>Naturoterapeuta Carolina</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Figtree:wght@400;500;600;700&display=swap">
@@ -131,6 +131,14 @@ details p{font-size:15px}
 #rFlash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .15s}
 #rSaved{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);background:#000c;border-radius:16px;padding:14px 18px;font-weight:700;display:none}
 .rshot{display:flex;gap:8px;flex-wrap:wrap}
+#rPrev{position:absolute;right:max(12px,env(safe-area-inset-right,0px));top:calc(70px + env(safe-area-inset-top,0px));width:34vw;max-width:180px;border-radius:12px;border:2px solid #fff;box-shadow:0 6px 20px #000a;background:#000}
+.upq{display:grid;gap:6px;margin:10px 0}
+.up{display:grid;grid-template-columns:1fr auto;gap:2px 10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14px}
+.up .b{grid-column:1/-1;height:6px;background:var(--line);border-radius:9px;overflow:hidden}.up .b i{display:block;height:100%;background:var(--olive);width:0}
+.up.ok{border-color:var(--ok)}.up.err{border-color:var(--warn)}
+.plus{border:1.5px solid var(--olive);border-radius:16px;padding:14px 16px;margin-top:16px;background:var(--olive-soft)}
+.plus b{color:var(--olive)}
+.cloud{font-size:13px;font-weight:700;border-radius:99px;padding:4px 10px;display:inline-block}
 </style>
 
 <div class="wrap">
@@ -140,6 +148,7 @@ details p{font-size:15px}
 <section id="inicio">
 <h2>Hola, Carolina 🌿</h2>
 <p>Esta es tu app de trabajo con la agencia. Tú respondes, grabas y apruebas. Nosotras diseñamos, escribimos, editamos y programamos.</p>
+<p>Con tus respuestas y tus grabaciones preparamos tu material de lanzamiento: reels, carruseles e historias. Te lo mostramos antes de publicar y lo vamos afinando con tus comentarios hasta que lo apruebes. Nada sale sin tu visto bueno.</p>
 <div class="steps" id="steps"></div>
 <button class="btn" id="goNext">Empezar</button>
 <p class="muted" style="margin-top:12px;font-size:14px">Todo se guarda solo en este celular mientras avanzas. Puedes cerrar y volver cuando quieras.</p>
@@ -162,6 +171,14 @@ details p{font-size:15px}
 <h3>Tus 4 semanas de lanzamiento</h3>
 <p class="muted" style="font-size:15px">Reels, carruseles e historias para Instagram y Facebook. La agencia los produce; tú solo apruebas el lunes.</p>
 <div id="cal"></div>
+<h3>Cómo se afina tu material</h3>
+<div class="steps">
+ <div class="step"><div class="n">1</div><div><b>Tú respondes y grabas</b><span>Con la guía del Director, a tu ritmo.</span></div></div>
+ <div class="step"><div class="n">2</div><div><b>La agencia prepara</b><span>Edita tus tomas, diseña carruseles e historias y escribe los textos.</span></div></div>
+ <div class="step"><div class="n">3</div><div><b>Tú apruebas o pides cambios</b><span>Cada lunes por WhatsApp. Ajustamos hasta que te guste.</span></div></div>
+ <div class="step"><div class="n">4</div><div><b>Se publica y medimos</b><span>Vemos qué funcionó y lo usamos para la semana siguiente.</span></div></div>
+</div>
+<div class="plus"><b>Plan Plus · publicación automática</b><p style="margin:6px 0 0">En el plan base, tú publicas lo aprobado (te lo dejamos listo para copiar y subir). Con el Plan Plus, por un monto adicional módico, la agencia programa y publica todo automáticamente en Instagram y Facebook, en los mejores horarios. Tú solo apruebas.</p></div>
 </section>
 
 <!-- GRABAR -->
@@ -170,6 +187,8 @@ details p{font-size:15px}
 <p class="muted">Tu kit de inicio. Las tarjetas que dicen <b>Ahora</b> van primero. Cuando tengas una, márcala y mándala por WhatsApp a la agencia.</p>
 <button class="btn" id="soloAll" style="margin:6px 0 4px">🎬 Modo sola: grabar con el Director</button>
 <details style="margin:8px 0 12px"><summary>¿Cómo funciona el modo sola?</summary><p>Apoya el celular vertical, a la altura de tus ojos. El Director te habla en voz alta: te dice qué toma viene, te da un consejo, cuenta 3-2-1 y graba solo. Al terminar pregunta "¿Buena o mala?". Responde con la voz, con el pulgar (👍 o 👎 frente a la cámara) o tocando el botón. Si es buena, se guarda en tu celular (carpeta Descargas) y pasa a la siguiente. Si es mala, se repite. Las fotos se toman de a 3 seguidas.</p><p>Para las tomas de manos o de objetos, toca 🔄 para usar la cámara de atrás. Para máxima calidad también puedes grabar con la cámara normal del celular y usar esta pantalla solo como guía.</p></details>
+<div id="cloudSt" style="margin:4px 0"></div>
+<div class="upq" id="upq"></div>
 <div class="big-prog"><i id="pg"></i></div><div class="muted" id="pgt" style="font-size:14px"></div>
 <div class="filt" id="filt">
  <label><input type="radio" name="fl" value="all" checked>Todo</label><label><input type="radio" name="fl" value="foto">📷 Fotos</label><label><input type="radio" name="fl" value="audio">🎙 Audios</label><label><input type="radio" name="fl" value="video">🎬 Videos</label></div>
@@ -200,13 +219,15 @@ details p{font-size:15px}
 
 <div id="rec" hidden>
  <video id="rv" playsinline muted></video><div id="rShade"></div><div id="rFlash"></div><div id="rSaved"></div>
+ <video id="rPrev" playsinline muted loop hidden></video><img id="rPrevI" alt="" hidden style="position:absolute;right:12px;top:80px;width:34vw;max-width:180px;border-radius:12px;border:2px solid #fff">
+ <input type="file" id="rFile" hidden>
  <div id="rTop"><span id="rId"></span><span id="rCnt"></span></div>
  <div id="rBar"><div id="rFill"></div></div>
  <div id="rMain"><div id="rPh">LISTA</div><div id="rTx"></div><div id="rTip"></div><div id="rBig"></div><div id="rG"></div></div>
  <div id="rCtl">
   <button class="go" id="rGo">▶ Partir</button><button class="bad" id="rBad">👎 Mala</button><button class="good" id="rGood">👍 Buena</button>
   <select id="rDur" aria-label="Segundos de grabación"><option value="0">⏱ Auto</option><option value="10">10 s</option><option value="15">15 s</option><option value="20">20 s</option><option value="30">30 s</option><option value="45">45 s</option><option value="60">60 s</option></select>
-  <button id="rFlip" aria-label="Cambiar cámara">🔄</button><button id="rMic">🎙 Voz</button><button id="rHand">✋ Gestos</button><button id="rSkip" aria-label="Saltar toma">⏭</button><button id="rX" aria-label="Salir">✕</button>
+  <button id="rNat">📱 Cámara del celular</button><button id="rFlip" aria-label="Cambiar cámara">🔄</button><button id="rMic">🎙 Voz</button><button id="rHand">✋ Gestos</button><button id="rSkip" aria-label="Saltar toma">⏭</button><button id="rX" aria-label="Salir">✕</button>
  </div>
 </div>
 
@@ -224,7 +245,7 @@ const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const KEY="naturo_cp_v2";let S={ans:{},done:{},i:0};
 try{S=Object.assign(S,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){}
 let db=null;
-const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(db){try{db.doc("diagnostico/carolina").set({ans:S.ans,done:S.done,at:new Date().toISOString()})}catch(e){}}};
+let persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(db){try{db.doc("diagnostico/carolina").set({ans:S.ans,done:S.done,at:new Date().toISOString()})}catch(e){}}};
 (async()=>{try{if(window.claude&&claude.use){db=await claude.use("db");if(db){const d=await db.doc("diagnostico/carolina").get();const x=d&&d.exists!==false&&d.data?d.data():null;if(x&&x.ans&&!Object.keys(S.ans).length){S.ans=x.ans;S.done=x.done||{};renderAll()}}}}catch(e){db=null}})();
 function toast(t){const e=document.createElement("div");e.className="toast";e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),2600)}
 const esc=t=>String(t??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
@@ -305,8 +326,9 @@ const SH=[
 function shots(){const r=ruta(),f=($("input[name=fl]:checked")||{}).value||"all";
 const pri=s=>s[5]=="sin"?0:s[5]=="mixta"?(r=="sin"?2:1):(r=="rostro"?1:3);
 const L=SH.filter(s=>f=="all"||s[1]==f).sort((a,b)=>pri(a)-pri(b));
-$("#shots").innerHTML=L.map(s=>`<div class="shot ${S.done[s[0]]?"done":""}"><div class="top"><span class="id">${s[0]}</span>${pri(s)>=2?'<span class="chip w">Más adelante</span>':'<span class="chip">Ahora</span>'}</div><h4>${s[2]}</h4>${s[4]?`<div class="say">"${s[4]}"</div>`:""}<ol>${s[3].map(x=>`<li>${x}</li>`).join("")}</ol><div class="rshot"><button class="btn small" data-rec="${s[0]}">🎬 Grabar con el Director</button></div><label class="ck"><input type="checkbox" data-id="${s[0]}" ${S.done[s[0]]?"checked":""}>La tengo y la mandé</label></div>`).join("");
+$("#shots").innerHTML=L.map(s=>`<div class="shot ${S.done[s[0]]?"done":""}"><div class="top"><span class="id">${s[0]}</span>${pri(s)>=2?'<span class="chip w">Más adelante</span>':'<span class="chip">Ahora</span>'}</div><h4>${s[2]}</h4>${s[4]?`<div class="say">"${s[4]}"</div>`:""}<ol>${s[3].map(x=>`<li>${x}</li>`).join("")}</ol><div class="rshot"><button class="btn small" data-rec="${s[0]}">🎬 Grabar con el Director</button><button class="btn small ghost" data-nat="${s[0]}">📱 Cámara del celular</button></div><label class="ck"><input type="checkbox" data-id="${s[0]}" ${S.done[s[0]]?"checked":""}>La tengo y la mandé</label></div>`).join("");
 $$("#shots [data-rec]").forEach(b=>b.onclick=()=>recOpen([b.dataset.rec]));
+$$("#shots [data-nat]").forEach(b=>b.onclick=()=>{natPick(b.dataset.nat);recOpen([b.dataset.nat],true)});
 $$("#shots input[data-id]").forEach(i=>i.onchange=()=>{S.done[i.dataset.id]=i.checked;persist();shots();renderSteps();if(i.checked)toast("¡Bien! Mándala por WhatsApp a la agencia")});
 const n=SH.filter(s=>S.done[s[0]]).length;$("#pg").style.width=(n/SH.length*100)+"%";$("#pgt").textContent=n+" de "+SH.length+" tomas listas";}
 $$("input[name=fl]").forEach(i=>i.onchange=shots);
@@ -334,7 +356,11 @@ const FAQ=[
 ["¿Tengo que mostrar mi cara?","No al principio. Si te da vergüenza, el primer mes va con tus manos, tus herramientas y tu voz. Tú decides cuándo aparecer."],
 ["¿Cuánto tiempo me va a tomar?","Menos de una hora a la semana: 10 minutos para aprobar, unos 25 para grabar y el resto para responder mensajes."],
 ["¿Dónde quedan mis respuestas?","En este celular. Para que la agencia las reciba, ve a Dudas y toca \"Copiar mis respuestas\", y pégalas en el WhatsApp de la agencia. Nadie más las ve."],
-["¿Cómo mando mis fotos y videos?","Por WhatsApp a la agencia, en calidad original: en WhatsApp, adjunta como Documento, no como Foto, para que no pierdan calidad."],
+["¿Cómo mando mis fotos y videos?","Si arriba en Grabar dice \"☁ Conectada\", no tienes que hacer nada: cada toma que marcas como buena sube sola a la agencia. Si no, quedan en tu carpeta Descargas y las mandas por WhatsApp como Documento (no como Foto), para que no pierdan calidad."],
+["¿Qué pasa con lo que respondo y grabo?","Con eso preparamos tu material: reels, carruseles e historias. Te lo mostramos antes de publicar y lo afinamos con tus comentarios hasta que lo apruebes."],
+["¿Tengo que publicar yo?","En el plan base, sí: te dejamos todo listo para copiar y subir. Con el Plan Plus, por un monto adicional módico, la agencia publica todo automáticamente en Instagram y Facebook."],
+["¿Cómo la instalo como app?","En Android con Chrome: menú ⋮ → \"Agregar a la pantalla principal\" o \"Instalar app\". En iPhone con Safari: botón Compartir → \"Agregar a inicio\". Queda con su ícono y se abre en pantalla completa."],
+["¿Qué es mejor: grabar con el Director o con la cámara del celular?","Con la cámara del celular la calidad es mejor. El modo Director es más cómodo porque te guía y graba solo. Para la foto de perfil y los ganchos, usa la cámara del celular."],
 ["¿Y si me equivoco grabando?","Sigue hablando. La agencia corta los errores. Graba cada toma 3 veces y elegimos la mejor."],
 ["¿Por qué no puedo decir que \"curo\"?","En Chile la naturopatía es una profesión auxiliar de la salud y no reemplaza la medicina. Prometer curas puede traerte problemas legales. Hablamos de acompañamiento, bienestar y hábitos."],
 ["¿Por qué no publicamos precios todavía?","Primero los validamos con 5 a 10 clientas reales. Publicar un precio mal puesto cuesta más que esperar unas semanas."],
@@ -366,7 +392,7 @@ function sayThen(t,cb){let done=false;const fin=()=>{if(!done){done=true;cb&&cb(
 const shotOf=id=>SH.find(s=>s[0]===id);
 const typeDur=s=>s[1]=="foto"?0:s[1]=="audio"?Math.max(12,Math.ceil((s[4]||"").length/13)+4):(s[4]?Math.max(6,Math.ceil(s[4].length/13)+3):15);
 const dur=s=>+$("#rDur").value||typeDur(s);
-const PH={idle:"LISTA",brief:"ESCUCHA",prep:"PREPÁRATE",rec:"● GRABANDO",ver:"¿👍 O 👎?",pau:"⏸ PAUSA",fin:"TERMINASTE"};
+const PH={natwait:"📱 TU CÁMARA",idle:"LISTA",brief:"ESCUCHA",prep:"PREPÁRATE",rec:"● GRABANDO",ver:"¿👍 O 👎?",pau:"⏸ PAUSA",fin:"TERMINASTE"};
 function rDraw(){const s=shotOf(R.q[R.i]);if(!s){$("#rTx").textContent="¡Terminaste! 🌿";$("#rTip").textContent="Ahora manda tus archivos por WhatsApp a la agencia, como Documento.";$("#rId").textContent="";return}
 $("#rId").textContent=s[0]+" · "+s[2].toUpperCase()+" · TOMA "+R.toma;$("#rCnt").textContent=(R.i+1)+"/"+R.q.length;
 $("#rTx").textContent=s[4]?"“"+s[4]+"”":s[2];$("#rTip").textContent=s[3].join(" ");}
@@ -385,26 +411,26 @@ function recStop(){try{if(R.mr&&R.mr.state!=="inactive")R.mr.stop()}catch(e){}}
 function burst(n){const v=$("#rv");let k=0;const one=()=>{const c=document.createElement("canvas");c.width=v.videoWidth||1080;c.height=v.videoHeight||1920;const x=c.getContext("2d");if(R.face==="user"){x.translate(c.width,0);x.scale(-1,1)}x.drawImage(v,0,0,c.width,c.height);c.toBlob(b=>{if(b)R.blobs.push({b,ext:"jpg"})},"image/jpeg",.95);$("#rFlash").style.opacity=.9;setTimeout(()=>$("#rFlash").style.opacity=0,120);shutter();if(++k<n)setTimeout(one,1300)};one()}
 function saveBlobs(s){R.blobs.forEach((o,j)=>{const a=document.createElement("a");a.href=URL.createObjectURL(o.b);a.download=`CP_${s[0]}_T${R.toma}${R.blobs.length>1?"_"+(j+1):""}.${o.ext}`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)});const m=$("#rSaved");m.textContent="Guardado en Descargas ✓";m.style.display="block";setTimeout(()=>m.style.display="none",1800)}
 const wantFace=s=>s[5]=="sin"&&s[1]!="audio"?"environment":"user";
-async function rScene(){const s=shotOf(R.q[R.i]);rDraw();if(!s){rPhase("fin",1);sayThen("Terminaste. Muy bien, Carolina. Manda tus archivos a la agencia.");return}
+async function rScene(){const s=shotOf(R.q[R.i]);rDraw();if(!s){rPhase("fin",1);sayThen(PUENTE?"Terminaste. Muy bien, Carolina. Tus tomas ya van camino a la agencia.":"Terminaste. Muy bien, Carolina. Manda tus archivos a la agencia.");return}
 rPhase("brief",1);const needAudio=s[1]!="foto",hasAudio=R.stream&&R.stream.getAudioTracks().length>0;
-if(!R.stream||wantFace(s)!==R.camFace||needAudio!==hasAudio){R.face=wantFace(s);await camStart()}const tip=R.toma>1?" Toma "+R.toma+". Respira, más lento y con una sonrisa.":" "+s[3][0];
-sayThen(s[2]+"."+tip+(s[4]&&s[1]!="foto"?" Lee el texto de la pantalla.":""),()=>{if(R.ph!=="brief")return;R.lb=0;rPhase("prep",3)})}
+if(!R.nat&&(!R.stream||wantFace(s)!==R.camFace||needAudio!==hasAudio)){R.face=wantFace(s);await camStart()}const tip=R.toma>1?" Toma "+R.toma+". Respira, más lento y con una sonrisa.":" "+s[3][0];
+sayThen(s[2]+"."+tip+(R.nat?" Toca Cámara del celular y graba con calma.":(s[4]&&s[1]!="foto"?" Lee el texto de la pantalla.":"")),()=>{if(R.ph!=="brief")return;if(R.nat){rPhase("natwait",1);$("#rG").textContent="Toca «📱 Cámara del celular». Al volver, el Director te pregunta si quedó buena.";return}R.lb=0;rPhase("prep",3)})}
 function rTick(){if(R.paused||!["prep","rec","ver"].includes(R.ph))return;const now=performance.now(),rem=Math.max(0,R.end-now);
 $("#rBig").textContent=R.ph=="ver"?"":Math.ceil(rem/1000);$("#rFill").style.width=(100-rem/R.len*100)+"%";$("#rFill").style.background=R.ph=="rec"?"#C0392B":R.ph=="ver"?"#2E6FD8":"#B7C38A";
 if(R.ph=="prep"){const sc=Math.ceil(rem/1000);if(sc!==R.lb&&sc>0){R.lb=sc;beep([520])}}
 if(rem>0)return;const s=shotOf(R.q[R.i]);
 if(R.ph=="prep"){beep([1040]);rPhase("rec",s[1]=="foto"?4.2:dur(s));recStart(s)}
-else if(R.ph=="rec"){recStop();rPhase("ver",8);setTimeout(()=>sayThen("¿Buena o mala?"),300)}
+else if(R.ph=="rec"){recStop();rPhase("ver",8);setTimeout(()=>{showPrev();sayThen("Mírala. ¿Buena o mala?")},450)}
 else if(R.ph=="ver"){rPhase("ver",8);sayThen("¿Buena o mala?")}}
 function verdict(good){const now=performance.now();if(now<R.cool)return;R.cool=now+2200;
 if(R.ph=="idle"||R.ph=="pau"){rGo();return}if(R.ph!=="ver"&&R.ph!=="rec")return;
 if(R.ph=="rec"){recStop();}const s=shotOf(R.q[R.i]);
-const go=()=>{if(good){beep([1500,2000]);saveBlobs(s);S.done[s[0]]=true;persist();shots();renderSteps();sayThen("Buena. Guardada.",()=>{R.i++;R.toma=1;rScene()})}else{badTone();sayThen("Mala. Vamos de nuevo.",()=>{R.toma++;rScene()})}};
+const go=()=>{hidePrev();if(good){beep([1500,2000]);deliver(s,R.toma,R.blobs);S.done[s[0]]=true;persist();shots();renderSteps();sayThen(PUENTE?"Buena. Subiendo a la agencia.":"Buena. Guardada.",()=>{R.i++;R.toma=1;rScene()})}else{badTone();sayThen("Mala. Vamos de nuevo.",()=>{R.toma++;rScene()})}};
 setTimeout(go,R.ph=="rec"?400:0);R.ph="wait";$("#rPh").textContent=good?"★ BUENA":"✗ OTRA";}
 function rGo(){if(R.ph=="idle"||R.ph=="fin"||R.ph=="pau"){R.paused=false;$("#rGo").textContent="⏸ Pausa";rScene();return}
 R.paused=!R.paused;$("#rGo").textContent=R.paused?"▶ Seguir":"⏸ Pausa";if(R.paused){R.left=R.end-performance.now();$("#rPh").textContent=PH.pau;if(R.ph=="rec")try{R.mr.pause()}catch(e){}}else{R.end=performance.now()+R.left;$("#rPh").textContent=PH[R.ph];if(R.ph=="rec")try{R.mr.resume()}catch(e){}}}
-async function recOpen(ids){R.q=ids;R.i=0;R.toma=1;R.paused=false;$("#rec").hidden=false;document.body.style.overflow="hidden";rDraw();rPhase("idle",1);$("#rGo").textContent="▶ Partir";
-const s=shotOf(ids[0]);R.face=s?wantFace(s):"user";await camStart();clearInterval(R.raf);R.raf=setInterval(rTick,100);try{R.wl=await navigator.wakeLock.request("screen")}catch(e){}
+async function recOpen(ids,nat){R.q=ids;R.i=0;R.toma=1;R.paused=false;R.nat=!!nat;$("#rec").hidden=false;document.body.style.overflow="hidden";rDraw();rPhase("idle",1);$("#rGo").textContent="▶ Partir";
+const s=shotOf(ids[0]);R.face=s?wantFace(s):"user";if(!R.nat)await camStart();clearInterval(R.raf);R.raf=setInterval(rTick,100);try{R.wl=await navigator.wakeLock.request("screen")}catch(e){}
 $("#rG").textContent="Toca ▶ Partir. Después todo es por voz: di «buena» o «mala»."}
 function recClose(){recStop();camStop();R.ph="idle";clearInterval(R.raf);micOff();R.hand=false;$("#rHand").textContent="✋ Gestos";try{speechSynthesis.cancel()}catch(e){}try{R.wl&&R.wl.release()}catch(e){}$("#rec").hidden=true;document.body.style.overflow=""}
 $("#soloAll").onclick=()=>{const r=ruta();const pri=s=>s[5]=="sin"?0:s[5]=="mixta"?(r=="sin"?2:1):(r=="rostro"?1:3);const L=SH.filter(s=>!S.done[s[0]]&&pri(s)<2).sort((a,b)=>pri(a)-pri(b)).map(s=>s[0]);if(!L.length){toast("¡Ya tienes todas las tomas de ahora!");return}recOpen(L)};
@@ -427,6 +453,35 @@ if(!R.gr){g.textContent="Cargando lector de gestos…";try{const m=await import(
 R.hand=true;$("#rHand").textContent="✋ Apagar";g.textContent="👍 buena · 👎 mala · ✋ pausa";const v=$("#rv");let last="",n=0,lt=0;
 const loop=()=>{if(!R.hand)return;requestAnimationFrame(loop);const t=performance.now();if(t-lt<120||v.readyState<2||R.ph=="rec")return;lt=t;let c="";try{const r=R.gr.recognizeForVideo(v,t);const x=r.gestures&&r.gestures[0]&&r.gestures[0][0];if(x&&x.score>.65)c=x.categoryName}catch(e){}
 n=c&&c===last?n+1:0;last=c;if(n===4){if(c=="Thumb_Up")verdict(true);else if(c=="Thumb_Down")verdict(false);else if(c=="Open_Palm"&&performance.now()>R.cool){R.cool=performance.now()+2200;rGo()}}};loop()};
+
+/* ================= PUENTE A DRIVE ================= */
+const PUENTE="";            /* URL /exec del Apps Script de la agencia. Vacío = guarda en el celular */
+const LLAVE="cp-naturo-2026";
+const CH=8*1024*1024;       /* partes de 8 MB (múltiplo de 256 KB) */
+async function post(o){const r=await fetch(PUENTE,{method:"POST",body:JSON.stringify(Object.assign({llave:LLAVE},o))});return r.json()}
+function cloudSt(){$("#cloudSt").innerHTML=PUENTE?`<span class="cloud" style="background:var(--olive-soft);color:var(--olive)">☁ Conectada: tus tomas buenas suben solas a la agencia</span>`:`<span class="cloud" style="background:var(--warn-soft);color:var(--warn)">Tus tomas se guardan en el celular (Descargas). Mándalas por WhatsApp como Documento.</span>`}
+function upRow(name){const d=document.createElement("div");d.className="up";d.innerHTML=`<span>${esc(name)}</span><span class="st">En cola</span><div class="b"><i></i></div>`;$("#upq").prepend(d);return{set:(p,t,c)=>{d.querySelector("i").style.width=p+"%";d.querySelector(".st").textContent=t;if(c)d.className="up "+c},el:d}}
+async function upload(blob,name,toma,tipo,row){const mime=blob.type||"application/octet-stream";
+const s=await post({accion:"sesion",nombre:name,mime,bytes:blob.size,origen:location.origin,sub:"Tomas"});if(!s.ok)throw new Error(s.error);
+let off=0,res=null;while(off<blob.size){const end=Math.min(off+CH,blob.size);const r=await fetch(s.url,{method:"PUT",headers:{"Content-Range":`bytes ${off}-${end-1}/${blob.size}`},body:blob.slice(off,end)});
+if(r.status===308){const rg=r.headers.get("Range");off=rg?+rg.split("-")[1]+1:end}else if(r.ok){res=await r.json();off=blob.size}else throw new Error("subida "+r.status);row.set(Math.round(off/blob.size*100),Math.round(off/blob.size*100)+"%")}
+if(res&&res.id)await post({accion:"registro",id:res.id,toma,tipo});return res}
+function deliver(s,toma,blobs){const list=(blobs||[]).slice();if(!list.length)return;
+if(!PUENTE){R.blobs=list;saveBlobs(s);return}
+list.forEach((o,j)=>{const name=`CP_${s[0]}_T${toma}${list.length>1?"_"+(j+1):""}.${o.ext}`;const row=upRow(name);
+const go=async(k=0)=>{try{row.set(0,"Subiendo…");await upload(o.b,name,s[0],s[1],row);row.set(100,"✓ En la agencia","ok")}catch(e){if(k<2){row.set(0,"Reintentando…");setTimeout(()=>go(k+1),3000)}else{row.set(0,"No subió: quedó en el celular","err");const a=document.createElement("a");a.href=URL.createObjectURL(o.b);a.download=name;document.body.appendChild(a);a.click();a.remove()}}};go()})}
+/* vista previa antes de decidir */
+function showPrev(){const o=R.blobs&&R.blobs[0];if(!o)return;if(o.ext=="jpg"||/^image/.test(o.b.type)){const i=$("#rPrevI");i.src=URL.createObjectURL(o.b);i.hidden=false}else if(/^video/.test(o.b.type)||o.ext=="mp4"||o.ext=="webm"){const v=$("#rPrev");v.src=URL.createObjectURL(o.b);v.hidden=false;v.play().catch(()=>{})}}
+function hidePrev(){const v=$("#rPrev"),i=$("#rPrevI");v.pause();v.hidden=true;i.hidden=true}
+/* cámara nativa del celular */
+function natPick(id){const s=shotOf(id||R.q[R.i]);if(!s)return;camStop();const f=$("#rFile");f.value="";f.accept=s[1]=="foto"?"image/*":s[1]=="audio"?"audio/*":"video/*";f.setAttribute("capture",s[1]=="audio"?"user":wantFace(s));f.click()}
+$("#rNat").onclick=()=>{R.nat=true;natPick()};
+$("#rFile").onchange=e=>{const file=e.target.files&&e.target.files[0];if(!file)return;const ext=(file.name.split(".").pop()||"").toLowerCase()||(file.type.split("/")[1]||"bin");
+R.blobs=[{b:file,ext}];rPhase("ver",8);showPrev();sayThen("Mírala. ¿Buena o mala?")};
+/* respuestas a la planilla de la agencia */
+let ansT=0;function syncAnswers(){if(!PUENTE)return;clearTimeout(ansT);ansT=setTimeout(()=>{const filas=Q.map(q=>{const v=S.ans[q.k];return[q.q,[].concat(v??"").join(", ")]});post({accion:"respuestas",filas}).catch(()=>{})},1500)}
+const _persist=persist;persist=()=>{_persist();syncAnswers()};
+cloudSt();
 </script>
 
 </body></html>

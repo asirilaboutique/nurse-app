@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Panel Agencia Carolina</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Figtree:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#F5F1E8;--s:#FBF9F3;--fg:#2E3424;--m:#6B6D5C;--l:#DDD6C4;--o:#5E6B3A;--os:#E6E8D5;--w:#9A4B2E}
+@media (prefers-color-scheme:dark){:root{--bg:#1D1F18;--s:#25281F;--fg:#ECE8DC;--m:#AFAE9C;--l:#3B3E31;--o:#B7C38A;--os:#33382A;--w:#E3A184;color-scheme:dark}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 "Figtree",system-ui,sans-serif;padding:20px max(16px,env(safe-area-inset-left))}
+.w{max-width:900px;margin:0 auto}h1{font:400 32px "Gilda Display",Georgia,serif;margin:0 0 4px}h2{font:700 13px "Figtree";letter-spacing:.12em;text-transform:uppercase;color:var(--m);margin:26px 0 8px}
+input{font:inherit;padding:10px 12px;border:1.5px solid var(--l);border-radius:12px;background:var(--s);color:var(--fg);width:min(360px,100%)}
+button{font:700 15px "Figtree";padding:10px 16px;border-radius:12px;border:0;background:var(--o);color:var(--bg);cursor:pointer}
+.k{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.k div{background:var(--s);border:1px solid var(--l);border-radius:14px;padding:12px}.k b{font:400 30px "Gilda Display",serif;display:block}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:8px;border-bottom:1px solid var(--l);vertical-align:top}
+a{color:var(--o)}.m{color:var(--m)}.chip{font-size:12px;font-weight:700;border-radius:99px;padding:2px 8px;background:var(--os);color:var(--o)}
+</style></head><body><div class="w">
+<div class="m" style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700">Agencia · supervisión Amparo</div>
+<h1>Panel Carolina</h1>
+<p class="m">Respuestas del diagnóstico y tomas que subió Carolina, en vivo desde Drive.</p>
+<div id="login"><input type="password" id="k" placeholder="Llave del panel" autocomplete="off"> <button id="go">Entrar</button><p class="m" id="msg"></p></div>
+<div id="out" hidden>
+ <div class="k" id="kpi"></div>
+ <p><a id="fold" target="_blank" rel="noopener">Abrir la carpeta en Drive →</a></p>
+ <h2>Tomas recibidas</h2><div class="tw"><table id="tt"></table></div>
+ <h2>Pendientes del kit</h2><p id="pend" class="m"></p>
+ <h2>Diagnóstico</h2><div class="tw"><table id="ta"></table></div>
+ <p><button id="re">Actualizar</button></p>
+</div>
+<script>
+const PUENTE="";const KIT=["F1","F2","F3","F4","F5","F6","A1","A2","A3","A4","V1","V2","V3","V4","V5","V6"];
+const $=s=>document.querySelector(s),e=t=>String(t??"").replace(/&/g,"&amp;").replace(/</g,"&lt;");
+let key="";try{key=sessionStorage.getItem("pk")||""}catch(x){}
+async function load(){if(!PUENTE){$("#msg").textContent="Falta conectar el Puente a Drive (URL del Apps Script).";return}
+$("#msg").textContent="Cargando…";try{const r=await (await fetch(PUENTE+"?llave="+encodeURIComponent(key))).json();if(!r.ok){$("#msg").textContent="Llave incorrecta.";return}
+try{sessionStorage.setItem("pk",key)}catch(x){}$("#login").hidden=true;$("#out").hidden=false;$("#fold").href=r.carpeta;
+const got=new Set(r.tomas.map(t=>t[1]));const resp=r.respuestas.filter(x=>String(x[2]).trim()).length;
+$("#kpi").innerHTML=`<div><b>${resp}/20</b>preguntas respondidas</div><div><b>${got.size}/16</b>tomas del kit</div><div><b>${r.tomas.length}</b>archivos subidos</div><div><b>${r.tomas.reduce((a,t)=>a+ +t[4],0).toFixed(0)} MB</b>en Drive</div>`;
+$("#tt").innerHTML="<tr><th>Fecha</th><th>Toma</th><th>Archivo</th><th>MB</th></tr>"+r.tomas.slice().reverse().map(t=>`<tr><td>${new Date(t[0]).toLocaleString("es-CL")}</td><td><span class=chip>${e(t[1])}</span></td><td><a href="${e(t[5])}" target="_blank" rel="noopener">${e(t[2])}</a></td><td>${e(t[4])}</td></tr>`).join("");
+$("#pend").textContent=KIT.filter(k=>!got.has(k)).join(" · ")||"¡Kit completo!";
+$("#ta").innerHTML="<tr><th>Pregunta</th><th>Respuesta</th></tr>"+r.respuestas.map(x=>`<tr><td>${e(x[1])}</td><td>${e(x[2])||'<span class=m>—</span>'}</td></tr>`).join("")}catch(x){$("#msg").textContent="No se pudo conectar con el Puente."}}
+$("#go").onclick=()=>{key=$("#k").value.trim();load()};$("#re").onclick=load;if(key)load();
+</script></div></body></html>
