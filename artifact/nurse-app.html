@@ -1145,7 +1145,7 @@ document.addEventListener('click',async ev=>{
  const act=el.dataset.act,id=el.dataset.id;
  switch(act){
  case 'closesheet':closeSheet();break;
- case 'menu':sheet(`<h2>Más</h2><div class="col" style="margin-top:12px"><a class="btn sec" href="#/panel">Panel comercial</a><a class="btn sec" href="#/embudo">Embudo de clientes</a><a class="btn sec" href="#/disponibilidad">Horas disponibles</a><a class="btn sec" href="#/voz">Agendar por voz</a><a class="btn sec" href="#/ajustes">Ajustes y respaldo</a></div>`);break;
+ case 'menu':sheet(`<h2>Más</h2><div class="col" style="margin-top:12px"><a class="btn sec" href="#/panel">Panel comercial</a><a class="btn sec" href="#/embudo">Embudo de clientes</a><a class="btn sec" href="#/disponibilidad">Horas disponibles</a><a class="btn sec" href="#/voz">Agendar por voz</a><a class="btn sec" href="director/" data-director="1">Estudio de contenido (reels)</a><a class="btn sec" href="#/ajustes">Ajustes y respaldo</a></div>`);break;
  case 'demo':if(S.patients.length&&!await ask('Esto reemplaza lo que tengas. ¿Cargar datos de ejemplo?'))break;demo();toast('Datos de ejemplo cargados');route();break;
  case 'cleardemo':if(await ask('Se quitan los datos de ejemplo. Tu perfil y ajustes se mantienen. ¿Continuar?')){const k=S.profile,tf=S.tarifas,hr=S.horario;S=DEFAULTS();S.profile=k;S.tarifas=tf;S.horario=hr;saveNow();toast('Listo, parte con tu primera paciente');route()}break;
  case 'wipe':if(await ask('Se borrarán TODAS tus pacientes, citas y cobros de este teléfono. ¿Seguro?')&&await ask('Última confirmación: no se puede deshacer.')){const k=S.profile,tf=S.tarifas,hr=S.horario;S=DEFAULTS();S.profile=k;S.tarifas=tf;S.horario=hr;saveNow();toast('Datos borrados');location.hash='#/hoy';route()}break;
