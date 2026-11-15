@@ -1118,5 +1118,23 @@ if(!$("#agenda").hidden)renderAgenda();
 /* durante la intro solo suena el corazón: el ding de desbloqueo se silencia mientras exista #intro */
 const _us8=unlockSound;unlockSound=function(){if($("#intro"))return;_us8()};
 
+/* ================= EVOLUCIÓN 9 · piezas conectadas con la agencia (panel → app, app → panel) ================= */
+/* 1) las piezas se publican desde el panel (hoja Entregas del puente); entregas.json queda de respaldo */
+function cargarPiezas9(){try{fetch(PUENTE+"?accion=entregas&llave="+LLAVE).then(r=>r.json()).then(j=>{if(!j||!j.ok||!Array.isArray(j.piezas)||!j.piezas.length)return;
+ PZ=j.piezas.map(p=>Object.assign({},p,{semana:p.semana}));if(!$("#agenda").hidden)renderAgenda();if(!$("#inicio").hidden)renderHome()}).catch(()=>{})}catch(e){}}
+cargarPiezas9();document.addEventListener("visibilitychange",()=>{if(document.visibilityState=="visible")cargarPiezas9()});
+/* 2) cada aprobación o pedido de cambio llega a la agencia (hoja Piezas + correo); si no hay señal, queda en cola */
+function pzEnviar9(o){S.pzq=S.pzq||[];return post(Object.assign({accion:"pieza"},o)).then(r=>{if(!r||!r.ok)throw 0;return true}).catch(()=>{S.pzq.push(o);persist();return false})}
+function pzCola9(){const q=(S.pzq||[]).splice(0);if(!q.length)return;persist();q.forEach(o=>pzEnviar9(o))}
+setTimeout(pzCola9,4000);window.addEventListener("online",pzCola9);
+const _ra9=renderAgenda;renderAgenda=function(){_ra9();const tit=id=>((PZ.find(p=>String(p.id)==String(id))||{}).titulo||id);
+ $$("[data-pok]").forEach(b=>b.onclick=()=>{const id=b.dataset.pok;if((S.pz[id]||{}).st=="ok")return;S.pz[id]={st:"ok",at:new Date().toISOString()};persist();renderAgenda();confetti();
+  pzEnviar9({id,titulo:tit(id),estado:"ok"}).then(ok=>toast(ok?"¡Aprobada! Se lo contamos a la agencia 💚":"Aprobada. La enviamos apenas tengas señal"))});
+ $$("[data-pnt]").forEach(t=>{const id=t.dataset.pnt;if(t.hidden||t.nextElementSibling&&t.nextElementSibling.dataset.pse)return;
+  const b=document.createElement("button");b.className="btn small";b.dataset.pse=id;b.style.marginTop="8px";b.textContent=(S.pz[id]||{}).env?"✓ Cambio enviado · reenviar":"Enviar cambio a la agencia";t.after(b);
+  b.onclick=()=>{const nota=t.value.trim();if(!nota){toast("Cuéntanos qué ajustamos 🙂");t.focus();return}b.disabled=true;
+   pzEnviar9({id,titulo:tit(id),estado:"cm",nota}).then(ok=>{S.pz[id]=Object.assign(S.pz[id]||{},{st:"cm",nota,env:1});persist();b.disabled=false;b.textContent="✓ Cambio enviado · reenviar";toast(ok?"Listo, la agencia ya lo tiene ✨":"Guardado. Lo enviamos apenas tengas señal")})}})};
+if(!$("#agenda").hidden)renderAgenda();
+
 </script>
 </body></html>
