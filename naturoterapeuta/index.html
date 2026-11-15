@@ -1092,13 +1092,15 @@ const _lh7=logrosHTML;logrosHTML=function(){return _lh7().replace(/<span>🔒<\/
 renderAll();if(!$("#inicio").hidden)renderHome();if(!$("#agenda").hidden)renderAgenda();{const _sg=show;show=function(t){_sg(t);if(t=="grabar"){misTomas();if(!S.tutoV&&!$("#tut"))setTimeout(tutorial,500)}};window.show=show}
 
 /* ================= EVOLUCIÓN 8 · latido de corazón + transición sin "portal" ================= */
-introSound=function(){try{const c=ax(),t=c.currentTime,out=c.createGain();out.gain.value=1;out.connect(c.destination);
- const nb=c.createBuffer(1,c.sampleRate*.08,c.sampleRate),nd=nb.getChannelData(0);for(let i=0;i<nd.length;i++)nd[i]=(Math.random()*2-1)*(1-i/nd.length);
- const hit=(s,f,v)=>{const os=c.createOscillator(),g=c.createGain();os.type="triangle";os.frequency.setValueAtTime(f*2.2,s);os.frequency.exponentialRampToValueAtTime(f,s+.07);
-  g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(v,s+.008);g.gain.exponentialRampToValueAtTime(.0005,s+.2);os.connect(g).connect(out);os.start(s);os.stop(s+.22);
-  const n=c.createBufferSource(),bp=c.createBiquadFilter(),ng=c.createGain();n.buffer=nb;bp.type="bandpass";bp.frequency.value=f*3;bp.Q.value=1.2;ng.gain.value=v*.9;n.connect(bp).connect(ng).connect(out);n.start(s)};
- [0,.95,1.85,2.7,3.5].forEach((d,i)=>{const s=t+.15+d,v=.5+i*.1;hit(s,95,v);hit(s+.19,80,v*.7)});
-}catch(e){}};
+function latidoPCM(SR){const T=2.4,N=Math.floor(SR*T),o=new Float32Array(N);
+ const beat=(t0,a)=>{[[0,48,30,.085,1],[.27,62,34,.06,.72]].forEach(([d,f,fs,dec,g])=>{let ph=0,lp=0,s0=Math.floor((t0+d)*SR);
+  for(let n=0;n<SR*.45&&s0+n<N;n++){const t=n/SR,f0=f+fs*Math.exp(-t/.022);ph+=2*Math.PI*f0/SR;
+   const env=(1-Math.exp(-t/.0035))*Math.exp(-t/dec);const tone=Math.sin(ph)+.45*Math.sin(2*ph+.4)+.2*Math.sin(3*ph+.9);
+   lp+=.08*((Math.random()*2-1)-lp);const nz=lp*3.2*Math.exp(-t/.02);o[s0+n]+=a*g*(env*tone+nz*.9)}})};
+ [[.12,.82],[.95,.95],[1.78,1]].forEach(([t,a])=>beat(t,a));
+ let pk=0;for(let i=0;i<N;i++){o[i]=Math.tanh(o[i]*1.6);pk=Math.max(pk,Math.abs(o[i]))}for(let i=0;i<N;i++)o[i]*=.95/pk;
+ const fo=Math.floor(SR*.25);for(let i=0;i<fo;i++)o[N-1-i]*=i/fo;return o}
+let _latBuf=null;introSound=function(){try{const c=ax();if(!_latBuf){const d=latidoPCM(c.sampleRate);_latBuf=c.createBuffer(1,d.length,c.sampleRate);_latBuf.getChannelData(0).set(d)}const src=c.createBufferSource(),g=c.createGain();g.gain.value=1;src.buffer=_latBuf;src.connect(g).connect(c.destination);src.start(c.currentTime+.05)}catch(e){}};
 /* el saludo se monta YA opaco debajo de la intro: al desvanecerse la intro nunca se ve la app */
 const _hello8=hello;hello=function(){_hello8();const d=$("#hello");if(d){d.style.animation="none";d.style.opacity="1"}};
 /* --- Ver en HD: cada pieza abre su original en Drive (sin compresión) + carpeta completa --- */
