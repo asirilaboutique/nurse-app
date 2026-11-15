@@ -1,7 +1,7 @@
 // AGENCIA Naturópata: red primero (siempre la versión nueva), copia local si no hay señal + avisos
-const C='naturo-v11';
+const C='naturo-v12';
 const PUENTE='https://script.google.com/macros/s/AKfycbyO56oCiyngFkMlCS9EG-6pAZiXXV5K4t57om96cgMP-b1weD-_7X5tslPib0DoevJi/exec',LLAVE='cp-naturo-2026';
-self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>c.addAll(['./','icon-192.png','icon-512.png','manifest.json'])))});
+self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>c.addAll(['./','latido.mp3','icon-192.png','icon-512.png','manifest.json'])))});
 self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
 self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(e.request.method!=='GET'||u.origin!==location.origin)return;
 e.respondWith(fetch(e.request).then(r=>{const k=r.clone();caches.open(C).then(c=>c.put(e.request,k));return r}).catch(()=>caches.match(e.request)))});

@@ -1100,7 +1100,11 @@ function latidoPCM(SR){const T=2.4,N=Math.floor(SR*T),o=new Float32Array(N);
  [[.12,.82],[.95,.95],[1.78,1]].forEach(([t,a])=>beat(t,a));
  let pk=0;for(let i=0;i<N;i++){o[i]=Math.tanh(o[i]*1.6);pk=Math.max(pk,Math.abs(o[i]))}for(let i=0;i<N;i++)o[i]*=.95/pk;
  const fo=Math.floor(SR*.25);for(let i=0;i<fo;i++)o[N-1-i]*=i/fo;return o}
-let _latBuf=null;introSound=function(){try{const c=ax();if(!_latBuf){const d=latidoPCM(c.sampleRate);_latBuf=c.createBuffer(1,d.length,c.sampleRate);_latBuf.getChannelData(0).set(d)}const src=c.createBufferSource(),g=c.createGain();g.gain.value=1;src.buffer=_latBuf;src.connect(g).connect(c.destination);src.start(c.currentTime+.05)}catch(e){}};
+/* latido REAL (grabación con estetoscopio, Wikimedia Commons "Human heart rate.flac", CC0) · respaldo sintetizado */
+let _latBuf=null,_latAB=null;try{fetch("latido.mp3").then(r=>r.ok?r.arrayBuffer():null).then(x=>_latAB=x).catch(()=>{})}catch(e){}
+introSound=function(){try{const c=ax();const play=buf=>{const src=c.createBufferSource();src.buffer=buf;src.connect(c.destination);src.start(c.currentTime+.03)};
+ const synth=()=>{const d=latidoPCM(c.sampleRate),bb=c.createBuffer(1,d.length,c.sampleRate);bb.getChannelData(0).set(d);play(bb)};
+ if(_latBuf)return play(_latBuf);if(_latAB){c.decodeAudioData(_latAB.slice(0),bb=>{_latBuf=bb;play(bb)},synth);return}synth()}catch(e){}};
 /* el saludo se monta YA opaco debajo de la intro: al desvanecerse la intro nunca se ve la app */
 const _hello8=hello;hello=function(){_hello8();const d=$("#hello");if(d){d.style.animation="none";d.style.opacity="1"}};
 /* --- Ver en HD: cada pieza abre su original en Drive (sin compresión) + carpeta completa --- */
