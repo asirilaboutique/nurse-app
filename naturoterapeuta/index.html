@@ -1109,5 +1109,8 @@ const _ra8=renderAgenda;renderAgenda=function(){_ra8();const L=$("#pzL");if(!L||
  if(!$("#hdDir")){const d=document.createElement("a");d.id="hdDir";d.href=HD_DIR;d.target="_blank";d.rel="noopener";d.className="btn ghost";d.style.margin="10px 0";d.textContent="📁 Todo tu material en alta calidad";L.after(d)}};
 if(!$("#agenda").hidden)renderAgenda();
 
+/* durante la intro solo suena el corazón: el ding de desbloqueo se silencia mientras exista #intro */
+const _us8=unlockSound;unlockSound=function(){if($("#intro"))return;_us8()};
+
 </script>
 </body></html>
