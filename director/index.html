@@ -501,7 +501,7 @@ function esStop(){cancelAnimationFrame(ES.raf);if(ES.stream){ES.stream.getTracks
 $("esCat").innerHTML='<option value="">Todas las voces</option>'+[...new Set(VO.map(v=>v.cat))].map(c=>`<option>${c}</option>`).join("");$("esCat").onchange=esList;
 $("esGo").onclick=esGo;$("esGood").onclick=()=>esMark(true);$("esBad").onclick=()=>esMark(false);$("esBack").onclick=esClose;
 $("esPrev").onclick=()=>{if(ES.i>0){ES.i--;esDraw()}};$("esNext").onclick=()=>{if(ES.i<VO.length-1){ES.i++;esDraw()}};
-$("esDl").onclick=()=>{const g=ES.takes.filter(t=>t.ok);if(!g.length){$("esPh").textContent="Aún no hay buenas";return}g.forEach((t,j)=>setTimeout(()=>esSave(t),j*400))};
+$("esDl").onclick=()=>{const g=ES.takes.filter(t=>t.ok);if(!g.length){$("esPh").textContent="Aún no hay buenas";return}const fl=g.map(t=>new File([t.blob],"VO_"+t.id+"_T"+t.n+"."+esExt,{type:esMime||"audio/webm"}));if(navigator.canShare&&navigator.canShare({files:fl})){navigator.share({files:fl}).catch(e=>{if(!e||e.name!=="AbortError")g.forEach((t,j)=>setTimeout(()=>esSave(t),j*900))});return}g.forEach((t,j)=>setTimeout(()=>esSave(t),j*900))};
 document.addEventListener("keydown",e=>{if($("esRec").hidden)return;const k=e.key;if(k===" "||k==="Enter"){e.preventDefault();esGo()}else if(k==="ArrowUp"||k==="b")esMark(true);else if(k==="ArrowDown"||k==="m")esMark(false)});
 if(!window.MediaRecorder||!navigator.mediaDevices){$("esWarn").hidden=false;$("esWarn").textContent="Este navegador no graba audio. Usa Chrome en asirilaboutique.github.io/nurse-app/director"}
 esAll().then(esList);
