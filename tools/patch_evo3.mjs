@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+let s = fs.readFileSync('index.html', 'utf8');
+const rep = (a, b, n) => { if (!s.includes(a)) throw new Error('no encontré: ' + n); s = s.split(a).join(b); };
+rep('spare>=210&&ser0.length>=2', 'spare>=160&&ser0.length>=2', 'umbral');
+rep('const top=y+bh-190;', 'const top=y+bh-150;', 'top');
+rep("'EVOLUCIÓN · ÚLTIMAS '+ser0.length+' VISITAS',110,top+26", "'EVOLUCIÓN · ÚLTIMAS '+ser0.length+' VISITAS',110,top+22", 'label');
+rep("T(x,q.lb.toUpperCase(),X,top+66,", "T(x,q.lb.toUpperCase(),X,top+56,", 'nombres');
+rep("py=top+150-(val-mn)/rg*56", "py=top+130-(val-mn)/rg*50", 'py');
+rep("top+150-(q.vals[q.vals.length-1]-mn)/rg*56", "top+130-(q.vals[q.vals.length-1]-mn)/rg*50", 'punto');
+fs.writeFileSync('index.html', s); console.log('ok');
