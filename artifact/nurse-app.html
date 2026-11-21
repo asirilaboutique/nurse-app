@@ -520,7 +520,7 @@ function patForm(p){
  <input type="hidden" name="id" value="${p.id||''}">
  <label class="f">Nombre<input name="name" value="${esc(p.name||'')}" required></label>
  <div class="row"><label class="f grow">Edad<input type="number" name="age" min="0" max="120" value="${p.age||''}"></label><label class="f grow">Sector<input name="zone" value="${esc(p.zone||'')}" placeholder="Talca Norte"></label></div>
- <label class="f">Servicio<select name="svc">${['Adulto mayor','Bebé y niño','Paliativo','Procedimientos'].map(x=>`<option ${p.svc===x?'selected':''}>${x}</option>`).join('')}</select></label>
+ <label class="f">Servicio<select name="svc">${['Adulto mayor','Bebé y niño','Niños','Paliativo','Procedimientos'].map(x=>`<option ${p.svc===x?'selected':''}>${x}</option>`).join('')}</select></label>
  <label class="f">Cómo llegó<select name="source">${['Derivación médica','Instagram','Recomendación','WhatsApp directo','Otro'].map(x=>`<option ${p.source===x?'selected':''}>${x}</option>`).join('')}</select></label>
  <div class="eyebrow">Responsable (recibe los informes)</div>
  <div class="row"><label class="f grow">Nombre<input name="rname" value="${esc(p.resp.name||'')}"></label><label class="f grow">Parentesco<input name="rrel" value="${esc(p.resp.rel||'')}" placeholder="hija"></label></div>
@@ -566,20 +566,59 @@ routes.ficha=([id])=>{
 
 /* ============ VISITA EN CURSO ============ */
 const VIG=['Sin sangrado','Sin dolor','Hematoma en sitio','Otro'];
+/* ===== CUIDADO INFANTIL: informe de niños y actividades ===== */
+const KID_ANIMO=['Contento','Tranquilo','Inquieto','Irritable','Decaído'];
+const KID_COMIO=['Todo','Casi todo','Poco','Nada'];
+const KID_COMIDAS=['Desayuno','Almuerzo','Once','Cena','Mamadera o leche','Colación'];
+const KID_ACTS=['Juego libre','Cuentos y lectura','Dibujo y pintura','Música y canto','Juego al aire libre','Estimulación motora','Estimulación del lenguaje','Juego sensorial','Tareas escolares','Rutina de sueño'];
+const KID_INC=['Sin incidentes','Golpe o caída leve','Rechazó comida','Rabieta','Fiebre','Vómito o diarrea'];
+const isKid=(a,p)=>!!p&&!/inyecc|anticoag|curaci/i.test(a.type||'')&&(p.svc==='Niños'||p.svc==='Bebé y niño'||/niñ|bebé|infantil/i.test(a.type||''));
+const chk=(n,list,sel)=>list.map(v=>`<label class="chip row" style="display:inline-flex;align-items:center;gap:6px"><input type="checkbox" name="${n}" value="${v}" style="width:auto;min-height:0" ${(sel||[]).includes(v)?'checked':''}>${v}</label>`).join('');
+const rad=(n,list,sel)=>list.map(v=>`<label class="chip row" style="display:inline-flex;align-items:center;gap:6px"><input type="radio" name="${n}" value="${v}" style="width:auto;min-height:0" ${sel===v?'checked':''}>${v}</label>`).join('');
+function kidCard(r){const k=r.kid||{};
+ return `<input type="hidden" name="kidmode" value="1">
+ <div class="card col"><b>Cómo estuvo hoy</b><div class="f"><span>Ánimo</span><div class="row" style="flex-wrap:wrap;margin-top:4px">${rad('animo',KID_ANIMO,k.animo)}</div></div>
+ <div class="f"><span>Cuánto comió</span><div class="row" style="flex-wrap:wrap;margin-top:4px">${rad('comio',KID_COMIO,k.comio)}</div></div>
+ <div class="f"><span>Comidas del turno</span><div class="row" style="flex-wrap:wrap;margin-top:4px">${chk('comidas',KID_COMIDAS,k.comidas)}</div></div></div>
+ <div class="card col"><b>Sueño e higiene</b><div class="row"><label class="f grow">Siesta (min)<input name="siesta" inputmode="numeric" value="${esc(k.siesta||'')}" placeholder="90"></label><label class="f grow">Cambios de pañal<input name="panales" inputmode="numeric" value="${esc(k.panales||'')}" placeholder="3"></label></div>
+ <label class="chip row" style="display:inline-flex;align-items:center;gap:6px"><input type="checkbox" name="bano" value="1" style="width:auto;min-height:0" ${k.bano?'checked':''}>Se bañó</label></div>
+ <div class="card col"><b>Actividades con él o ella</b><div class="row" style="flex-wrap:wrap;margin-top:4px">${chk('acts',KID_ACTS,k.acts)}</div>
+ <label class="f">Lo más lindo o un logro de hoy<input name="logro" maxlength="140" value="${esc(k.logro||'')}" placeholder="Armó una torre de 6 bloques"></label></div>
+ <div class="card col"><b>Salud e incidentes</b><div class="row" style="flex-wrap:wrap;margin-top:4px">${chk('inc',KID_INC,k.inc)}</div>
+ <label class="f">Medicamento administrado (solo con indicación)<input name="med" value="${esc(k.med||'')}" placeholder="Nombre, dosis y hora"></label></div>`}
+function kidFamily(a,p,r){const k=r.kid||{};const f=p.name.split(/[ ,]/)[0];const b=[];
+ b.push(`Hoy cuidé a ${f}.`);
+ if(k.animo)b.push(`Estuvo ${k.animo.toLowerCase()}.`);
+ if(k.comio)b.push(`Comió ${k.comio.toLowerCase()}${(k.comidas||[]).length?' ('+k.comidas.map(x=>x.toLowerCase()).join(', ')+')':''}.`);
+ if(k.siesta)b.push(`Durmió una siesta de ${k.siesta} minutos.`);
+ if(k.panales)b.push(`Hice ${k.panales} cambio${+k.panales===1?'':'s'} de pañal${k.bano?' y se bañó':''}.`);else if(k.bano)b.push('Se bañó.');
+ if((k.acts||[]).length)b.push('Hicimos: '+k.acts.map(x=>x.toLowerCase()).join(', ')+'.');
+ if(k.logro)b.push('Lo más lindo: '+k.logro.trim().replace(/[.!]+$/,'')+'.');
+ const inc=(k.inc||[]).filter(x=>x!=='Sin incidentes');
+ b.push(inc.length?'Para tener en cuenta: '+inc.map(x=>x.toLowerCase()).join(', ')+'.':'No hubo incidentes.');
+ if(k.med)b.push('Se administró '+k.med.trim()+', según la indicación.');
+ const v=r.vit||{};if(v.temp)b.push(`Su temperatura fue ${v.temp} °C.`);
+ if(r.nota)b.push(r.nota.trim().replace(/\s+/g,' ').replace(/^./,c=>c.toUpperCase()).replace(/([^.!?])$/,'$1.'));
+ const nxt=S.appts.filter(x=>x.patientId===a.patientId&&x.status==='prog'&&(x.date+x.start)>(a.date+a.start)).sort((x,y)=>(x.date+x.start).localeCompare(y.date+y.start))[0];
+ const obs=`Fíjate esta tarde en su apetito, su ánimo y cómo duerme esta noche${inc.some(x=>/Fiebre|Vómito/.test(x))?'; si la fiebre sigue o hay decaimiento, consulta a su pediatra':''}. Avísame si algo te preocupa.${nxt?' Nos vemos '+fdate(nxt.date,true).toLowerCase()+' a las '+nxt.start+'.':''}`;
+ return {texto:b.join(' '),obs}}
+function kidClinical(a,p,r){const k=r.kid||{};const v=r.vit||{};
+ return `${fdate(a.date,true)} ${a.start}. ${a.type}. Ánimo: ${k.animo||'—'}. Ingesta: ${k.comio||'—'}${(k.comidas||[]).length?' ('+k.comidas.join(', ')+')':''}. Siesta: ${k.siesta?k.siesta+' min':'—'}. Pañales: ${k.panales||'—'}${k.bano?' · baño':''}. Actividades: ${(k.acts||[]).join(', ')||'—'}. ${k.logro?'Logro: '+k.logro+'. ':''}Incidentes: ${(k.inc||[]).join(', ')||'sin registro'}. ${k.med?'Medicamento: '+k.med+'. ':''}T° ${v.temp||'—'}. ${r.nota||''}`.trim()}
 routes.visita=([id])=>{
  const a=A(id);if(!a)return `${empty('Atención no encontrada.','<a class="btn" href="#/hoy">Volver</a>')}`;
  const p=P(a.patientId);const r=a.record||(a.record={start:null});
- const isInj=/inyecc|anticoag/i.test(a.type);
+ const isInj=/inyecc|anticoag/i.test(a.type);const kid=isKid(a,p);
  const last=S.appts.filter(x=>x.patientId===a.patientId&&x.record?.sitio&&x.id!==a.id).sort((x,y)=>(y.date+y.start).localeCompare(x.date+x.start))[0];
  const sug=last?(last.record.sitio==='Abdomen izq.'?'Abdomen der.':'Abdomen izq.'):'';
  return `<div class="row sp">${back('Hoy','#/hoy')}<span class="pill p-bad" id="timer" aria-live="off">En curso · 00:00</span></div>
  <div class="row" style="margin:6px 0 12px"><div style="width:52px;height:52px;border-radius:26px;background:var(--navy);color:var(--blush);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:20px">${esc(initials(p.name))}</div><div><h2>${esc(p.name)}</h2><div class="sm mut">${esc(a.type)}</div></div></div>
  <form class="col" data-form="visit" data-id="${a.id}" novalidate>
  ${p.indication?.text?`<div class="alert a-ok"><b>Indicación vigente</b><br>${esc(p.indication.text)}${p.indication.photo?' · foto adjunta':''}</div>`:'<div class="alert a-warn"><b>Sin indicación médica registrada.</b> Adjúntala en la ficha antes de procedimientos.</div>'}
- ${isInj?`<div class="card col"><b>Registro de inyección</b><div class="row"><label class="f grow">Fármaco<input name="farmaco" value="${esc(r.farmaco||'')}" placeholder="Anticoagulante"></label><label class="f grow">Dosis<input name="dosis" value="${esc(r.dosis||'')}" placeholder="según receta"></label></div>
+ ${kid?kidCard(r):''}
+ ${isInj&&!kid?`<div class="card col"><b>Registro de inyección</b><div class="row"><label class="f grow">Fármaco<input name="farmaco" value="${esc(r.farmaco||'')}" placeholder="Anticoagulante"></label><label class="f grow">Dosis<input name="dosis" value="${esc(r.dosis||'')}" placeholder="según receta"></label></div>
  <div class="f"><span>Sitio de aplicación</span><div class="row" style="flex-wrap:wrap;margin-top:4px">${['Abdomen izq.','Abdomen der.','Otro'].map(s=>`<label class="chip row" style="display:inline-flex;align-items:center;gap:6px"><input type="radio" name="sitio" value="${s}" style="width:auto;min-height:0" ${r.sitio===s?'checked':''}>${s}</label>`).join('')}</div>${sug?`<span class="xs">Ayer fue ${esc(last.record.sitio.toLowerCase())} · hoy te sugiero rotar a ${sug.toLowerCase()}</span>`:''}</div></div>`:''}
- <div class="card col"><b>Signos vitales</b><div class="row"><label class="f grow">Presión<input name="pa" inputmode="numeric" value="${esc(r.vit?.pa||'')}" placeholder="120/80"></label><label class="f grow">Pulso<input name="fc" inputmode="numeric" value="${esc(r.vit?.fc||'')}" placeholder="72"></label></div><div class="row"><label class="f grow">Temp. °C<input name="temp" inputmode="decimal" value="${esc(r.vit?.temp||'')}" placeholder="36.5"></label><label class="f grow">Sat. O₂<input name="sat" inputmode="numeric" value="${esc(r.vit?.sat||'')}" placeholder="97"></label></div><div id="vitwarn"></div></div>
- <div class="card"><b>Vigilancia</b> <span class="xs mut">criterios que tú definiste</span><div class="row" style="flex-wrap:wrap;margin-top:8px">${VIG.map(v=>`<label class="chip row" style="display:inline-flex;align-items:center;gap:6px"><input type="checkbox" name="vig" value="${v}" style="width:auto;min-height:0" ${(r.vig||[]).includes(v)?'checked':''}>${v}</label>`).join('')}</div></div>
+ <div class="card col"><b>Signos vitales</b>${kid?' <span class="xs mut">opcional</span>':''}<div class="row"><label class="f grow">Presión<input name="pa" inputmode="numeric" value="${esc(r.vit?.pa||'')}" placeholder="120/80"></label><label class="f grow">Pulso<input name="fc" inputmode="numeric" value="${esc(r.vit?.fc||'')}" placeholder="72"></label></div><div class="row"><label class="f grow">Temp. °C<input name="temp" inputmode="decimal" value="${esc(r.vit?.temp||'')}" placeholder="36.5"></label><label class="f grow">Sat. O₂<input name="sat" inputmode="numeric" value="${esc(r.vit?.sat||'')}" placeholder="97"></label></div><div id="vitwarn"></div></div>
+ ${kid?'':`<div class="card"><b>Vigilancia</b> <span class="xs mut">criterios que tú definiste</span><div class="row" style="flex-wrap:wrap;margin-top:8px">${VIG.map(v=>`<label class="chip row" style="display:inline-flex;align-items:center;gap:6px"><input type="checkbox" name="vig" value="${v}" style="width:auto;min-height:0" ${(r.vig||[]).includes(v)?'checked':''}>${v}</label>`).join('')}</div></div>`}
  <label class="f">Nota para el informe<textarea name="nota" id="nota" placeholder="Dicta una nota para el informe…">${esc(r.nota||'')}</textarea></label>
  ${('webkitSpeechRecognition' in window||'SpeechRecognition' in window)?'<button type="button" class="btn sec" data-act="dictnote">🎙 Dictar nota</button>':''}
  <button class="btn full" style="min-height:54px;font-size:16px" type="submit">Cerrar visita y generar informe</button>
@@ -598,6 +637,7 @@ function vitWarn(f){
  const box=f.querySelector('#vitwarn');if(box)box.innerHTML=w.length?`<div class="alert a-bad" role="alert">${w.join(' · ')}. Revisa y decide con tu criterio clínico.</div>`:'';
 }
 function genFamily(a,p,r){
+ if(r.kid)return kidFamily(a,p,r);
  const first=p.name.split(/[ ,]/)[0];const trat=/Sra|Sr/.test('')?'':'';
  const inj=/inyecc|anticoag/i.test(a.type);
  const bits=[];
@@ -615,6 +655,7 @@ function genFamily(a,p,r){
 }
 const esc2=s=>s;
 function genClinical(a,p,r){
+ if(r.kid)return kidClinical(a,p,r);
  const v=r.vit||{};
  return `${fdate(a.date,true)} ${a.start}. ${a.type}. ${r.farmaco?'Fármaco: '+r.farmaco+(r.dosis?' ('+r.dosis+')':'')+'. ':''}${r.sitio?'Sitio: '+r.sitio+'. ':''}SV: PA ${v.pa||'—'} · FC ${v.fc||'—'} · T° ${v.temp||'—'} · SatO₂ ${v.sat||'—'}. Vigilancia: ${(r.vig||[]).join(', ')||'sin hallazgos registrados'}. ${r.nota||''}`.trim();
 }
@@ -624,6 +665,7 @@ function closeVisit(f){
  r.farmaco=fd.get('farmaco')||'';r.dosis=fd.get('dosis')||'';r.sitio=fd.get('sitio')||'';
  r.vit={pa:fd.get('pa')||'',fc:fd.get('fc')||'',temp:fd.get('temp')||'',sat:fd.get('sat')||''};
  r.vig=fd.getAll('vig');r.nota=fd.get('nota')||'';r.end=new Date().toISOString();
+ if(fd.get('kidmode')){r.kid={animo:fd.get('animo')||'',comio:fd.get('comio')||'',comidas:fd.getAll('comidas'),siesta:(fd.get('siesta')||'').trim(),panales:(fd.get('panales')||'').trim(),bano:!!fd.get('bano'),acts:fd.getAll('acts'),logro:(fd.get('logro')||'').trim(),inc:fd.getAll('inc'),med:(fd.get('med')||'').trim()};r.vig=r.kid.inc.slice();r.farmaco='';r.dosis='';r.sitio=''}
  a.record=r;a.status='hecha';
  if(a.price&&!a.tent&&!S.charges.some(c=>c.apptId===a.id)&&!S.charges.some(c=>c.patientId===p.id&&c.status==='pend'&&/^(Tratamiento|Cotizaci)/.test(c.concept))){S.charges.push({id:uid(),patientId:p.id,concept:(a.type||'Visita')+' · '+fdate(a.date),amount:a.price,due:addDays(today(),3),status:'pend',boleta:'',apptId:a.id});a.chargeMade=true}
  const g=genFamily(a,p,r);
@@ -703,15 +745,16 @@ async function reportCard(a){
  T(x,'INFORME DEL CUIDADO',1010,112,'700 20px "DM Sans", sans-serif',AQU,'right',4);T(x,fdate(a.date,true),1010,152,'400 28px "DM Sans", sans-serif','#E3EEF9','right');
  let y=370;T(x,'Cómo estuvo '+first+' hoy',70,y,'600 84px "Cormorant Garamond", serif',NV);
  y+=52;T(x,(a.type||'Visita')+' · '+a.start+' h',72,y,'500 30px "DM Sans", sans-serif','#4C5A7A');
- y+=44;const ser0=vitSeries(a.patientId,a.id,6);const dl=k=>{const d=vitDelta(ser0,k);return d===null?'':' · '+dShort(d)};const vit=[['PRESIÓN',v.pa,'mmHg'+dl('pas')],['PULSO',v.fc,'lpm'+dl('fc')],['TEMP.',v.temp,'°C'+dl('temp')],['SAT. O₂',v.sat,'%'+dl('sat')]].filter(t=>t[1]);
+ y+=44;const ser0=vitSeries(a.patientId,a.id,6);const dl=k=>{const d=vitDelta(ser0,k);return d===null?'':' · '+dShort(d)};const kk=r.kid;const vit=(kk?[['ÁNIMO',kk.animo,'hoy'],['COMIÓ',kk.comio,'en el turno'],['SIESTA',kk.siesta,'min'],['TEMP.',v.temp,'°C']]:[['PRESIÓN',v.pa,'mmHg'+dl('pas')],['PULSO',v.fc,'lpm'+dl('fc')],['TEMP.',v.temp,'°C'+dl('temp')],['SAT. O₂',v.sat,'%'+dl('sat')]]).filter(t=>t[1]);
  if(vit.length){const w=(940-(vit.length-1)*16)/vit.length;vit.forEach((t,i)=>{const X=70+i*(w+16);rr(x,X,y,w,150,26);x.fillStyle='#fff';x.fill();x.strokeStyle='#E5DACA';x.lineWidth=2;x.stroke();T(x,t[0],X+w/2,y+44,'700 19px "DM Sans", sans-serif',TQ,'center',3);T(x,String(t[1]),X+w/2,y+104,(String(t[1]).length>5?'700 46px':'700 54px')+' "DM Sans", sans-serif',NV,'center');T(x,t[2],X+w/2,y+136,'400 19px "DM Sans", sans-serif','#7A869F','center')});y+=150+30}
  const ch=(r.vig||[]).filter(s=>s!=='Otro');
  if(ch.length){let cx=70;x.font='600 26px "DM Sans", sans-serif';ch.forEach(s=>{const w=x.measureText(s).width+64;if(cx+w>1010){cx=70;y+=64}rr(x,cx,y,w,50,25);x.fillStyle='#DDF1EC';x.fill();T(x,'✓',cx+22,y+34,'700 26px "DM Sans", sans-serif',TQ);T(x,s,cx+46,y+34,'600 26px "DM Sans", sans-serif',NV);cx+=w+12});y+=50+32}
+ if(kk&&(kk.acts||[]).length){let cx=70;x.font='600 26px "DM Sans", sans-serif';T(x,'ACTIVIDADES DE HOY',70,y+14,'700 19px "DM Sans", sans-serif',TQ,'left',3);y+=34;kk.acts.slice(0,6).forEach(s=>{const w=x.measureText(s).width+40;if(cx+w>1010){cx=70;y+=62}rr(x,cx,y,w,50,25);x.fillStyle=CLO;x.fill();T(x,s,cx+20,y+34,'600 26px "DM Sans", sans-serif',NV);cx+=w+12});y+=50+30}
  let thumbs=[];try{for(const m of (a.media||[]).filter(m=>m.fam&&m.t==='i').slice(0,3)){const b=await MDB.get(m.id);if(b)thumbs.push(await createImageBitmap(b))}}catch(e){}
  const obsT=rp.obs||'';x.font='400 29px "DM Sans", sans-serif';x.__mw=860;const obsL=obsT?clip(x,wrapT(x,obsT,860),3):[];const obsH=obsL.length?70+obsL.length*42:0;
  const thH=thumbs.length?250:0;const bodyBottom=1190-obsH-thH;
  rr(x,70,y,940,Math.max(200,bodyBottom-y),30);x.fillStyle='#fff';x.fill();x.strokeStyle='#E5DACA';x.lineWidth=2;x.stroke();
- x.font='400 32px "DM Sans", sans-serif';x.__mw=860;const maxL=Math.max(3,Math.floor((bodyBottom-y-44)/48));const bl=clip(x,wrapT(x,rp.family,860),maxL);
+ x.font='400 32px "DM Sans", sans-serif';x.__mw=860;const maxL=Math.max(3,Math.floor((bodyBottom-y-44)/48));const bl=clip(x,wrapT(x,(kk&&kk.logro)?'Lo más lindo de hoy: '+kk.logro:rp.family,860),maxL);
  bl.forEach((l,i)=>T(x,l,110,y+66+i*48,'400 32px "DM Sans", sans-serif','#26324F'));
  {const bh=Math.max(200,bodyBottom-y),tb=y+66+(bl.length-1)*48+24,spare=y+bh-tb;if(spare>=160&&ser0.length>=2){const cols=VDEF.map(([k,lb])=>({lb:lb.replace(' (sistólica)','').replace('Saturación O₂','Sat. O₂'),vals:ser0.map(q=>vitOf(q)[k]).filter(z=>z!==null)})).filter(q=>q.vals.length>=2);if(cols.length){const top=y+bh-150;x.strokeStyle='#E5DACA';x.lineWidth=2;x.beginPath();x.moveTo(110,top-8);x.lineTo(970,top-8);x.stroke();T(x,'EVOLUCIÓN · ÚLTIMAS '+ser0.length+' VISITAS',110,top+22,'700 18px "DM Sans", sans-serif',TQ,'left',3);const cw=(860-(cols.length-1)*20)/cols.length;cols.forEach((q,i)=>{const X=110+i*(cw+20),mn=Math.min(...q.vals),mx=Math.max(...q.vals),rg=(mx-mn)||1;T(x,q.lb.toUpperCase(),X,top+56,'700 16px "DM Sans", sans-serif','#7A869F','left',2);x.save();x.strokeStyle=TQ;x.lineWidth=4;x.lineCap='round';x.lineJoin='round';x.beginPath();q.vals.forEach((val,j)=>{const px=X+4+j*(cw-12)/(q.vals.length-1),py=top+130-(val-mn)/rg*50;j?x.lineTo(px,py):x.moveTo(px,py)});x.stroke();x.fillStyle=TQ;x.beginPath();x.arc(X+cw-8,top+130-(q.vals[q.vals.length-1]-mn)/rg*50,7,0,7);x.fill();x.restore()})}}}
  y=Math.max(y+200,bodyBottom)+22;
@@ -793,7 +836,7 @@ const perName=d=>d<=7?'de la semana':d<=14?'de 2 semanas':'del mes';
 function summaryText(p,days){const st=periodStats(p.id,days);const f=p.name.split(/[ ,]/)[0];
  if(!st.n)return `Aún no hay visitas en los últimos ${days} días.`;
  const h=Math.floor(st.mins/60);
- return `Resumen ${perName(days)} de ${f}: ${st.n} visita${st.n===1?'':'s'} (${h?h+' h ':''}${st.mins%60} min de cuidado). `+(st.vig.length?`Lo que más se vigiló: ${st.vig.map(x=>x[0].toLowerCase()+' ('+x[1]+')').join(', ')}. `:'')+'Registré sus signos vitales en cada visita. Ante cualquier cambio, escríbeme; en una emergencia llama al 131.'}
+ return `Resumen ${perName(days)} de ${f}: ${st.n} visita${st.n===1?'':'s'} (${h?h+' h ':''}${st.mins%60} min de cuidado). `+(st.vig.length?`Lo que más se vigiló: ${st.vig.map(x=>x[0].toLowerCase()+' ('+x[1]+')').join(', ')}. `:'')+(st.vis.some(a=>a.record&&a.record.kid)?'Registré su ánimo, alimentación, sueño y actividades en cada visita. Ante cualquier cambio, escríbeme; en una emergencia llama al 131.':'Registré sus signos vitales en cada visita. Ante cualquier cambio, escríbeme; en una emergencia llama al 131.')}
 async function summaryCard(p,days){
  await fontsReady();const st=periodStats(p.id,days);const first=p.name.split(/[ ,]/)[0];
  const [c,x]=newCv(1080,1350);
@@ -1409,7 +1452,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')){navigator
   rPx.forEach((rp,i)=>{if(!played[i]&&head>=rp){played[i]=1;bip()}const d=head-rp;if(d>0&&d<140){x.strokeStyle='rgba(159,217,207,'+(.35*(1-d/140))+')';x.lineWidth=2;x.beginPath();x.arc(rp,yAt(rp),14+d*.5,0,7);x.stroke()}});
   if(p<1||head<W*1.12)requestAnimationFrame(frame);else try{ac&&setTimeout(()=>ac.close(),600)}catch(e){}};
  requestAnimationFrame(frame)})();
-window.NURSE={reportCard,quoteCard,summaryCard,summaryText,periodStats,vitSeries,vitOf,vitDelta,evoBox,onboardSteps,onboardHtml,CARDS,MDB,imgBlob,addMedia,shareMedia,mediaName,hydrateMedia,sealBackup,openBackup,parseLeadMsg,outbox,PCACHE,openPortal,get S(){return S},set S(v){S=v},route,conflicts,suggest,parsePhrase,qTotal,freeWindows,today,addDays,genFamily,tentSlots,startVisit,closeVisit,waLink,demo,DEFAULTS,saveNow,b64e,b64d,portalUrl,sha,A,P,loadOf,dayAppts};
+window.NURSE={isKid,kidFamily,kidClinical,reportCard,quoteCard,summaryCard,summaryText,periodStats,vitSeries,vitOf,vitDelta,evoBox,onboardSteps,onboardHtml,CARDS,MDB,imgBlob,addMedia,shareMedia,mediaName,hydrateMedia,sealBackup,openBackup,parseLeadMsg,outbox,PCACHE,openPortal,get S(){return S},set S(v){S=v},route,conflicts,suggest,parsePhrase,qTotal,freeWindows,today,addDays,genFamily,tentSlots,startVisit,closeVisit,waLink,demo,DEFAULTS,saveNow,b64e,b64d,portalUrl,sha,A,P,loadOf,dayAppts};
 loadDispImg();
 route();
 </script>
