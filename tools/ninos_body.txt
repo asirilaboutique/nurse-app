@@ -1,0 +1,77 @@
+
+/* ===== Pack CUIDADO INFANTIL: datos ficticios (niño de ejemplo, sin rostros, sin montos) ===== */
+const PREPK = `(async()=>{const N=window.NURSE;N.S=N.DEFAULTS();N.demo();const S=N.S;S.demo=false;S.lastBackup=Date.now();S.charges=[];S.quotes=[];
+ S.profile.wa=S.profile.wa||'+56911112222';
+ const p=S.patients.find(x=>x.svc==='Bebé y niño');p.name='Mateo, 3 años';p.age=3;p.consent=p.consent||{date:N.today()};p.drive='https://drive.google.com/drive/folders/ejemplo';p.resp={name:'Pamela Rojas',rel:'madre',phone:'+56 9 5555 0101'};
+ S.appts=S.appts.filter(a=>a.patientId!==p.id);
+ const mkimg=(c1,c2)=>new Promise(r=>{const c=document.createElement('canvas');c.width=900;c.height=700;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,900,700);g.addColorStop(0,c1);g.addColorStop(1,c2);x.fillStyle=g;x.fillRect(0,0,900,700);x.fillStyle='rgba(255,255,255,.35)';x.beginPath();x.arc(450,330,170,0,7);x.fill();c.toBlob(r,'image/jpeg',.8)});
+ const past=[[6,'Contento','Todo',['Almuerzo','Colación'],'80',['Cuentos y lectura','Juego libre'],'Dijo «agua» por primera vez'],[4,'Tranquilo','Casi todo',['Almuerzo','Once'],'70',['Dibujo y pintura','Música y canto'],'Pintó con témpera sin ayuda'],[2,'Contento','Todo',['Almuerzo','Colación','Once'],'95',['Juego al aire libre','Estimulación motora'],'Saltó con los dos pies']];
+ past.forEach(([ago,an,co,cm,si,ac,lg],i)=>{const d=N.addDays(N.today(),-ago);const kid={animo:an,comio:co,comidas:cm,siesta:si,panales:'3',bano:i!==1,acts:ac,logro:lg,inc:['Sin incidentes'],med:''};const a={id:'kp'+i,patientId:p.id,type:'Cuidado infantil · turno por horas',date:d,start:'10:00',dur:180,travel:15,price:0,status:'hecha',zone:p.zone,record:{start:d+'T10:00',end:d+'T13:00',vit:{},vig:['Sin incidentes'],kid},report:{family:'',obs:'',clinical:'x',approved:true,sent:true}};const g=N.kidFamily(a,p,a.record);a.report.family=g.texto;a.report.obs=g.obs;S.appts.push(a)});
+ const cur={id:'kidhoy',patientId:p.id,type:'Cuidado infantil · turno por horas',date:N.today(),start:'10:00',dur:180,travel:15,price:0,status:'prog',zone:p.zone,record:null,report:null};S.appts.push(cur);
+ S.appts.push({id:'kprox',patientId:p.id,type:'Cuidado infantil · turno por horas',date:N.addDays(N.today(),2),start:'10:00',dur:180,travel:15,price:0,status:'prog',zone:p.zone,record:null,report:null});
+ const cd=S.appts.find(x=>x.id==='kp2');cd.media=[];await N.addMedia(cd,[await mkimg('#F7E3A1','#F1CFC8'),await mkimg('#D8EFE8','#E3EEF9')]);cd.media[0].cap='Hora del juego';cd.media[0].fam=true;cd.media[1].cap='Dibujo de hoy';cd.media[1].fam=true;
+ N.saveNow();return 'kidhoy|'+p.id})()`;
+const KFILL = `(()=>{const f=document.querySelector('form[data-form=visit]');const c=(n,v)=>{const e=f.querySelector('input[name='+n+'][value="'+v+'"]');if(e)e.click()};
+ c('animo','Contento');c('comio','Casi todo');c('comidas','Almuerzo');c('comidas','Colación');
+ c('acts','Cuentos y lectura');c('acts','Dibujo y pintura');c('acts','Juego sensorial');c('inc','Sin incidentes');return 1})()`;
+const kidVisitFill = async () => {
+  await sleep(100);
+  await ev(`(()=>{const a=window.NURSE.A('kidhoy');if(a&&a.record){a.record.start=new Date(Date.now()-170*60000).toISOString();window.NURSE.saveNow();window.NURSE.route()}return 1})()`); await sleep(500); await ev(INJECT);
+};
+
+await send('Page.navigate', { url: BASE + '?fresh=' + Date.now() }); await sleep(900);
+await ev(`sessionStorage.clear();1`);
+await send('Page.navigate', { url: BASE + '?k1=' + Date.now() + '#/hoy' }); await sleep(4600);
+await ev(INJECT);
+const kids = (await ev(PREPK)).split('|'); const kPat = kids[1];
+await send('Page.navigate', { url: BASE + '?k2=' + Date.now() + '#/hoy' }); await sleep(2800); await ev(INJECT);
+await go('#/pacientes'); await still('K01_pacientes_servicios');
+await go('#/ficha/' + kPat); await still('K02_ficha_nino');
+await ev(`window.NURSE.startVisit('kidhoy');1`); await sleep(1200); await ev(INJECT);
+await sleep(100);
+await ev(`(()=>{const a=window.NURSE.A('kidhoy');if(a&&a.record){a.record.start=new Date(Date.now()-170*60000).toISOString();window.NURSE.saveNow();window.NURSE.route()}return 1})()`); await sleep(600); await ev(INJECT);
+await still('K03_visita_infantil_inicio');
+await ev(KFILL); await sleep(300);
+await ev(`window.__setfield=1;(()=>{const f=document.querySelector('form[data-form=visit]');const s=(n,v)=>{const e=f.elements[n];e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}))};s('siesta','90');s('panales','3');f.elements.bano.click();s('logro','Armó una torre de 6 bloques');s('nota','Hoy quiso ayudar a ordenar sus juguetes.');return 1})()`); await sleep(300);
+await ev(`document.querySelector('input[name=animo]').scrollIntoView({block:'start'});window.scrollBy(0,-90);1`); await sleep(400); await still('K04_visita_animo_comida');
+await ev(`document.querySelector('input[name=siesta]').scrollIntoView({block:'start'});window.scrollBy(0,-90);1`); await sleep(400); await still('K05_visita_sueno_actividades');
+await ev(`document.querySelector('input[name=inc]').scrollIntoView({block:'start'});window.scrollBy(0,-90);1`); await sleep(400); await still('K06_visita_incidentes_logro');
+await ev(`window.NURSE.closeVisit(document.querySelector('form[data-form=visit]'));1`); await sleep(1500); await ev(`window.scrollTo(0,0);1`);
+await still('K07_informe_familiar_infantil');
+await ev(`document.querySelector('#cardimg').scrollIntoView({block:'center'});1`); await sleep(600); await still('K08_tarjeta_infantil');
+await ev(`document.querySelector('#rptpaper').scrollIntoView({block:'start'});window.scrollBy(0,-20);1`); await sleep(400); await still('K09_texto_para_la_familia');
+await go('#/resumen/' + kPat, 1500); await still('K10_resumen_semana_infantil');
+await ev(`window.scrollBy(0,700);1`); await sleep(500); await still('K11_resumen_evolucion_mensaje');
+
+/* portal de la familia */
+const kcode = await ev(`(async()=>{const N=window.NURSE;const p=N.P(${J(kPat)});N.S.ui.portal=N.S.ui.portal||{};N.S.ui.portal[p.id]={pin:'482113',days:30,exp:N.addDays(N.today(),30),inf:true,cot:false,pay:false,evi:true,rev:false};N.saveNow();const url=await N.portalUrl(p);return url.split('#/p/')[1]})()`);
+await send('Page.navigate', { url: BASE + '?kp=' + Date.now() + '#/p/' + kcode }); await sleep(2500); await ev(INJECT);
+await setv('#pinin', '482113', 400); await tap('#pinbtn', 1700); await still('K12_portal_inicio_infantil');
+for (const [h, n] of [['informe', 'K13_portal_informe_infantil'], ['fotos', 'K14_portal_fotos_infantil']]) { const ok = await ev(`!!document.querySelector('nav.tabs a[href$="/${h}"]')`); if (!ok) { problems.push('portal sin pestaña ' + h); continue; } await tap('nav.tabs a[href$="/' + h + '"]', 1300); await ev(`window.scrollTo(0,0);1`); await still(n); }
+
+/* clip vertical: cerrar visita infantil → informe → tarjeta */
+await dsf(2); await send('Page.navigate', { url: BASE + '?kc=' + Date.now() }); await sleep(2800); await ev(INJECT);
+await ev(PREPK); await send('Page.navigate', { url: BASE + '?kc2=' + Date.now() + '#/visita/kidhoy' }); await sleep(2800); await ev(INJECT);
+await record('KCLIP1_visita_infantil_informe_tarjeta', async () => {
+  await ev(`window.NURSE.startVisit('kidhoy');1`); await sleep(1100);
+  await ev(`(()=>{const a=window.NURSE.A('kidhoy');if(a&&a.record){a.record.start=new Date(Date.now()-170*60000).toISOString();window.NURSE.saveNow();window.NURSE.route()}return 1})()`); await sleep(500); await ev(INJECT);
+  await ev(`document.querySelector('input[name=animo]').scrollIntoView({block:'start'});window.scrollBy(0,-90);1`); await sleep(500);
+  for (const [n, v] of [['animo', 'Contento'], ['comio', 'Casi todo'], ['comidas', 'Almuerzo']]) { await tap(`input[name=${n}][value="${v}"]`, 380); }
+  await ev(`document.querySelector('input[name=siesta]').scrollIntoView({block:'start'});window.scrollBy(0,-90);1`); await sleep(500);
+  await setv('input[name=siesta]', '90', 350);
+  for (const v of ['Cuentos y lectura', 'Dibujo y pintura', 'Juego sensorial']) { await tap(`input[name=acts][value="${v}"]`, 380); }
+  await tap('input[name=inc][value="Sin incidentes"]', 450);
+  await setv('input[name=logro]', 'Armó una torre de 6 bloques', 400);
+  await ev(`window.NURSE.closeVisit(document.querySelector('form[data-form=visit]'));1`); await sleep(1600);
+  await ev(`document.querySelector('#cardimg').scrollIntoView({block:'center',behavior:'smooth'});1`); await sleep(1800);
+}, 14);
+
+/* tarjetas crudas + lámina de integración con los servicios */
+await dsf(2); await send('Page.navigate', { url: BASE + '?kt=' + Date.now() }); await sleep(2800); await ev(INJECT);
+const k3 = (await ev(PREPK)).split('|');
+await ev(`(async()=>{const N=window.NURSE;const a=N.A('kidhoy');a.status='hecha';a.record={start:N.today()+'T10:00',end:N.today()+'T13:00',vit:{},vig:['Sin incidentes'],kid:{animo:'Contento',comio:'Casi todo',comidas:['Almuerzo','Colación'],siesta:'90',panales:'3',bano:true,acts:['Cuentos y lectura','Dibujo y pintura','Juego sensorial'],logro:'Armó una torre de 6 bloques',inc:['Sin incidentes'],med:''}};const g=N.kidFamily(a,N.P(a.patientId),a.record);a.report={family:g.texto,obs:g.obs,clinical:N.kidClinical(a,N.P(a.patientId),a.record),approved:true,sent:false};N.saveNow();return 1})()`);
+const kc = JSON.parse(await ev(`(async()=>{const N=window.NURSE;const b64=b=>new Promise(res=>{const f=new FileReader();f.onload=()=>res(f.result.split(',')[1]);f.readAsDataURL(b)});const a=N.A('kidhoy');return JSON.stringify({r:await b64(await N.reportCard(a)),s:await b64(await N.summaryCard(N.P(${J(k3[1])}),7))})})()`));
+fs.writeFileSync(path.join(OUT, 'tarjeta_informe_infantil_1080x1350.png'), Buffer.from(kc.r, 'base64'));
+fs.writeFileSync(path.join(OUT, 'tarjeta_resumen_semana_infantil_1080x1350.png'), Buffer.from(kc.s, 'base64'));
+console.log('PROBLEMAS:', problems.length ? problems.join(' | ') : 'ninguno');
+console.log('listo'); ws.close(); proc.kill(); try { fs.rmSync(udir, { recursive: true, force: true }); } catch {}
